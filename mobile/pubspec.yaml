@@ -1,0 +1,24 @@
+name: right_tech_mobile
+description: A mobile app for the Right Tech Centre eLearning platform.
+
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+  provider: ^6.0.0
+  firebase_core: ^2.4.0
+  firebase_messaging: ^14.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true

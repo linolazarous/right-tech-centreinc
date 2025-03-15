@@ -1,0 +1,32 @@
+{
+       "abi": [
+           {
+               "inputs": [],
+               "stateMutability": "nonpayable",
+               "type": "constructor"
+           },
+           {
+               "inputs": [
+                   {
+                       "internalType": "address",
+                       "name": "studentAddress",
+                       "type": "address"
+                   },
+                   {
+                       "internalType": "uint256",
+                       "name": "courseId",
+                       "type": "uint256"
+                   },
+                   {
+                       "internalType": "string",
+                       "name": "certificateHash",
+                       "type": "string"
+                   }
+               ],
+               "name": "issueCertificate",
+               "outputs": [],
+               "stateMutability": "nonpayable",
+               "type": "function"
+           }
+       ]
+   }

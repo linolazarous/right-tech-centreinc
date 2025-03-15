@@ -1,0 +1,33 @@
+service: right-tech-centre-backend
+
+   provider:
+     name: aws
+     runtime: nodejs14.x
+     region: global
+     environment:
+       DB_HOST: ${env:DB_HOST}
+       DB_USER: ${env:DB_USER}
+       DB_PASSWORD: ${env:DB_PASSWORD}
+       STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
+       ZOOM_API_KEY: ${env:ZOOM_API_KEY}
+       OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+
+   functions:
+     createCourse:
+       handler: src/handlers/createCourse.handler
+       events:
+         - http:
+             path: courses
+             method: post
+     # Add more functions as needed
+
+   resources:
+     Resources:
+       MyDatabase:
+         Type: AWS::RDS::DBInstance
+         Properties:
+           Engine: postgres
+           DBInstanceClass: db.t3.micro
+           AllocatedStorage: 20
+           MasterUsername: ${env:DB_USER}
+           MasterUserPassword: ${env:DB_PASSWORD}

@@ -1,0 +1,23 @@
+{
+  "name": "right-tech-backend",
+  "version": "1.0.0",
+  "description": "Backend for Right Tech Centre",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12",
+    "stripe": "^8.194.0",
+    "jsonwebtoken": "^8.5.1",
+    "winston": "^3.3.3",
+    "aws-sdk": "^2.1015.0",
+    "web3": "^1.6.0",
+    "zoomus": "^1.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
