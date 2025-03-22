@@ -1,3 +1,4 @@
+require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const mongoose = require('mongoose');
 const { Client } = require('pg');
@@ -5,7 +6,7 @@ const { Client } = require('pg');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/your-mongodb-database', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
