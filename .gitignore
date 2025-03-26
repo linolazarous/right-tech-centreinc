@@ -1,0 +1,83 @@
+# --------------------------
+# General Development Files
+# --------------------------
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.env
+.vscode/
+.idea/
+
+# --------------------------
+# Dependency Directories
+# --------------------------
+node_modules/
+.pnpm-store/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+dist/
+out/
+.cache/
+
+# --------------------------
+# Environment Files
+# --------------------------
+.env
+.env.local
+.env.*.local
+*.env
+secrets.*
+*.secret
+
+# --------------------------
+# Test & Coverage Reports
+# --------------------------
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+junit.xml
+
+# --------------------------
+# Build Artifacts
+# --------------------------
+*.apk
+*.ipa
+*.aab
+*.dmg
+*.exe
+*.msi
+*.app
+*.jar
+*.war
+*.tar.gz
+*.zip
+
+# --------------------------
+# IDE/Editor Specific
+# --------------------------
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --------------------------
+# OS Generated Files
+# --------------------------
+ehthumbs.db
+[Tt]humbs.db
+*.stackdump
+
+# Flutter
+  .flutter-plugins
+  .flutter-plugins-dependencies
+  .dart_tool/
