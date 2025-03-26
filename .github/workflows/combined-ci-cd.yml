@@ -1,1 +1,405 @@
+name: combined-ci-cd
 
+on:
+  push:
+    branches:
+      - master
+      - dev
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      perform-security-scan:
+        description: 'Run full security scan'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  NODE_VERSION: '20'
+  FLUTTER_VERSION: '3.13.0'
+  AWS_REGION: 'us-east-1'
+  DOCKER_REGISTRY: 'ghcr.io'
+  DOCKER_IMAGE_PREFIX: 'right-tech-centre'
+  SONAR_PROJECT_KEY: 'right-tech-centre'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --------------------------
+  # SECURITY SCANNING
+  # --------------------------
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || github.event.inputs.perform-security-scan }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for SonarCloud analysis
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Dependency Audit
+        run: npm audit --production
+
+      - name: Run SBOM Generation
+        uses: cyclonedx/cdxgen-action@v1
+        with:
+          output-format: 'json'
+          output-file: 'bom.json'
+
+      - name: Upload SBOM
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bom.json
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Run Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          exit-code: '1'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          scan-ref: '.'
+
+  # --------------------------
+  # BACKEND CI/CD
+  # --------------------------
+  backend:
+    name: Backend
+    needs: security-scan
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18, 20]
+        include:
+          - os: ubuntu-latest
+            docker: true
+          - os: windows-latest
+            docker: false
+          - os: macos-latest
+            docker: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --audit=false
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test -- --coverage --detectOpenHandles
+
+      - name: Build Docker image
+        if: matrix.docker
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:${{ github.sha }} \
+            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:latest \
+            --push \
+            .
+
+      - name: Run Performance Tests
+        uses: grafana/k6-action@v0.4
+        with:
+          filename: tests/load-test.js
+          flags: --vus 100 --duration 30s
+        env:
+          API_BASE_URL: http://localhost:${{ env.BACKEND_PORT }}
+
+  backend-deploy:
+    name: Deploy Backend
+    needs: [backend, performance-test]
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy using SAM
+        run: |
+          sam deploy \
+            --template-file template.yaml \
+            --stack-name right-tech-centre-backend-${{ github.event.inputs.environment || 'production' }} \
+            --capabilities CAPABILITY_IAM \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              Environment=${{ github.event.inputs.environment || 'production' }} \
+              DbHost=${{ secrets.DB_HOST }} \
+              DbUser=${{ secrets.DB_USER }} \
+              DbPassword=${{ secrets.DB_PASSWORD }} \
+              MongoUri=${{ secrets.MONGO_URI }} \
+              JwtSecret=${{ secrets.JWT_SECRET }} \
+              StripeSecretKey=${{ secrets.STRIPE_SECRET_KEY }} \
+              ZoomApiKey=${{ secrets.ZOOM_API_KEY }} \
+              OpenaiApiKey=${{ secrets.OPENAI_API_KEY }}
+
+      - name: Run API Contract Tests
+        uses: mikepenz/action-newman@v1
+        with:
+          collection: tests/api-contract-tests.json
+          environment: tests/api-env-${{ github.event.inputs.environment || 'production' }}.json
+
+  # --------------------------
+  # FRONTEND CI/CD
+  # --------------------------
+  frontend:
+    name: Frontend
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --audit=false
+
+      - name: Run tests
+        run: npm test -- --watchAll=false --coverage
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:3000
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Analyze bundle
+        uses: preactjs/compressed-size-action@v2
+        with:
+          pattern: 'build/static/**/*.{js,css}'
+          compression: 'brotli'
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: build/
+
+  frontend-deploy:
+    name: Deploy Frontend
+    needs: [frontend, backend-deploy]
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to S3 and CloudFront
+        run: |
+          aws s3 sync ./ s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=31536000, immutable"
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Deploy to Vercel (Alternative)
+        if: github.event.inputs.environment == 'production'
+        uses: amondnet/vercel-action@v30
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: ${{ secrets.VERCEL_SCOPE }}
+          production: true
+
+  # --------------------------
+  # MOBILE CI/CD
+  # --------------------------
+  mobile:
+    name: Mobile
+    needs: security-scan
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        flutter-version: ['3.10.0', '3.13.0']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: 'stable'
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ matrix.flutter-version }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ matrix.flutter-version }}-
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run Flutter analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
+      - name: Run Flutter Security Scan
+        uses: ShiftLeftSecurity/scan-action@v2
+        with:
+          output: reports/flutter-security.sarif
+
+  mobile-deploy:
+    name: Deploy Mobile
+    needs: [mobile, backend-deploy]
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+    runs-on: macos-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release --dart-define=ENV=${{ github.event.inputs.environment || 'production' }}
+
+      - name: Build iOS IPA
+        run: |
+          flutter build ipa --release \
+            --dart-define=ENV=${{ github.event.inputs.environment || 'production' }} \
+            --export-options-plist=ios/ExportOptions.plist
+
+      - name: Deploy to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          groups: testers
+          file: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Deploy to App Store Connect
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: build/ios/ipa/*.ipa
+          issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mobile-build-${{ github.run_number }}
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/ios/ipa/*.ipa
+
+  # --------------------------
+  # MONITORING & OBSERVABILITY
+  # --------------------------
+  monitoring:
+    name: Monitoring Setup
+    needs: [backend-deploy, frontend-deploy, mobile-deploy]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Configure Datadog
+        uses: DataDog/gha-datadog@v1
+        with:
+          api_key: ${{ secrets.DATADOG_API_KEY }}
+          env: ${{ github.event.inputs.environment || 'production' }}
+
+      - name: Setup New Relic
+        uses: newrelic/newrelic-github-actions@v1
+        with:
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          accountId: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          region: US
+          applicationId: ${{ secrets.NEW_RELIC_APP_ID }}
+
+      - name: Send deployment notification
+        uses: bobheadxi/deployments@v2
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: ${{ github.event.inputs.environment || 'production' }}
+          noop: false
