@@ -1,4 +1,4 @@
-name: combined-cicd
+name: combined-ci-cd
 
 on:
   push:
@@ -46,7 +46,7 @@ jobs:
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || inputs.perform-security-scan }}
+    if: ${{ github.event_name == 'pull_request' || github.event.inputs.perform-security-scan }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -148,9 +148,9 @@ jobs:
   backend-deploy:
     name: Deploy Backend
     needs: [backend, performance-test]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'production' }}
+    environment: ${{ github.event.inputs.environment || 'production' }}
 
     steps:
       - name: Checkout repository
@@ -167,11 +167,11 @@ jobs:
         run: |
           sam deploy \
             --template-file template.yaml \
-            --stack-name right-tech-centre-backend-${{ inputs.environment || 'production' }} \
+            --stack-name right-tech-centre-backend-${{ github.event.inputs.environment || 'production' }} \
             --capabilities CAPABILITY_IAM \
             --no-fail-on-empty-changeset \
             --parameter-overrides \
-              Environment=${{ inputs.environment || 'production' }} \
+              Environment=${{ github.event.inputs.environment || 'production' }} \
               DbHost=${{ secrets.DB_HOST }} \
               DbUser=${{ secrets.DB_USER }} \
               DbPassword=${{ secrets.DB_PASSWORD }} \
@@ -185,7 +185,7 @@ jobs:
         uses: mikepenz/action-newman@v1
         with:
           collection: tests/api-contract-tests.json
-          environment: tests/api-env-${{ inputs.environment || 'production' }}.json
+          environment: tests/api-env-${{ github.event.inputs.environment || 'production' }}.json
 
   # --------------------------
   # FRONTEND CI/CD
@@ -236,9 +236,9 @@ jobs:
   frontend-deploy:
     name: Deploy Frontend
     needs: [frontend, backend-deploy]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'production' }}
+    environment: ${{ github.event.inputs.environment || 'production' }}
 
     steps:
       - name: Download build artifacts
@@ -261,7 +261,7 @@ jobs:
             --paths "/*"
 
       - name: Deploy to Vercel (Alternative)
-        if: inputs.environment == 'production'
+        if: github.event.inputs.environment == 'production'
         uses: amondnet/vercel-action@v30
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -322,9 +322,9 @@ jobs:
   mobile-deploy:
     name: Deploy Mobile
     needs: [mobile, backend-deploy]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: macos-latest
-    environment: ${{ inputs.environment || 'production' }}
+    environment: ${{ github.event.inputs.environment || 'production' }}
 
     steps:
       - name: Checkout repository
@@ -340,12 +340,12 @@ jobs:
         run: flutter pub get
 
       - name: Build Android APK
-        run: flutter build apk --release --dart-define=ENV=${{ inputs.environment || 'production' }}
+        run: flutter build apk --release --dart-define=ENV=${{ github.event.inputs.environment || 'production' }}
 
       - name: Build iOS IPA
         run: |
           flutter build ipa --release \
-            --dart-define=ENV=${{ inputs.environment || 'production' }} \
+            --dart-define=ENV=${{ github.event.inputs.environment || 'production' }} \
             --export-options-plist=ios/ExportOptions.plist
 
       - name: Deploy to Firebase App Distribution
@@ -386,7 +386,7 @@ jobs:
         uses: DataDog/gha-datadog@v1
         with:
           api_key: ${{ secrets.DATADOG_API_KEY }}
-          env: ${{ inputs.environment || 'production' }}
+          env: ${{ github.event.inputs.environment || 'production' }}
 
       - name: Setup New Relic
         uses: newrelic/newrelic-github-actions@v1
@@ -401,5 +401,5 @@ jobs:
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
-          env: ${{ inputs.environment || 'production' }}
+          env: ${{ github.event.inputs.environment || 'production' }}
           noop: false
