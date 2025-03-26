@@ -1,4 +1,4 @@
-name: Advanced CI/CD Pipeline
+name: combined-cicd
 
 on:
   push:
