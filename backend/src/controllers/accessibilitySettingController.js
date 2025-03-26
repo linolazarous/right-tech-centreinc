@@ -1,5 +1,7 @@
 const AccessibilitySetting = require('../models/accessibilitySettingModel');
-const logger = require('../utils/logger'); // Assuming you have a logger utility
+const logger = require('../utils/logger');
+const { validationResult } = require('express-validator');
+const { Types } = require('mongoose');
 
 class AccessibilitySettingController {
   /**
@@ -9,42 +11,78 @@ class AccessibilitySettingController {
    * @returns {Promise<void>}
    */
   static async getSettings(req, res) {
+    const startTime = process.hrtime();
+    const requestId = req.id || 'unknown-request';
+
     try {
-      const { userId } = req.params;
-      
-      // Validate userId
-      if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({ 
-          error: 'Invalid user ID',
-          details: 'User ID must be a non-empty string'
+      // Validate input using express-validator
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.warn('Validation failed', {
+          requestId,
+          errors: errors.array(),
+          params: req.params
+        });
+        return res.status(400).json({
+          success: false,
+          error: 'Validation Error',
+          details: errors.array(),
+          requestId
         });
       }
 
-      const settings = await AccessibilitySetting.findOne({ userId }).lean();
+      const { userId } = req.params;
+
+      if (!Types.ObjectId.isValid(userId)) {
+        logger.warn('Invalid ObjectId format', { requestId, userId });
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID format',
+          details: 'Must be a valid MongoDB ObjectId',
+          requestId
+        });
+      }
+
+      const settings = await AccessibilitySetting.findOne({ userId })
+        .select('-_id -__v') // Exclude fields directly in query
+        .lean()
+        .exec(); // Always use exec() with promises
 
       if (!settings) {
-        logger.info(`Accessibility settings not found for user: ${userId}`);
-        return res.status(404).json({ 
-          message: 'Accessibility settings not found',
-          suggestion: 'Create new settings using POST /accessibility'
+        logger.info('Settings not found', { requestId, userId });
+        return res.status(404).json({
+          success: false,
+          error: 'Settings not found',
+          suggestion: 'Create new settings using POST /accessibility',
+          requestId
         });
       }
 
-      // Remove internal MongoDB fields before sending response
-      const { _id, __v, ...responseData } = settings;
-      
+      logger.info('Settings retrieved successfully', {
+        requestId,
+        userId,
+        duration: process.hrtime(startTime)
+      });
+
       return res.status(200).json({
         success: true,
-        data: responseData
+        data: settings,
+        requestId
       });
+
     } catch (error) {
-      logger.error(`Error getting accessibility settings: ${error.message}`, {
+      logger.error('Failed to get settings', {
+        requestId,
+        error: error.message,
         stack: error.stack,
         params: req.params
       });
-      return res.status(500).json({ 
-        error: 'Internal server error',
-        requestId: req.id // Assuming you have request ID middleware
+
+      return res.status(500).json({
+        success: false,
+        error: 'Internal Server Error',
+        requestId,
+        timestamp: new Date().toISOString()
       });
     }
   }
@@ -56,29 +94,37 @@ class AccessibilitySettingController {
    * @returns {Promise<void>}
    */
   static async updateSettings(req, res) {
+    const startTime = process.hrtime();
+    const requestId = req.id || 'unknown-request';
+
     try {
+      // Validate input using express-validator
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.warn('Validation failed', {
+          requestId,
+          errors: errors.array(),
+          params: req.params,
+          body: req.body
+        });
+        return res.status(400).json({
+          success: false,
+          error: 'Validation Error',
+          details: errors.array(),
+          requestId
+        });
+      }
+
       const { userId } = req.params;
-      const { highContrastMode, fontSize, screenReaderEnabled } = req.body;
+      const { highContrastMode, fontSize, screenReaderEnabled, colorTheme } = req.body;
 
-      // Input validation
-      if (!userId || typeof userId !== 'string') {
-        return res.status(400).json({ 
-          error: 'Invalid user ID',
-          details: 'User ID must be a non-empty string'
-        });
-      }
-
-      if (fontSize && (typeof fontSize !== 'number' || fontSize < 12 || fontSize > 24)) {
-        return res.status(400).json({ 
-          error: 'Invalid font size',
-          details: 'Font size must be between 12 and 24'
-        });
-      }
-
-      if (typeof highContrastMode !== 'boolean' || typeof screenReaderEnabled !== 'boolean') {
-        return res.status(400).json({ 
-          error: 'Invalid settings format',
-          details: 'Boolean values required for highContrastMode and screenReaderEnabled'
+      if (!Types.ObjectId.isValid(userId)) {
+        logger.warn('Invalid ObjectId format', { requestId, userId });
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID format',
+          details: 'Must be a valid MongoDB ObjectId',
+          requestId
         });
       }
 
@@ -86,8 +132,14 @@ class AccessibilitySettingController {
         highContrastMode,
         fontSize,
         screenReaderEnabled,
-        lastUpdated: new Date()
+        colorTheme,
+        updatedAt: new Date()
       };
+
+      // Remove undefined fields
+      Object.keys(updateFields).forEach(key => 
+        updateFields[key] === undefined && delete updateFields[key]
+      );
 
       const updatedSettings = await AccessibilitySetting.findOneAndUpdate(
         { userId },
@@ -95,37 +147,51 @@ class AccessibilitySettingController {
         { 
           new: true,
           upsert: true,
-          runValidators: true, // Ensure model validation runs
-          lean: true
+          runValidators: true,
+          lean: true,
+          setDefaultsOnInsert: true
         }
-      );
+      ).select('-_id -__v').exec();
 
-      // Remove internal fields before response
-      const { _id, __v, ...responseData } = updatedSettings;
+      logger.info('Settings updated successfully', {
+        requestId,
+        userId,
+        changes: updateFields,
+        duration: process.hrtime(startTime)
+      });
 
-      logger.info(`Updated accessibility settings for user: ${userId}`);
-      
       return res.status(200).json({
         success: true,
-        data: responseData
+        data: updatedSettings,
+        requestId
       });
+
     } catch (error) {
-      logger.error(`Error updating accessibility settings: ${error.message}`, {
+      logger.error('Failed to update settings', {
+        requestId,
+        error: error.message,
         stack: error.stack,
         params: req.params,
         body: req.body
       });
 
+      let status = 500;
+      let errorMessage = 'Internal Server Error';
+
       if (error.name === 'ValidationError') {
-        return res.status(400).json({ 
-          error: 'Validation error',
-          details: error.message
-        });
+        status = 400;
+        errorMessage = 'Validation Error';
+      } else if (error.name === 'CastError') {
+        status = 400;
+        errorMessage = 'Invalid Data Format';
       }
 
-      return res.status(500).json({ 
-        error: 'Internal server error',
-        requestId: req.id
+      return res.status(status).json({
+        success: false,
+        error: errorMessage,
+        details: status !== 500 ? error.message : undefined,
+        requestId,
+        timestamp: new Date().toISOString()
       });
     }
   }
