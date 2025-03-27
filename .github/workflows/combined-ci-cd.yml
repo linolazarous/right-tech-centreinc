@@ -1,4 +1,4 @@
-name: combined-ci-cd 
+name: Advanced CI/CD Pipeline
 
 on:
   push:
@@ -78,10 +78,12 @@ jobs:
         uses: aquasecurity/trivy-action@0.13
         with:
           scan-type: 'fs'
+          scan-ref: '.'
           ignore-unfixed: false
           format: 'sarif'
           severity: 'CRITICAL,HIGH'
           output: 'trivy-results.sarif'
+          exit-code: '1'
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
@@ -361,6 +363,8 @@ jobs:
         with:
           api_key: ${{ secrets.DATADOG_API_KEY }}
           env: ${{ inputs.environment || 'production' }}
+          service: "right-tech-centre"
+          version: ${{ github.sha }}
 
       - name: Deployment notification
         uses: bobheadxi/deployments@v2
