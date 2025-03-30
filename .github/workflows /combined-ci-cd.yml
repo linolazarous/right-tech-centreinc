@@ -1,6 +1,3 @@
-- name: Datadog Service Catalog Metadata Provider
-  uses: arcxp/datadog-service-catalog-metadata-provider@v2.3.2
-
 name: Advanced CI/CD Pipeline
 
 on:
@@ -24,8 +21,8 @@ on:
         default: true
 
 env:
-  NODE_VERSION: '20'
-  FLUTTER_VERSION: '3.13.0'
+  NODE_VERSION: '20.12.2'
+  FLUTTER_VERSION: '3.13.9'
   AWS_REGION: 'us-east-1'
   DOCKER_REGISTRY: 'ghcr.io'
   DOCKER_IMAGE_PREFIX: 'right-tech-centre'
@@ -44,15 +41,16 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      packages: read
       
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -61,24 +59,24 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
 
       - name: Generate SBOM
-        uses: cyclonedx/cdxgen-action@v1
+        uses: cyclonedx/cdxgen-action@v9.1.1
         with:
           output-format: 'json'
           output-file: 'sbom.json'
 
       - name: Upload SBOM
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v3.0.6
         with:
           sarif_file: sbom.json
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarcloud-github-action@v2.7.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Run Trivy Scan
-        uses: aquasecurity/trivy-action@0.13
+        uses: aquasecurity/trivy-action@0.14.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -89,7 +87,7 @@ jobs:
           exit-code: '1'
 
       - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v3.0.6
         with:
           sarif_file: trivy-results.sarif
 
@@ -101,7 +99,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [18, 20]
+        node-version: [18.19.1, 20.12.2]
         include:
           - os: ubuntu-latest
             docker: true
@@ -112,10 +110,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -145,15 +143,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Run performance tests
-        uses: grafana/k6-action@v0.4
+        uses: grafana/k6-action@v0.4.1
         with:
           filename: tests/load-test.js
           flags: --vus 100 --duration 30s
@@ -172,10 +170,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4.0.3
         with:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -196,7 +194,7 @@ jobs:
               JwtSecret=${{ secrets.JWT_SECRET }}
 
       - name: API contract tests
-        uses: mikepenz/action-newman@v1
+        uses: mikepenz/action-newman@v1.1.0
         with:
           collection: tests/api-contract-tests.json
           environment: tests/api-env-${{ inputs.environment || 'production' }}.json
@@ -207,10 +205,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -222,7 +220,7 @@ jobs:
         run: npm test -- --watchAll=false --coverage
 
       - name: Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v11
+        uses: treosh/lighthouse-ci-action@v11.0.3
         with:
           urls: http://localhost:3000
           uploadArtifacts: true
@@ -231,13 +229,13 @@ jobs:
         run: npm run build
 
       - name: Analyze bundle
-        uses: preactjs/compressed-size-action@v2
+        uses: preactjs/compressed-size-action@v2.1.1
         with:
           pattern: 'build/static/**/*.{js,css}'
           compression: 'brotli'
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: frontend-build
           path: build/
@@ -254,12 +252,12 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3.0.2
         with:
           name: frontend-build
 
       - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v4.0.3
         with:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -278,20 +276,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        flutter-version: ['3.10.0', '3.13.0']
+        flutter-version: ['3.10.9', '3.13.9']
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2.13.0
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: 'stable'
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v3.3.2
         with:
           path: |
             ~/.pub-cache
@@ -308,7 +306,7 @@ jobs:
         run: flutter test --coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v3.1.4
 
   mobile_deploy:
     name: Mobile Deploy
@@ -319,10 +317,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2.13.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
@@ -340,7 +338,7 @@ jobs:
             --export-options-plist=ios/ExportOptions.plist
 
       - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.8.0
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -348,7 +346,7 @@ jobs:
           file: build/app/outputs/flutter-apk/app-release.apk
 
       - name: Deploy to App Store
-        uses: apple-actions/upload-testflight-build@v1
+        uses: apple-actions/upload-testflight-build@v1.2.0
         with:
           app-path: build/ios/ipa/*.ipa
           issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
@@ -362,7 +360,7 @@ jobs:
     if: always()
     steps:
       - name: Setup Datadog
-        uses: DataDog/gha-datadog@v1
+        uses: DataDog/gha-datadog@v1.6.0
         with:
           api_key: ${{ secrets.DATADOG_API_KEY }}
           env: ${{ inputs.environment || 'production' }}
@@ -370,7 +368,7 @@ jobs:
           version: ${{ github.sha }}
 
       - name: Deployment notification
-        uses: bobheadxi/deployments@v2
+        uses: bobheadxi/deployments@v2.1.1
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
