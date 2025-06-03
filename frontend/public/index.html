@@ -855,6 +855,7 @@
 <section id="contact" class="py-16 bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="lg:grid lg:grid-cols-2 lg:gap-12">
+            <!-- Contact Information (Left Column) -->
             <div data-aos="fade-right">
                 <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
                     Get In Touch
@@ -864,7 +865,7 @@
                 </p>
                 
                 <div class="mt-8 space-y-6">
-                    <!-- Address with Google Maps link -->
+                    <!-- Address -->
                     <div class="flex">
                         <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                             <i class="fas fa-map-marker-alt text-indigo-600"></i>
@@ -873,12 +874,13 @@
                             <p class="text-lg font-medium text-gray-900">Our Location</p>
                             <a href="https://maps.app.goo.gl/3CJ6Bh9EF2isVCRc9" 
                                target="_blank" rel="noopener noreferrer"
-                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">VGFM+98, North Gudele<br>Juba, South Sudan
+                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                                VGFM+98, North Gudele<br>Juba, South Sudan
                             </a>
                         </div>
                     </div>
                     
-                    <!-- Phone with click-to-call -->
+                    <!-- Phone -->
                     <div class="flex">
                         <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                             <i class="fas fa-phone-alt text-indigo-600"></i>
@@ -886,13 +888,14 @@
                         <div class="ml-4">
                             <p class="text-lg font-medium text-gray-900">Call Us</p>
                             <a href="tel:+211925522700" 
-                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">+211 925 522 700
+                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
+                                +211 925 522 700
                             </a>
                             <p class="mt-1 text-sm text-gray-500">Mon-Fri, 8am-5pm</p>
                         </div>
                     </div>
                     
-                    <!-- Email with mailto link -->
+                    <!-- Email -->
                     <div class="flex">
                         <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                             <i class="fas fa-envelope text-indigo-600"></i>
@@ -936,47 +939,85 @@
                 </div>
             </div>
             
+            <!-- Enrollment Form (Right Column) -->
+            	
             <div class="mt-12 lg:mt-0" data-aos="fade-left">
                 <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
                     <h3 class="text-2xl font-bold text-gray-900">Enrollment Form</h3>
-                    <form id="enrollment-form" action="https://your-api-endpoint.com" method="POST" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                        <input type="hidden" name="_csrf" value="CSRF_TOKEN_GOES_HERE">
+                    <p class="mt-2 text-sm text-gray-600">Fields marked with <span class="text-red-500">*</span> are required</p>
+                    <form action="https://formspree.io/f/mpwrznzd" method="POST">
+                    <form id="enrollment-form" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                        <!-- Form Success/Error Messages -->
+                        <div id="form-messages" class="hidden sm:col-span-2"></div>
                         
+                        <!-- First Name -->
                         <div>
                             <label for="first-name" class="block text-sm font-medium text-gray-700">First name <span class="text-red-500">*</span></label>
-                            <div class="mt-1">
+                            <div class="mt-1 relative">
                                 <input type="text" name="first-name" id="first-name" autocomplete="given-name" required 
                                        class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
                                        aria-required="true">
+                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <p class="mt-1 text-sm text-red-600 hidden" id="first-name-error"></p>
                         </div>
+                        
+                        <!-- Last Name -->
                         <div>
                             <label for="last-name" class="block text-sm font-medium text-gray-700">Last name <span class="text-red-500">*</span></label>
-                            <div class="mt-1">
+                            <div class="mt-1 relative">
                                 <input type="text" name="last-name" id="last-name" autocomplete="family-name" required 
                                        class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
                                        aria-required="true">
+                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <p class="mt-1 text-sm text-red-600 hidden" id="last-name-error"></p>
                         </div>
+                        
+                        <!-- Email -->
                         <div class="sm:col-span-2">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
-                            <div class="mt-1">
+                            <div class="mt-1 relative">
                                 <input id="email" name="email" type="email" autocomplete="email" required 
                                        class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
                                        aria-required="true">
+                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <p class="mt-1 text-sm text-red-600 hidden" id="email-error"></p>
                         </div>
+                        
+                        <!-- Phone -->
                         <div class="sm:col-span-2">
                             <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-                            <div class="mt-1">
+                            <div class="mt-1 relative">
                                 <input type="tel" name="phone" id="phone" autocomplete="tel" required 
                                        class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
                                        aria-required="true">
+                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <p class="mt-1 text-sm text-red-600 hidden" id="phone-error"></p>
                         </div>
+                        
+                        <!-- Program -->
                         <div class="sm:col-span-2">
                             <label for="program" class="block text-sm font-medium text-gray-700">Program of Interest <span class="text-red-500">*</span></label>
-                            <div class="mt-1">
+                            <div class="mt-1 relative">
                                 <select id="program" name="program" required 
                                         class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
                                         aria-required="true">
@@ -998,8 +1039,16 @@
                                         <option value="aws">AWS Certified Cloud Practitioner</option>
                                     </optgroup>
                                 </select>
+                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
                             </div>
+                            <p class="mt-1 text-sm text-red-600 hidden" id="program-error"></p>
                         </div>
+                        
+                        <!-- Message -->
                         <div class="sm:col-span-2">
                             <label for="message" class="block text-sm font-medium text-gray-700">Questions or Comments</label>
                             <div class="mt-1">
@@ -1007,13 +1056,22 @@
                                           class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md"></textarea>
                             </div>
                         </div>
+                        
+                        <!-- Submit Button -->
                         <div class="sm:col-span-2">
-                            <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md">
-                                <i class="fas fa-paper-plane mr-2"></i> Submit Application
+                            <button type="submit" id="submit-btn" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <span id="submit-text"><i class="fas fa-paper-plane mr-2"></i> Submit Application</span>
+                                <span id="spinner" class="hidden ml-2">
+                                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
                             </button>
                         </div>
                     </form>
-                </div>
+                </form>
+               </div>
             </div>
         </div>
     </div>
