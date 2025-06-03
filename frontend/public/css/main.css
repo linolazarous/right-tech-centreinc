@@ -1,0 +1,200 @@
+:root {
+    --primary: #4f46e5;
+    --secondary: #ec4899;
+    --dark: #111827;
+    --light: #f9fafb;
+    --accent: #10b981;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+    background-color: var(--light);
+}
+
+.tech-font {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Header & Navigation */
+.header-gradient {
+    background: linear-gradient(135deg, rgba(17,24,39,0.98) 0%, rgba(31,41,55,0.98) 100%);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--accent);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.mobile-menu {
+    transition: all 0.3s ease;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Gradients */
+.hero-gradient {
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+}
+
+.programs-gradient {
+    background: linear-gradient(135deg, #4f46e5 0%, var(--accent) 100%);
+}
+
+/* Cards & UI Elements */
+.program-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.program-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.course-category {
+    transition: transform 0.3s ease;
+}
+
+.course-category:hover {
+    transform: scale(1.03);
+}
+
+/* Tabs */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float {
+    animation: float 8s ease-in-out infinite;
+}
+
+.animate-scroll {
+    animation: scroll 30s linear infinite;
+}
+
+.animate-bounce {
+    animation: bounce 2s infinite;
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Reduced motion media query */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Focus styles for accessibility */
+a:focus-visible, 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+    }
+    
+    a::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+        font-weight: normal;
+    }
+}
+
+/* Animation optimizations */
+.floating, .animate-float {
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* Tab accessibility */
+[role="tab"][aria-selected="true"] {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
