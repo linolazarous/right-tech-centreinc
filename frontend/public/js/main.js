@@ -256,3 +256,119 @@ window.addEventListener('load', function() {
 
 // Auto-update copyright year
 document.getElementById('current-year').textContent = new Date().getFullYear();
+
+// JavaScript for Form Handling
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('enrollment-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const submitText = document.getElementById('submit-text');
+    const spinner = document.getElementById('spinner');
+    const formMessages = document.getElementById('form-messages');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        submitText.textContent = 'Processing...';
+        spinner.classList.remove('hidden');
+        submitBtn.disabled = true;
+        
+        // Reset error states
+        document.querySelectorAll('[id$="-error"]').forEach(el => {
+            el.classList.add('hidden');
+        });
+        document.querySelectorAll('.border-red-500').forEach(el => {
+            el.classList.remove('border-red-500');
+        });
+        
+        try {
+            // Simulate form submission (replace with actual fetch/axios call)
+            // Example using Fetch API:
+            /*
+            const response = await fetch('https://formspree.io/f/mpwrznzd', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            });
+            
+            const result = await response.json();
+            */
+            
+            // Simulate 2 second delay for demo
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Show success message
+            formMessages.innerHTML = `
+                <div class="rounded-md bg-green-50 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-green-800">
+                                Thank you! Your application has been submitted successfully. We'll contact you shortly.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            formMessages.classList.remove('hidden');
+            form.reset();
+            
+        } catch (error) {
+            // Show error message
+            formMessages.innerHTML = `
+                <div class="rounded-md bg-red-50 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-red-800">
+                                There was an error submitting your form. Please try again later.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            formMessages.classList.remove('hidden');
+            
+        } finally {
+            // Reset button state
+            submitText.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Submit Application';
+            spinner.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Real-time validation
+    form.querySelectorAll('input, select').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.classList.remove('border-red-500');
+                this.nextElementSibling?.classList.add('hidden');
+                const checkIcon = this.parentElement.querySelector('svg');
+                if (checkIcon) checkIcon.classList.remove('hidden');
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            if (!this.checkValidity()) {
+                this.classList.add('border-red-500');
+                const errorElement = document.getElementById(`${this.id}-error`);
+                if (errorElement) {
+                    errorElement.textContent = this.validationMessage;
+                    errorElement.classList.remove('hidden');
+                }
+                const checkIcon = this.parentElement.querySelector('svg');
+                if (checkIcon) checkIcon.classList.add('hidden');
+            }
+        });
+    });
+});
