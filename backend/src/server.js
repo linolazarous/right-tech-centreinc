@@ -1,130 +1,225 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
+const compression = require('compression');
+const { body, validationResult } = require('express-validator');
+const fs = require('fs');
+const https = require('https');
+const cluster = require('cluster');
+const os = require('os');
+const timeout = require('connect-timeout');
+
+// Import configurations and utilities
 const db = require('./db');
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/authMiddleware');
 const logger = require('./utils/logger');
 
 // Import all routes
-const adRoutes = require('./routes/adRoutes');
-const analyticsRoutes = require('./routes/analyticsRoutes');
-const arLearningRoutes = require('./routes/arLearningRoutes');
-const arvrLearningRoutes = require('./routes/arvrLearningRoutes');
-const blockChainRoutes = require('./routes/blockChainRoutes');
-const careerCoachingRoutes = require('./routes/careerCoachingRoutes');
-const careerPathRoutes = require('./routes/careerPathRoutes');
-const certificateRoutes = require('./routes/certificateRoutes');
-const codingChallengeRoutes = require('./routes/codingChallengeRoutes');
-const contentCreationRoutes = require('./routes/contentCreationRoutes');
-const corporateRoutes = require('./routes/corporateRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const forumRoutes = require('./routes/forumRoutes');
-const gamificationRoutes = require('./routes/gamificationRoutes');
-const integrationRoutes = require('./routes/integrationRoutes');
-const interviewRoutes = require('./routes/interviewRoutes');
-const jobMatchingRoutes = require('./routes/jobMatchingRoutes');
-const jobRoutes = require('./routes/jobRoutes');
-const languageSwitcherRoutes = require('./routes/languageSwitcherRoutes');
-const learningPathRoutes = require('./routes/learningPathRoutes');
-const learningQARoutes = require('./routes/learningQARoutes');
-const localizationRoutes = require('./routes/localizationRoutes');
-const metaverseRoutes = require('./routes/metaverseRoutes');
-const microLearningRoutes = require('./routes/microLearningRoutes');
-const moderationRoutes = require('./routes/moderationRoutes');
-const offlineRoutes = require('./routes/offlineRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
-const privacyRoutes = require('./routes/privacyRoutes');
-const proctoringRoutes = require('./routes/proctoringRoutes');
-const pushNotificationRoutes = require('./routes/pushNotificationRoutes');
-const recommendationRoutes = require('./routes/recommendationRoutes');
-const resumeBuilderRoutes = require('./routes/resumeBuilderRoutes');
-const scholarshipRoutes = require('./routes/scholarshipRoutes');
-const skillsAssessmentRoutes = require('./routes/skillsAssessmentRoutes');
-const socialMediaRoutes = require('./routes/socialMediaRoutes');
-const socialRoutes = require('./routes/socialRoutes');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
-const translationRoutes = require('./routes/translationRoutes');
-const userRoutes = require('./routes/userRoutes');
-const virtualLabRoutes = require('./routes/virtualLabRoutes');
-const virtualTutorRoutes = require('./routes/virtualTutorRoutes');
-const vrCareerFairRoutes = require('./routes/vrCareerFairRoutes');
-const vrLabRoutes = require('./routes/vrLabRoutes');
-const vrLearningRoutes = require('./routes/vrLearningRoutes');
-const zoomRoutes = require('./routes/zoomRoutes');
-const authRoutes = require('./routes/authRoutes');
-const badgeRoutes = require('./routes/badgeRoutes');
-const leaderboardRoutes = require('./routes/leaderboardRoutes');
-const affiliationRoutes = require('./routes/affiliationRoutes');
-const accessibilitySettingRoutes = require('./routes/accessibilitySettingRoutes'); // New route
+const routes = require('./routes'); // Consolidated routes
 
+// Initialize Express app
 const app = express();
 
-// Middleware
-app.use(express.json());
+// Security Middleware
+app.use(helmet());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+}));
 
-// Connect to MongoDB
-mongoose.connect(db.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
+// Rate Limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: 'Too many requests from this IP, please try again later'
+});
+app.use(apiLimiter);
 
-// Use routes
-app.use('/api/ads', adRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/ar-learning', arLearningRoutes);
-app.use('/api/arvr-learning', arvrLearningRoutes);
-app.use('/api/blockchain', blockChainRoutes);
-app.use('/api/career-coaching', careerCoachingRoutes);
-app.use('/api/career-path', careerPathRoutes);
-app.use('/api/certificates', certificateRoutes);
-app.use('/api/coding-challenges', codingChallengeRoutes);
-app.use('/api/content-creation', contentCreationRoutes);
-app.use('/api/corporate', corporateRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/forum', forumRoutes);
-app.use('/api/gamification', gamificationRoutes);
-app.use('/api/integration', integrationRoutes);
-app.use('/api/interviews', interviewRoutes);
-app.use('/api/job-matching', jobMatchingRoutes);
-app.use('/api/jobs', jobRoutes);
-app.use('/api/language-switcher', languageSwitcherRoutes);
-app.use('/api/learning-path', learningPathRoutes);
-app.use('/api/learning-qa', learningQARoutes);
-app.use('/api/localization', localizationRoutes);
-app.use('/api/metaverse', metaverseRoutes);
-app.use('/api/micro-learning', microLearningRoutes);
-app.use('/api/moderation', moderationRoutes);
-app.use('/api/offline', offlineRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/privacy', privacyRoutes);
-app.use('/api/proctoring', proctoringRoutes);
-app.use('/api/push-notifications', pushNotificationRoutes);
-app.use('/api/recommendations', recommendationRoutes);
-app.use('/api/resume-builder', resumeBuilderRoutes);
-app.use('/api/scholarships', scholarshipRoutes);
-app.use('/api/skills-assessment', skillsAssessmentRoutes);
-app.use('/api/social-media', socialMediaRoutes);
-app.use('/api/social', socialRoutes);
-app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/translation', translationRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/virtual-lab', virtualLabRoutes);
-app.use('/api/virtual-tutor', virtualTutorRoutes);
-app.use('/api/vr-career-fair', vrCareerFairRoutes);
-app.use('/api/vr-lab', vrLabRoutes);
-app.use('/api/vr-learning', vrLearningRoutes);
-app.use('/api/zoom', zoomRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/badges', authMiddleware, badgeRoutes);
-app.use('/api/leaderboard', authMiddleware, leaderboardRoutes);
-app.use('/api/affiliations', affiliationRoutes);
-app.use('/api/accessibility-settings', accessibilitySettingRoutes); // New route
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    logger.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+// Special rate limiting for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: 'Too many login attempts, please try again later'
 });
 
-// Start the server
+// Standard Middleware
+app.use(compression());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(morgan('combined', { stream: logger.stream }));
+app.use(timeout('30s'));
+app.use((req, res, next) => {
+  res.set('X-Powered-By', 'Right Tech Centre');
+  next();
+});
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI || db.mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  poolSize: 10,
+  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 5000
+})
+.then(() => logger.info('MongoDB Connected'))
+.catch(err => logger.error('MongoDB Connection Error:', err));
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'UP',
+    timestamp: new Date().toISOString(),
+    dbStatus: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED',
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage()
+  });
+});
+
+// API Routes
+app.use('/api/auth', authLimiter, routes.authRoutes);
+app.use('/api/users', routes.userRoutes);
+app.use('/api/courses', routes.courseRoutes);
+// Add all other routes following the same pattern...
+
+// Special protected routes
+app.use('/api/badges', authMiddleware, routes.badgeRoutes);
+app.use('/api/leaderboard', authMiddleware, routes.leaderboardRoutes);
+
+// Static Files (if needed)
+app.use('/public', express.static('public', {
+  maxAge: '1y',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.gz')) {
+      res.set('Content-Encoding', 'gzip');
+    }
+  }
+}));
+
+// 404 Handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    status: 'error',
+    message: 'Resource not found',
+    code: 404
+  });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  logger.error(err.stack);
+  
+  // Handle validation errors
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({
+      status: 'fail',
+      message: err.message,
+      errors: err.errors
+    });
+  }
+
+  // Handle JWT errors
+  if (err.name === 'JsonWebTokenError') {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'Invalid token'
+    });
+  }
+
+  // Handle rate limit errors
+  if (err instanceof rateLimit.RateLimitError) {
+    return res.status(429).json({
+      status: 'fail',
+      message: 'Too many requests, please try again later'
+    });
+  }
+
+  // Generic error response
+  res.status(err.statusCode || 500).json({
+    status: 'error',
+    message: process.env.NODE_ENV === 'production' ? 'Something went wrong!' : err.message,
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
+  });
+});
+
+// Server Setup
 const PORT = process.env.PORT || 5500;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const SSL_ENABLED = process.env.SSL_ENABLED === 'true';
+
+let server;
+if (SSL_ENABLED && process.env.NODE_ENV === 'production') {
+  const sslOptions = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+    ca: process.env.SSL_CA_PATH ? fs.readFileSync(process.env.SSL_CA_PATH) : null
+  };
+  server = https.createServer(sslOptions, app).listen(PORT, () => {
+    logger.info(`HTTPS Server running on port ${PORT}`);
+  });
+} else {
+  server = app.listen(PORT, () => {
+    logger.info(`HTTP Server running on port ${PORT}`);
+  });
+}
+
+// Graceful Shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      logger.info('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      logger.info('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('unhandledRejection', (err) => {
+  logger.error('Unhandled Rejection:', err);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception:', err);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+// Cluster Mode (Production Only)
+if (cluster.isMaster && process.env.NODE_ENV === 'production') {
+  const numCPUs = os.cpus().length;
+  logger.info(`Master ${process.pid} is running`);
+
+  // Fork workers
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    logger.error(`Worker ${worker.process.pid} died`);
+    cluster.fork(); // Restart the worker
+  });
+} else {
+  // Worker process
+  logger.info(`Worker ${process.pid} started`);
+        }
