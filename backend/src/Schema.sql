@@ -1,471 +1,247 @@
--- Users Table
-CREATE TABLE Users (
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
+-- Enable essential extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+CREATE EXTENSION IF NOT EXISTS "btree_gin";
+
+-- Users Table with enhanced security and indexing
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    salt VARCHAR(100) NOT NULL,
     profile_picture VARCHAR(255),
     bio TEXT,
-    role VARCHAR(50) DEFAULT 'student',
-    is_verified BOOLEAN DEFAULT FALSE,
-    verification_token VARCHAR(255),
-    job_title VARCHAR(255),
-    company VARCHAR(255),
-    skills TEXT[],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    role VARCHAR(20) NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'instructor', 'admin', 'corporate')),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    verification_token VARCHAR(100),
+    verification_token_expires_at TIMESTAMPTZ,
+    job_title VARCHAR(100),
+    company VARCHAR(100),
+    skills VARCHAR(100)[],
+    last_login TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ
 );
 
--- Ads Table
-CREATE TABLE Ads (
-    id SERIAL PRIMARY KEY,
+-- Indexes for users table
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_skills ON users USING GIN(skills);
+
+-- Courses Table with full-text search support
+CREATE TABLE courses (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    short_description VARCHAR(500),
+    instructor_id UUID NOT NULL REFERENCES users(id),
+    price NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (price >= 0),
+    duration_hours INTEGER NOT NULL DEFAULT 0,
+    level VARCHAR(20) NOT NULL DEFAULT 'beginner' CHECK (level IN ('beginner', 'intermediate', 'advanced')),
+    language VARCHAR(20) NOT NULL DEFAULT 'en',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    published_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ
+);
+
+-- Full-text search index for courses
+CREATE INDEX idx_courses_fts ON courses USING GIN(to_tsvector('english', title || ' ' || description));
+CREATE INDEX idx_courses_instructor ON courses(instructor_id);
+CREATE INDEX idx_courses_active ON courses(is_active) WHERE is_active = TRUE;
+
+-- Enrollments Table
+CREATE TABLE enrollments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    course_id UUID NOT NULL REFERENCES courses(id),
+    enrolled_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    completed_at TIMESTAMPTZ,
+    progress_percentage INTEGER NOT NULL DEFAULT 0 CHECK (progress_percentage BETWEEN 0 AND 100),
+    last_accessed_at TIMESTAMPTZ,
+    UNIQUE (user_id, course_id)
+);
+
+-- Indexes for enrollments
+CREATE INDEX idx_enrollments_user ON enrollments(user_id);
+CREATE INDEX idx_enrollments_course ON enrollments(course_id);
+CREATE INDEX idx_enrollments_progress ON enrollments(progress_percentage);
+
+-- Certificates Table with validation
+CREATE TABLE certificates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    course_id UUID NOT NULL REFERENCES courses(id),
+    enrollment_id UUID NOT NULL REFERENCES enrollments(id),
+    issued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    certificate_number VARCHAR(50) UNIQUE NOT NULL,
+    verification_url VARCHAR(255) UNIQUE NOT NULL,
+    UNIQUE (user_id, course_id)
+);
+
+-- Content Table (for all types of learning content)
+CREATE TABLE content (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    course_id UUID NOT NULL REFERENCES courses(id),
+    parent_id UUID REFERENCES content(id),
+    title VARCHAR(255) NOT NULL,
+    content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('video', 'article', 'quiz', 'assignment', 'file', 'link', 'vr', 'ar')),
+    duration_minutes INTEGER,
+    content_url VARCHAR(255),
+    content_text TEXT,
+    is_free BOOLEAN NOT NULL DEFAULT FALSE,
+    sequence_number INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ
+);
+
+-- Indexes for content
+CREATE INDEX idx_content_course ON content(course_id);
+CREATE INDEX idx_content_parent ON content(parent_id);
+CREATE INDEX idx_content_sequence ON content(course_id, sequence_number);
+
+-- Unified Media Table for all XR content
+CREATE TABLE xr_content (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    image_url VARCHAR(255),
-    link VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Affiliations Table
-CREATE TABLE Affiliations (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Analytics Table
-CREATE TABLE Analytics (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    course_id INT REFERENCES Courses(id),
-    activity VARCHAR(255) NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- AR Learning Table
-CREATE TABLE ARLearning (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    ar_content_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ARVR Learning Table
-CREATE TABLE ARVRLearning (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    arvr_content_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Badges Table
-CREATE TABLE Badges (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    image_url VARCHAR(255),
-    criteria TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Blockchain Table
-CREATE TABLE Blockchain (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    transaction_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Career Coaching Table
-CREATE TABLE CareerCoaching (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    coach_id INT REFERENCES Users(id),
-    session_date TIMESTAMP NOT NULL,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Career Path Table
-CREATE TABLE CareerPath (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    steps TEXT[],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Certificates Table
-CREATE TABLE Certificates (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    course_id INT REFERENCES Courses(id),
-    issued_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    certificate_url VARCHAR(255)
-);
-
--- Coding Challenges Table
-CREATE TABLE CodingChallenges (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    difficulty VARCHAR(50),
-    code_template TEXT,
-    test_cases JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Content Creation Table
-CREATE TABLE ContentCreation (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    content_type VARCHAR(50),
-    created_by INT REFERENCES Users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Corporate Table
-CREATE TABLE Corporate (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    contact_email VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Courses Table
-CREATE TABLE Courses (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    instructor_id INT REFERENCES Users(id),
-    price NUMERIC(10, 2) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Forum Table
-CREATE TABLE Forum (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    created_by INT REFERENCES Users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Gamification Table
-CREATE TABLE Gamification (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    points INT DEFAULT 0,
-    badges INT[],
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Integration Table
-CREATE TABLE Integration (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    api_key VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Interview Table
-CREATE TABLE Interview (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    interviewer_id INT REFERENCES Users(id),
-    interview_date TIMESTAMP NOT NULL,
-    feedback TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Jobs Table
-CREATE TABLE Jobs (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    company VARCHAR(255),
-    location VARCHAR(255),
-    posted_by INT REFERENCES Users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Job Matching Table
-CREATE TABLE JobMatching (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    job_id INT REFERENCES Jobs(id),
-    match_score NUMERIC(5, 2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Language Switcher Table
-CREATE TABLE LanguageSwitcher (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    preferred_language VARCHAR(50) DEFAULT 'en',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Leaderboard Table
-CREATE TABLE Leaderboard (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    score INT DEFAULT 0,
-    rank INT,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Learning Path Table
-CREATE TABLE LearningPath (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    courses INT[],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Live QA Table
-CREATE TABLE LiveQA (
-    id SERIAL PRIMARY KEY,
-    question TEXT NOT NULL,
-    asked_by INT REFERENCES Users(id),
-    answered_by INT REFERENCES Users(id),
-    answer TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Localization Table
-CREATE TABLE Localization (
-    id SERIAL PRIMARY KEY,
-    key VARCHAR(255) NOT NULL,
-    translations JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Metaverse Table
-CREATE TABLE Metaverse (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    virtual_world_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Microlearning Table
-CREATE TABLE Microlearning (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
+    xr_type VARCHAR(20) NOT NULL CHECK (xr_type IN ('ar', 'vr', 'mixed')),
     content_url VARCHAR(255) NOT NULL,
-    duration INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    thumbnail_url VARCHAR(255),
+    duration_minutes INTEGER,
+    is_interactive BOOLEAN NOT NULL DEFAULT FALSE,
+    required_equipment VARCHAR(255)[],
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Moderation Table
-CREATE TABLE Moderation (
-    id SERIAL PRIMARY KEY,
-    content_id INT NOT NULL,
-    content_type VARCHAR(50),
-    status VARCHAR(50) DEFAULT 'pending',
-    moderated_by INT REFERENCES Users(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Offline Table
-CREATE TABLE Offline (
-    id SERIAL PRIMARY KEY,
+-- Job Listings Table
+CREATE TABLE job_listings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
-    description TEXT,
-    location VARCHAR(255) NOT NULL,
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    description TEXT NOT NULL,
+    company_id UUID REFERENCES corporate_partners(id),
+    location VARCHAR(100),
+    remote_available BOOLEAN NOT NULL DEFAULT FALSE,
+    salary_range VARCHAR(100),
+    employment_type VARCHAR(50) CHECK (employment_type IN ('full-time', 'part-time', 'contract', 'internship')),
+    posted_by UUID NOT NULL REFERENCES users(id),
+    expires_at TIMESTAMPTZ,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Payment Table
-CREATE TABLE Payment (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    amount NUMERIC(10, 2) NOT NULL,
-    payment_method VARCHAR(50),
-    status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Privacy Table
-CREATE TABLE Privacy (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    show_email BOOLEAN DEFAULT FALSE,
-    show_profile BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Proctoring Table
-CREATE TABLE Proctoring (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    exam_id INT NOT NULL,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP,
-    flagged_events TEXT[],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Push Notification Table
-CREATE TABLE PushNotification (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    message TEXT NOT NULL,
-    status VARCHAR(50) DEFAULT 'sent',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Recommendation Table
-CREATE TABLE Recommendation (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    recommended_course_id INT REFERENCES Courses(id),
-    score NUMERIC(5, 2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Resume Builder Table
-CREATE TABLE ResumeBuilder (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    template VARCHAR(255) NOT NULL,
-    content JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Scholarships Table
-CREATE TABLE Scholarships (
-    id SERIAL PRIMARY KEY,
+-- Corporate Partners Table
+CREATE TABLE corporate_partners (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    criteria TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    logo_url VARCHAR(255),
+    website_url VARCHAR(255),
+    industry VARCHAR(100),
+    contact_email VARCHAR(255),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Skills Assessment Table
-CREATE TABLE SkillsAssessment (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    skill VARCHAR(255) NOT NULL,
-    score NUMERIC(5, 2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Social Table
-CREATE TABLE Social (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    platform VARCHAR(50),
-    profile_url VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Social Media Table
-CREATE TABLE SocialMedia (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    platform VARCHAR(50),
-    profile_url VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Subscription Table
-CREATE TABLE Subscription (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id),
-    plan VARCHAR(50),
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP,
-    status VARCHAR(50) DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Translation Table
-CREATE TABLE Translation (
-    id SERIAL PRIMARY KEY,
-    key VARCHAR(255) NOT NULL,
-    translations JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Virtual Lab Table
-CREATE TABLE VirtualLab (
-    id SERIAL PRIMARY KEY,
+-- Unified Event Table (for all types of events)
+CREATE TABLE events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    lab_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    event_type VARCHAR(50) NOT NULL CHECK (event_type IN ('career-fair', 'webinar', 'workshop', 'networking', 'hackathon')),
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ NOT NULL,
+    timezone VARCHAR(50) NOT NULL DEFAULT 'UTC',
+    location_type VARCHAR(20) NOT NULL CHECK (location_type IN ('physical', 'virtual', 'hybrid')),
+    physical_address TEXT,
+    virtual_meeting_url VARCHAR(255),
+    max_attendees INTEGER,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Virtual Tutor Table
-CREATE TABLE VirtualTutor (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+-- Event Registrations Table
+CREATE TABLE event_registrations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id UUID NOT NULL REFERENCES events(id),
+    user_id UUID NOT NULL REFERENCES users(id),
+    registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    attended BOOLEAN DEFAULT FALSE,
+    feedback TEXT,
+    UNIQUE (event_id, user_id)
+);
+
+-- Skills Table
+CREATE TABLE skills (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL UNIQUE,
+    category VARCHAR(50) NOT NULL,
     description TEXT,
-    tutor_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- VR Career Fair Table
-CREATE TABLE VRCareerFair (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    fair_url VARCHAR(255) NOT NULL,
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- User Skills Table
+CREATE TABLE user_skills (
+    user_id UUID NOT NULL REFERENCES users(id),
+    skill_id UUID NOT NULL REFERENCES skills(id),
+    proficiency_level VARCHAR(20) NOT NULL CHECK (proficiency_level IN ('beginner', 'intermediate', 'advanced', 'expert')),
+    verified BOOLEAN NOT NULL DEFAULT FALSE,
+    verified_by UUID REFERENCES users(id),
+    verified_at TIMESTAMPTZ,
+    PRIMARY KEY (user_id, skill_id)
 );
 
--- VR Lab Table
-CREATE TABLE VRLab (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    lab_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Audit Log Table
+CREATE TABLE audit_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    action VARCHAR(50) NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id UUID,
+    performed_by UUID REFERENCES users(id),
+    old_values JSONB,
+    new_values JSONB,
+    ip_address VARCHAR(50),
+    user_agent TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- VR Learning Table
-CREATE TABLE VRLearning (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    vr_content_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Indexes for audit log
+CREATE INDEX idx_audit_log_entity ON audit_log(entity_type, entity_id);
+CREATE INDEX idx_audit_log_user ON audit_log(performed_by);
+CREATE INDEX idx_audit_log_date ON audit_log(created_at);
 
--- Zoom Table
-CREATE TABLE Zoom (
-    id SERIAL PRIMARY KEY,
-    meeting_id VARCHAR(255) NOT NULL,
-    host_id INT REFERENCES Users(id),
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP,
-    participants INT[],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Create update timestamp function
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- AccessibilitySettings Table
-CREATE TABLE AccessibilitySettings (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(id) UNIQUE NOT NULL,
-    high_contrast_mode BOOLEAN DEFAULT FALSE,
-    font_size VARCHAR(50) DEFAULT 'medium',
-    screen_reader_enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Create triggers for updated_at
+DO $$
+DECLARE
+    t record;
+BEGIN
+    FOR t IN 
+        SELECT table_name FROM information_schema.columns 
+        WHERE column_name = 'updated_at' AND table_schema = 'public'
+    LOOP
+        EXECUTE format('CREATE TRIGGER update_timestamp
+                        BEFORE UPDATE ON %I
+                        FOR EACH ROW EXECUTE FUNCTION update_timestamp()', 
+                        t.table_name);
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
