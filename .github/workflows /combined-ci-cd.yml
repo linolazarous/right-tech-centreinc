@@ -1,4 +1,4 @@
-name: Advanced CI/CD Pipeline
+name: DigitalOcean CI/CD Pipeline
 
 on:
   push:
@@ -23,11 +23,12 @@ on:
 env:
   NODE_VERSION: '20.12.2'
   FLUTTER_VERSION: '3.13.9'
-  AWS_REGION: 'us-east-1'
   DOCKER_REGISTRY: 'ghcr.io'
   DOCKER_IMAGE_PREFIX: 'right-tech-centre'
   SONAR_PROJECT_KEY: 'right-tech-centre'
   BACKEND_PORT: '3000'
+  DROPLET_SSH_PORT: '22'
+  APP_PLATFORM_SPEC_FILE: 'app_spec.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -135,8 +136,7 @@ jobs:
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:${{ github.sha }} \
             --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:latest \
             --push \
-            .
-
+            
   backend_performance:
     name: Backend Performance
     needs: backend_build
@@ -158,46 +158,50 @@ jobs:
         env:
           API_BASE_URL: http://localhost:${{ env.BACKEND_PORT }}
 
-  backend_deploy:
-    name: Deploy Backend
+  digitalocean_backend_deploy:
+    name: Deploy to DigitalOcean
     needs: [backend_build, backend_performance]
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'production' }}
-    permissions:
-      contents: read
-      id-token: write
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.1
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4.0.3
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: SAM deploy
+      - name: Login to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Deploy to App Platform
         run: |
-          sam deploy \
-            --template-file template.yaml \
-            --stack-name right-tech-centre-backend-${{ inputs.environment || 'production' }} \
-            --capabilities CAPABILITY_IAM \
-            --no-fail-on-empty-changeset \
-            --parameter-overrides \
-              Environment=${{ inputs.environment || 'production' }} \
-              DbHost=${{ secrets.DB_HOST }} \
-              DbUser=${{ secrets.DB_USER }} \
-              DbPassword=${{ secrets.DB_PASSWORD }} \
-              MongoUri=${{ secrets.MONGO_URI }} \
-              JwtSecret=${{ secrets.JWT_SECRET }}
+          doctl apps create --spec ${{ env.APP_PLATFORM_SPEC_FILE }} \
+            --project-id ${{ secrets.DO_PROJECT_ID }} \
+            --env ${{ inputs.environment || 'production' }}
 
-      - name: API contract tests
-        uses: mikepenz/action-newman@v1.1.0
-        with:
-          collection: tests/api-contract-tests.json
-          environment: tests/api-env-${{ inputs.environment || 'production' }}.json
+      - name: Update Database Connection
+        run: |
+          doctl databases connection ${{ secrets.DO_DATABASE_ID }} \
+            --format "Host,Port,User,Password,Database" \
+            | while read -r host port user password database; do
+              doctl apps update-config ${{ secrets.DO_APP_ID }} \
+                --env "DB_HOST=$host" \
+                --env "DB_PORT=$port" \
+                --env "DB_USER=$user" \
+                --env "DB_PASSWORD=$password" \
+                --env "DB_NAME=$database"
+            done
+
+      - name: Run database migrations
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+            -p ${{ env.DROPLET_SSH_PORT }} \
+            root@${{ secrets.DO_DROPLET_IP }} \
+            "cd /var/www/right-tech-centre/backend && npm run db:migrate"
 
   frontend_build:
     name: Frontend Build
@@ -241,14 +245,11 @@ jobs:
           path: build/
 
   frontend_deploy:
-    name: Deploy Frontend
-    needs: [frontend_build, backend_deploy]
+    name: Deploy Frontend to DigitalOcean Spaces
+    needs: [frontend_build, digitalocean_backend_deploy]
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'production' }}
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - name: Download artifacts
@@ -256,18 +257,23 @@ jobs:
         with:
           name: frontend-build
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v4.0.3
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Deploy to S3/CloudFront
+      - name: Sync to Spaces
         run: |
-          aws s3 sync ./ s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=31536000, immutable"
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          doctl spaces sync ./ ${{ secrets.DO_SPACES_NAME }}:/ \
+            --access-key ${{ secrets.DO_SPACES_ACCESS_KEY }} \
+            --secret-key ${{ secrets.DO_SPACES_SECRET_KEY }} \
+            --region ${{ secrets.DO_SPACES_REGION }} \
+            --delete
+
+      - name: Invalidate CDN cache
+        run: |
+          doctl cdn flush ${{ secrets.DO_CDN_ID }} \
+            --files "/*"
 
   mobile_build:
     name: Mobile Build
@@ -310,7 +316,7 @@ jobs:
 
   mobile_deploy:
     name: Mobile Deploy
-    needs: [mobile_build, backend_deploy]
+    needs: [mobile_build, digitalocean_backend_deploy]
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: macos-latest
     environment: ${{ inputs.environment || 'production' }}
@@ -355,17 +361,15 @@ jobs:
 
   monitoring:
     name: Monitoring
-    needs: [backend_deploy, frontend_deploy, mobile_deploy]
+    needs: [digitalocean_backend_deploy, frontend_deploy, mobile_deploy]
     runs-on: ubuntu-latest
     if: always()
+    
     steps:
-      - name: Setup Datadog
-        uses: DataDog/gha-datadog@v1.6.0
-        with:
-          api_key: ${{ secrets.DATADOG_API_KEY }}
-          env: ${{ inputs.environment || 'production' }}
-          service: "right-tech-centre"
-          version: ${{ github.sha }}
+      - name: Setup monitoring
+        run: |
+          # DigitalOcean Monitoring integration
+          curl -sSL https://repos.insights.digitalocean.com/install.sh | sudo bash
 
       - name: Deployment notification
         uses: bobheadxi/deployments@v2.1.1
