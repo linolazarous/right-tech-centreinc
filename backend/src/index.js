@@ -6,178 +6,183 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const compression = require('compression');
-const fs = require('fs');
-const https = require('https');
-const cluster = require('cluster');
-const os = require('os');
 const path = require('path');
 
 // Initialize Express app
 const app = express();
 
 // ======================
-// Security Middleware
+// Enhanced Security Middleware
 // ======================
-app.use(helmet());
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later'
-});
-app.use(limiter);
-
-// ======================
-// Standard Middleware
-// ======================
-app.use(compression());
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
-// Logging
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'));
-}
-
-// ======================
-// Database Connection
-// ======================
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  poolSize: 10,
-  socketTimeoutMS: 45000,
-  serverSelectionTimeoutMS: 5000
-})
-.then(() => console.log('✅ MongoDB Connected'))
-.catch(err => console.error('❌ MongoDB Connection Error:', err));
-
-// ======================
-// Route Imports
-// ======================
-const apiRoutes = require('./routes/api');
-app.use('/api', apiRoutes);
-
-// ======================
-// Static Files
-// ======================
-app.use('/public', express.static(path.join(__dirname, 'public'), {
-  maxAge: '1y',
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.gz')) {
-      res.set('Content-Encoding', 'gzip');
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'", process.env.API_BASE_URL || ''],
     }
   }
 }));
 
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+}));
+
+// Rate limiting optimized for DO
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: process.env.RATE_LIMIT_MAX || 200, // Higher limit for DO infrastructure
+  message: 'Too many requests, please try again later',
+  skip: (req) => req.ip === '127.0.0.1' // Skip for health checks
+});
+app.use('/api', limiter);
+
 // ======================
-// Health Check
+// Performance Middleware
 // ======================
-app.get('/health', (req, res) => {
+app.use(compression({
+  level: 6,
+  threshold: '10kb',
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
+
+app.use(express.json({ limit: '50kb' }));
+app.use(express.urlencoded({ extended: true, limit: '50kb' }));
+
+// Enhanced logging
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev', {
+  skip: (req) => req.path === '/health'
+}));
+
+// ======================
+// Database Connection (DigitalOcean Managed MongoDB)
+// ======================
+const mongoOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  retryWrites: true,
+  w: 'majority',
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 10000,
+  maxPoolSize: 10,
+  minPoolSize: 2
+};
+
+mongoose.connect(process.env.MONGO_URI, mongoOptions)
+  .then(() => console.log('✅ MongoDB Connected'))
+  .catch(err => {
+    console.error('❌ MongoDB Connection Error:', err);
+    process.exit(1); // Exit if DB connection fails
+  });
+
+// ======================
+// Route Configuration
+// ======================
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
+
+// Static files with cache control
+app.use('/public', express.static(path.join(__dirname, 'public'), {
+  maxAge: '1y',
+  immutable: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.br')) {
+      res.set('Content-Encoding', 'br');
+    } else if (path.endsWith('.gz')) {
+      res.set('Content-Encoding', 'gzip');
+    }
+  }
+});
+
+// ======================
+// Enhanced Health Check
+// ======================
+app.get('/health', async (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
+  const memoryUsage = process.memoryUsage();
+  
   res.status(200).json({
     status: 'UP',
     timestamp: new Date().toISOString(),
-    dbStatus: mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED'
+    dbStatus,
+    memory: {
+      rss: `${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`,
+      heapTotal: `${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
+      heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`
+    },
+    uptime: process.uptime()
   });
 });
 
 // ======================
 // Error Handling
 // ======================
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
 // 404 Handler
 app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: 'Resource not found'
-  });
+  next(new AppError(`Resource not found: ${req.originalUrl}`, 404));
 });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  
-  const statusCode = err.statusCode || 500;
-  const message = process.env.NODE_ENV === 'production' 
-    ? 'Something went wrong!'
-    : err.message;
+  err.statusCode = err.statusCode || 500;
+  err.status = `${err.statusCode}`.startsWith('4') ? 'fail' : 'error';
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
+  // Log detailed error in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error('💥 ERROR:', err.stack);
+  }
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.isOperational ? err.message : 'Something went wrong!',
+    ...(process.env.NODE_ENV === 'development' && {
+      stack: err.stack,
+      error: err
+    })
   });
 });
 
 // ======================
 // Server Initialization
 // ======================
-const PORT = process.env.PORT || 5500;
-const SSL_ENABLED = process.env.SSL_ENABLED === 'true';
-
-let server;
-
-if (SSL_ENABLED && process.env.NODE_ENV === 'production') {
-  const sslOptions = {
-    key: fs.readFileSync(process.env.SSL_KEY_PATH),
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH),
-    ca: process.env.SSL_CA_PATH ? fs.readFileSync(process.env.SSL_CA_PATH) : null
-  };
-  server = https.createServer(sslOptions, app).listen(PORT, () => {
-    console.log(`🚀 HTTPS Server running on port ${PORT}`);
-  });
-} else {
-  server = app.listen(PORT, () => {
-    console.log(`🚀 HTTP Server running on port ${PORT}`);
-  });
-}
+const PORT = process.env.PORT || 8080; // DO standard port
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+});
 
 // ======================
 // Process Management
 // ======================
-// Graceful shutdown
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION! 💥', err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
 process.on('SIGTERM', () => {
-  console.log('🛑 SIGTERM received. Shutting down gracefully...');
+  console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
   server.close(() => {
-    mongoose.connection.close(false, () => {
-      console.log('⛔ MongoDB connection closed');
-      process.exit(0);
-    });
+    console.log('💥 Process terminated!');
   });
 });
-
-process.on('SIGINT', () => {
-  console.log('🛑 SIGINT received. Shutting down gracefully...');
-  server.close(() => {
-    mongoose.connection.close(false, () => {
-      console.log('⛔ MongoDB connection closed');
-      process.exit(0);
-    });
-  });
-});
-
-// Cluster mode (Production only)
-if (cluster.isMaster && process.env.NODE_ENV === 'production') {
-  const numCPUs = os.cpus().length;
-  console.log(`👑 Master ${process.pid} is running`);
-
-  // Fork workers
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`💀 Worker ${worker.process.pid} died. Restarting...`);
-    cluster.fork();
-  });
-}
 
 module.exports = app;
