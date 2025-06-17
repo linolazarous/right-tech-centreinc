@@ -17,4 +17,4 @@ We process personal data only for specified, explicit, and legitimate purposes. 
 In the event of a data breach, we will notify affected users and relevant authorities within 72 hours.
 
 ## 5. Data Protection Officer (DPO)
-For GDPR-related inquiries, contact our DPO at [dpo@righttechcentre.com].
+For GDPR-related inquiries, contact our DPO at [info@righttechcentre.com].
