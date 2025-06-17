@@ -1,86 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Right Tech Centre - Premier institution offering diploma, degree, and certification programs in technology fields like AI, Web Development, Cybersecurity, and more.">
-    <meta name="keywords" content="tech education, programming courses, cybersecurity training, AI learning, data science, diploma courses, degree programs, tech certifications">
+    <meta name="description" content="Right Tech Centre - Premier online tech education offering certifications, diplomas & degrees in AI, Web Development, Cybersecurity with flexible payment options.">
+    <meta name="keywords" content="tech education, programming courses, cybersecurity certification, AI diploma, computer science degree, affordable tech degrees, online learning">
     <meta name="author" content="Right Tech Centre">
     <meta name="theme-color" content="#4f46e5">
-    
+
     <!-- Open Graph / Social Media -->
     <meta property="og:title" content="Right Tech Centre | Technology Education & Certification">
-    <meta property="og:description" content="Empowering the next generation of tech professionals with diploma, degree, and certification programs in cutting-edge technologies.">
+    <meta property="og:description" content="Empowering the next generation of tech professionals with affordable diploma, degree, and certification programs.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.righttechcentre.com">
     <meta property="og:image" content="https://www.righttechcentre.com/images/social-preview.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    
-    <title>Right Tech Centre | Technology Education & Certification Programs</title>
-    <link rel="icon" href="images/favicon.ico" />
-    
-    <!-- Preload critical resources -->
+    <meta property="og:site_name" content="Right Tech Centre">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Right Tech Centre | Technology Education & Certification">
+    <meta name="twitter:description" content="Affordable tech education with flexible payment options. Certifications, diplomas & degrees in cutting-edge technologies.">
+    <meta name="twitter:image" content="https://www.righttechcentre.com/images/social-preview.jpg">
+
+    <title>Right Tech Centre | Affordable Tech Certifications, Diplomas & Degrees</title>
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+    <!-- Preload Critical Resources -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
     <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style">
     <link rel="preload" href="css/main.css" as="style">
     <link rel="preload" href="images/hero-image.png" as="image" media="(min-width: 768px)">
-    
+
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Stylesheet -->
     <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* Critical CSS */
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+        @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(calc(-100% - 3rem))}.animate-scroll{animation:scroll 30s linear infinite;display:flex;width:max-content}
+        .header-gradient{background:linear-gradient(to right,#4f46e5,#7c3aed)}
+    </style>
 </head>
-
 <body class="bg-gray-50">
-    <!-- Navigation -->
+    <!-- Header -->
     <header class="fixed w-full header-gradient z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                <div class="flex-shrink-0 flex items-center">
-                    <img class="h-10 w-auto" src="images/logo.png" alt="Right Tech Centre Logo" width="40" height="40">
-                    <span class="ml-3 text-xl font-bold text-white tech-font"></span>
-                </div>
-                
-                <div class="hidden md:block">
+                <a href="#home" class="flex-shrink-0 flex items-center" aria-label="Right Tech Centre Home">
+                    <img class="h-10 w-auto" src="images/logo.png" alt="Right Tech Centre Logo" width="40" height="40" loading="eager">
+                    <span class="ml-3 text-xl font-bold text-white tech-font">Right Tech Centre</span>
+                </a>
+                <nav class="hidden md:block" aria-label="Main navigation">
                     <div class="ml-10 flex items-center space-x-8">
                         <a href="#home" class="nav-link text-gray-300 hover:text-white px-3 py-2 text-sm font-medium">Home</a>
                         <a href="#programs" class="nav-link text-gray-300 hover:text-white px-3 py-2 text-sm font-medium">Programs</a>
                         <a href="#courses" class="nav-link text-gray-300 hover:text-white px-3 py-2 text-sm font-medium">Courses</a>
                         <a href="#structure" class="nav-link text-gray-300 hover:text-white px-3 py-2 text-sm font-medium">Structure</a>
                         <a href="#contact" class="btn-primary text-white px-6 py-2 rounded-md text-sm font-medium hover:shadow-lg transition duration-300">
-                            <i class="fas fa-user-graduate mr-2"></i> Enroll Now
+                            <i class="fas fa-user-graduate mr-2" aria-hidden="true"></i>Enroll Now
                         </a>
                     </div>
-                </div>
-                
+                </nav>
                 <div class="-mr-2 flex md:hidden">
                     <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
-        
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="mobile-menu hidden md:hidden bg-gray-900">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900">
+            <nav class="px-2 pt-2 pb-3 space-y-1 sm:px-3" aria-label="Mobile navigation">
                 <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-gray-800">Home</a>
                 <a href="#programs" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Programs</a>
                 <a href="#courses" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Courses</a>
@@ -88,1089 +93,806 @@
                 <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
                     Enroll Now
                 </a>
-            </div>
+            </nav>
         </div>
     </header>
 
-    <!-- Noscript fallback -->
     <noscript>
         <div class="bg-yellow-100 text-center p-4">
             JavaScript is disabled in your browser. Some features may not work properly.
         </div>
     </noscript>
 
-<!-- Hero Section -->
-<section id="home" class="relative text-white pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
-    <!-- Background Image with Overlay -->
-    <div class="absolute inset-0 z-0">
-        <img src="images/bg-image.png" alt="Technology background" class="w-full h-full object-cover object-center" loading="eager" width="1920" height="1080">
-        <div class="absolute inset-0 bg-gradient-to-r from-indigo-900 to-purple-900 opacity-90"></div>
-    </div>
-    
-    <!-- Animated Tech Elements -->
-    <div class="absolute inset-0 overflow-hidden z-0">
-        <!-- Floating code elements -->
-        <div class="absolute top-1/4 left-10 text-xs text-white opacity-20 animate-float" style="animation-delay: 0s;">
-            &lt;div class="tech"&gt;&lt;/div&gt;
-        </div>
-        <div class="absolute top-1/3 right-20 text-xs text-white opacity-20 animate-float" style="animation-delay: 1s;">
-            function innovate() {
-        </div>
-        <div class="absolute bottom-1/4 left-1/4 text-xs text-white opacity-20 animate-float" style="animation-delay: 2s;">
-            #AI #MachineLearning
-        </div>
-        
-        <!-- Animated circles -->
-        <div class="absolute top-1/5 right-1/4 w-3 h-3 rounded-full bg-pink-500 opacity-30 animate-pulse" style="animation-delay: 0.5s;"></div>
-        <div class="absolute bottom-1/3 left-1/3 w-4 h-4 rounded-full bg-indigo-500 opacity-30 animate-pulse" style="animation-delay: 1.5s;"></div>
-        
-        <!-- Binary code animation -->
-        <div class="absolute bottom-10 left-0 right-0 text-center text-xs tracking-widest text-white opacity-10 whitespace-nowrap overflow-hidden">
-            <span class="inline-block animate-scroll">01010100 01000101 01000011 01001000 00100000 01000101 01000100 01010101 01000011 01000001 01010100 01001001 01001111 01001110 00100000 00110010 00110000 00110010 00110100</span>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-            <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left" data-aos="fade-right">
-                <h1 class="text-4xl tracking-tight font-extrabold sm:text-5xl md:text-6xl">
-                    <span class="block">Future-Ready</span>
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-300">Tech Education</span>
-                </h1>
-                <p class="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                    Master in-demand skills with our self-paced programs in AI, Web3, Cybersecurity, and more. 
-                    Earn diplomas, degrees, or industry certifications with flexible 4-credit modules.
-                </p>
-                
-                <!-- Trending Tech Badges -->
-                <div class="mt-6 flex flex-wrap gap-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-800 bg-opacity-60 text-indigo-100">
-                        <i class="fas fa-robot mr-1"></i> AI & ML
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-pink-800 bg-opacity-60 text-pink-100">
-                        <i class="fas fa-link mr-1"></i> Blockchain
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-800 bg-opacity-60 text-purple-100">
-                        <i class="fas fa-shield-alt mr-1"></i> Cybersecurity
-                    </span>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-800 bg-opacity-60 text-blue-100">
-                        <i class="fas fa-cloud mr-1"></i> Cloud Computing
-                    </span>
-                </div>
-                
-                <div class="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
-                    <div class="rounded-md shadow inline-flex">
-                        <a href="#courses" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-900 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                            <i class="fas fa-laptop-code mr-2"></i> Explore Courses
-                        </a>
-                    </div>
-                    <div class="rounded-md shadow inline-flex ml-3">
-                        <a href="#contact" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 md:py-4 md:text-lg md:px-10 transition duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                            <i class="fas fa-rocket mr-2"></i> Get Started
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Trust Indicators -->
-                <div class="mt-8 flex items-center space-x-4">
-                    <div class="flex -space-x-2">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student1.jpg" alt="Student" width="40" height="40" loading="lazy">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student2.jpg" alt="Student" width="40" height="40" loading="lazy">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student3.jpg" alt="Student" width="40" height="40" loading="lazy">
-                    </div>
-                    <div class="text-sm text-blue-100">
-                        <p>Join 5,000+ students advancing their careers</p>
-                        <div class="flex items-center mt-1">
-                            <div class="flex items-center">
-                                <i class="fas fa-star text-yellow-400"></i>
-                                <i class="fas fa-star text-yellow-400"></i>
-                                <i class="fas fa-star text-yellow-400"></i>
-                                <i class="fas fa-star text-yellow-400"></i>
-                                <i class="fas fa-star text-yellow-400"></i>
-                            </div>
-                            <span class="ml-2">4.9/5 (1,200+ reviews)</span>
-                        </div>
-                    </div>
-                </div>
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative text-white pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="images/bg-image.png" alt="Abstract technology background" class="w-full h-full object-cover" loading="eager" width="1920" height="1080">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-900 to-purple-900 opacity-90"></div>
             </div>
-            <div class="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center" data-aos="fade-left">
-                <div class="relative mx-auto w-full rounded-xl shadow-2xl lg:max-w-md overflow-hidden border-4 border-white border-opacity-20 transform hover:scale-105 transition duration-500">
-                    <img class="w-full h-auto floating" src="images/hero-image.png" alt="Student learning technology at Right Tech Centre" width="600" height="400" loading="eager">
-                    
-                    <!-- Tech Badge Overlays on Image -->
-                    <div class="absolute top-4 left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce">
-                        NEW: AI Courses
-                    </div>
-                    <div class="absolute bottom-4 right-4 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                        Trending Now
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Scrolling Tech Partners -->
-    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-30 py-3 overflow-hidden z-10">
-        <div class="flex items-center space-x-12 animate-scroll">
-            <span class="text-sm text-white opacity-70">TRUSTED BY TECH LEADERS:</span>
-            <img src="images/partner1.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner2.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner3.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner4.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner5.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <!-- Duplicate for infinite scroll effect -->
-            <img src="images/partner1.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner2.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner3.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner4.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-            <img src="images/partner5.png" alt="Tech Partner" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
-        </div>
-    </div>
-</section>
-
-    <!-- Programs Overview -->
-    <section id="programs" class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="lg:text-center" data-aos="fade-up">
-                <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Learning Paths</h2>
-                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                    Our Programs
-                </p>
-                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                    Choose the path that matches your career goals and learning style.
-                </p>
-            </div>
-
-            <div class="mt-16 grid gap-8 md:grid-cols-3">
-                <div class="pt-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8 h-full border-t-4 border-indigo-500">
-                        <div class="-mt-6">
-                            <div>
-                                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
-                                    <i class="fas fa-graduation-cap text-white text-xl"></i>
-                                </span>
-                            </div>
-                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Diploma Programs</h3>
-                            <p class="mt-5 text-base text-gray-500">
-                                60 credit hours (15 modules) in specialized tech fields. Complete in 12-18 months at your own pace.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#diploma-tab" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm tab-link">
-                                    View Diploma Courses →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8 h-full border-t-4 border-purple-500">
-                        <div class="-mt-6">
-                            <div>
-                                <span class="inline-flex items-center justify-center p-3 bg-purple-500 rounded-md shadow-lg">
-                                    <i class="fas fa-university text-white text-xl"></i>
-                                </span>
-                            </div>
-                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Bachelor Degrees</h3>
-                            <p class="mt-5 text-base text-gray-500">
-                                120 credit hours (30 modules) for comprehensive tech education. Complete in 24 months at your own pace.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#degree-tab" class="text-purple-600 hover:text-purple-800 font-medium text-sm tab-link">
-                                    View Degree Programs →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8 h-full border-t-4 border-pink-500">
-                        <div class="-mt-6">
-                            <div>
-                                <span class="inline-flex items-center justify-center p-3 bg-pink-500 rounded-md shadow-lg">
-                                    <i class="fas fa-certificate text-white text-xl"></i>
-                                </span>
-                            </div>
-                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Certifications</h3>
-                            <p class="mt-5 text-base text-gray-500">
-                                Industry-recognized credentials in specialized tech areas. Complete in 24 months at your own pace.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#certification-tab" class="text-pink-600 hover:text-pink-800 font-medium text-sm tab-link">
-                                    View Certifications →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<!-- Course Catalog -->
-<section id="courses" class="py-16 bg-gradient-to-br from-indigo-900 to-gray-900 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center" data-aos="fade-up">
-            <h2 class="text-base text-teal-300 font-semibold tracking-wide uppercase">Future-Ready Programs</h2>
-            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl">
-                Cutting-Edge Course Catalog
-            </p>
-            <p class="mt-4 max-w-2xl text-xl text-indigo-100 lg:mx-auto">
-                Industry-aligned programs designed for tomorrow's tech leaders
-            </p>
-        </div>
-
-        <div class="mt-12">
-            <!-- Course Category Tabs -->
-            <div class="border-b border-gray-700">
-                <nav class="-mb-px flex space-x-8 overflow-x-auto pb-4">
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-white border-teal-400 flex items-center" data-tab="diploma-tab">
-                        <i class="fas fa-certificate mr-2"></i> Diploma Programs
-                    </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-300 border-transparent hover:text-white hover:border-gray-500 flex items-center" data-tab="degree-tab">
-                        <i class="fas fa-graduation-cap mr-2"></i> Bachelor Degrees
-                    </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-300 border-transparent hover:text-white hover:border-gray-500 flex items-center" data-tab="certification-tab">
-                        <i class="fas fa-badge-check mr-2"></i> Certifications
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Tab Contents -->
-            <div class="mt-8">
-                <!-- Diploma Programs -->
-                <div id="diploma-tab" class="tab-content active">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Diploma Course 1 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20" data-aos="fade-up" data-aos-delay="100">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 text-teal-400 mb-4">
-                                <i class="fas fa-code text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Diploma in Web Development</h3>
-                            <p class="mt-2 text-gray-300">
-                                Master MERN stack, responsive design, and modern frameworks to build professional web applications.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-teal-300">60 Credit Hours</span>
-                                <span class="text-sm text-gray-400">15 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-teal-400 font-medium text-sm hover:text-teal-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Diploma Course 2 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20" data-aos="fade-up" data-aos-delay="150">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 text-teal-400 mb-4">
-                                <i class="fas fa-robot text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Diploma in AI & Machine Learning</h3>
-                            <p class="mt-2 text-gray-300">
-                                Learn neural networks, NLP, computer vision, and deploy AI models in real-world applications.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-teal-300">60 Credit Hours</span>
-                                <span class="text-sm text-gray-400">15 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-teal-400 font-medium text-sm hover:text-teal-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Diploma Course 3 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20" data-aos="fade-up" data-aos-delay="200">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 text-teal-400 mb-4">
-                                <i class="fas fa-shield-alt text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Diploma in Cybersecurity</h3>
-                            <p class="mt-2 text-gray-300">
-                                Develop expertise in ethical hacking, threat analysis, and enterprise security solutions.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-teal-300">60 Credit Hours</span>
-                                <span class="text-sm text-gray-400">15 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-teal-400 font-medium text-sm hover:text-teal-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- View All Card -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border-2 border-dashed border-gray-600 hover:border-teal-400 transition-all duration-300 flex flex-col justify-center items-center text-center" data-aos="fade-up" data-aos-delay="250">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 text-teal-400 mb-4">
-                                <i class="fas fa-plus text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Explore All 25+ Diplomas</h3>
-                            <p class="mt-2 text-gray-300">
-                                Discover our complete range of specialized diploma programs in emerging technologies.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 transition-colors duration-300">
-                                    Request Full Catalog
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Degree Programs -->
-                <div id="degree-tab" class="tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Degree Course 1 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 mb-4">
-                                <i class="fas fa-brain text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">BSc in Artificial Intelligence</h3>
-                            <p class="mt-2 text-gray-300">
-                                Comprehensive study of AI systems, deep learning architectures, and intelligent applications.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-purple-300">120 Credit Hours</span>
-                                <span class="text-sm text-gray-400">30 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-purple-400 font-medium text-sm hover:text-purple-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Degree Course 2 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 mb-4">
-                                <i class="fas fa-laptop-code text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">BSc in Computer Science</h3>
-                            <p class="mt-2 text-gray-300">
-                                Master algorithms, data structures, software engineering, and distributed systems.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-purple-300">120 Credit Hours</span>
-                                <span class="text-sm text-gray-400">30 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-purple-400 font-medium text-sm hover:text-purple-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- View All Card -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border-2 border-dashed border-gray-600 hover:border-purple-400 transition-all duration-300 flex flex-col justify-center items-center text-center">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-500/20 text-purple-400 mb-4">
-                                <i class="fas fa-plus text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Explore All 16+ Degrees</h3>
-                            <p class="mt-2 text-gray-300">
-                                Discover our complete range of bachelor's degree programs in technology fields.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-300">
-                                    Request Full Catalog
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Certification Programs -->
-                <div id="certification-tab" class="tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Certification 1 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-400/20">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-pink-500/20 text-pink-400 mb-4">
-                                <i class="fas fa-robot text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Certified AI Engineer</h3>
-                            <p class="mt-2 text-gray-300">
-                                Master TensorFlow, PyTorch, and ML deployment for industry-recognized certification.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-pink-300">120 Credit Hours</span>
-                                <span class="text-sm text-gray-400">30 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-pink-400 font-medium text-sm hover:text-pink-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Certification 2 -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-400/20">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-pink-500/20 text-pink-400 mb-4">
-                                <i class="fab fa-aws text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">AWS Certified Architect</h3>
-                            <p class="mt-2 text-gray-300">
-                                Design and deploy cloud solutions on AWS with professional certification.
-                            </p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-sm text-pink-300">120 Credit Hours</span>
-                                <span class="text-sm text-gray-400">30 Modules</span>
-                            </div>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center text-pink-400 font-medium text-sm hover:text-pink-300 group">
-                                    Learn More
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- View All Card -->
-                        <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border-2 border-dashed border-gray-600 hover:border-pink-400 transition-all duration-300 flex flex-col justify-center items-center text-center">
-                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-pink-500/20 text-pink-400 mb-4">
-                                <i class="fas fa-plus text-xl"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-white">Explore All 70+ Certifications</h3>
-                            <p class="mt-2 text-gray-300">
-                                Discover our complete range of industry-recognized tech certifications.
-                            </p>
-                            <div class="mt-6">
-                                <a href="#contact" class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 transition-colors duration-300">
-                                    Request Full Catalog
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Program Structure -->
-<section id="structure" class="py-16 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center" data-aos="fade-up">
-            <h2 class="text-base text-teal-600 font-semibold tracking-wide uppercase">Innovative Learning Model</h2>
-            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                Future-Ready Program Structure
-            </p>
-            <p class="mt-4 max-w-2xl text-xl text-gray-600 lg:mx-auto">
-                Designed for flexibility and real-world application
-            </p>
-        </div>
-
-        <div class="mt-16">
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                <!-- Structure 1 -->
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-teal-100" data-aos="fade-up" data-aos-delay="100">
-                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-md">
-                        <i class="fas fa-puzzle-piece text-xl"></i>
-                    </div>
-                    <h3 class="mt-6 text-xl font-bold text-gray-900">Modular 4-Credit System</h3>
-                    <p class="mt-3 text-gray-600">
-                        Focused learning in 4-credit modules that build comprehensive skills through sequential mastery.
-                    </p>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
-                            <i class="fas fa-clock mr-1"></i> 40-50 hours per module
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Structure 2 -->
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-indigo-100" data-aos="fade-up" data-aos-delay="150">
-                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-md">
-                        <i class="fas fa-user-clock text-xl"></i>
-                    </div>
-                    <h3 class="mt-6 text-xl font-bold text-gray-900">Flexible Pace</h3>
-                    <p class="mt-3 text-gray-600">
-                        Complete at your own speed: 12-18 months for diplomas or 24 months for degrees/certifications.
-                    </p>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                            <i class="fas fa-calendar-alt mr-1"></i> Start any time
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Structure 3 -->
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-purple-100" data-aos="fade-up" data-aos-delay="200">
-                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-md">
-                        <i class="fas fa-tasks text-xl"></i>
-                    </div>
-                    <h3 class="mt-6 text-xl font-bold text-gray-900">Practical Assessments</h3>
-                    <p class="mt-3 text-gray-600">
-                        Hands-on projects, coding challenges, and real-world simulations that test applied knowledge.
-                    </p>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            <i class="fas fa-laptop-code mr-1"></i> 70% practical
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Structure 4 -->
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-pink-100" data-aos="fade-up" data-aos-delay="250">
-                    <div class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 text-white shadow-md">
-                        <i class="fas fa-project-diagram text-xl"></i>
-                    </div>
-                    <h3 class="mt-6 text-xl font-bold text-gray-900">Industry Capstone</h3>
-                    <p class="mt-3 text-gray-600">
-                        Final project solving real business challenges, often in collaboration with tech partners.
-                    </p>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                            <i class="fas fa-briefcase mr-1"></i> Portfolio-ready
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detailed Structure -->
-            <div class="mt-16 bg-gradient-to-r from-gray-50 to-white rounded-2xl shadow-lg overflow-hidden border border-gray-100" data-aos="fade-up">
-                <div class="p-8 sm:p-12">
-                    <div class="md:flex md:items-center md:justify-between">
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900">Program Roadmap</h3>
-                            <p class="mt-2 text-gray-600 max-w-2xl">
-                                Our structured yet flexible approach ensures you gain comprehensive skills while maintaining work-life balance.
-                            </p>
-                        </div>
-                        <div class="mt-6 md:mt-0">
-                            <a href="#contact" class="inline-flex items-center px-5 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 transition-all duration-300">
-                                <i class="fas fa-book-open mr-2"></i> View Sample Syllabus
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-10 grid gap-10 md:grid-cols-2">
-                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center">
-                                    <i class="fas fa-certificate text-teal-600"></i>
-                                </div>
-                                <h4 class="ml-4 text-lg font-bold text-gray-900">Diploma Programs</h4>
-                            </div>
-                            <ul class="mt-6 space-y-4">
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-teal-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-teal-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">60 credit hours</span> across 15 focused modules
-                                    </p>
-                                </li>
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-teal-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-teal-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">12-18 month</span> self-paced completion
-                                    </p>
-                                </li>
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-teal-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-teal-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">Applied capstone</span> project in your specialization
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <i class="fas fa-university text-indigo-600"></i>
-                                </div>
-                                <h4 class="ml-4 text-lg font-bold text-gray-900">Degree/Certification Programs</h4>
-                            </div>
-                            <ul class="mt-6 space-y-4">
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-indigo-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">120 credit hours</span> across 30 comprehensive modules
-                                    </p>
-                                </li>
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-indigo-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">24 month</span> recommended completion timeline
-                                    </p>
-                                </li>
-                                <li class="flex items-start">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <div class="h-5 w-5 rounded-full bg-indigo-100 flex items-center justify-center">
-                                            <svg class="h-3 w-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
-                                                <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"/>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p class="ml-3 text-gray-600">
-                                        <span class="font-medium">Industry-partnered</span> capstone with networking opportunities
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-12 pt-8 border-t border-gray-200">
-                        <h4 class="text-lg font-medium text-gray-900">Learning Features</h4>
-                        <div class="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-video text-teal-600 mr-2"></i>
-                                <span class="text-sm text-gray-600">Video Lectures</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-laptop-code text-indigo-600 mr-2"></i>
-                                <span class="text-sm text-gray-600">Interactive Labs</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-comments text-purple-600 mr-2"></i>
-                                <span class="text-sm text-gray-600">Peer Discussions</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="fas fa-chalkboard-teacher text-pink-600 mr-2"></i>
-                                <span class="text-sm text-gray-600">Mentor Support</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="relative bg-gradient-to-r from-indigo-900 to-purple-900 overflow-hidden">
-    <!-- Decorative elements -->
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 left-0 w-32 h-32 bg-teal-400 rounded-full filter blur-3xl opacity-20"></div>
-        <div class="absolute bottom-0 right-0 w-32 h-32 bg-pink-400 rounded-full filter blur-3xl opacity-20"></div>
-    </div>
-    
-    <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
-        <div class="relative z-10 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
-            <div data-aos="fade-right">
-                <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                    <span class="block">Ready to transform your future?</span>
-                    <span class="block text-indigo-200 mt-2">Take the first step toward tech mastery today.</span>
-                </h2>
-                <p class="mt-4 text-lg text-indigo-100 max-w-2xl">
-                    Join thousands of students who've accelerated their careers with our industry-leading programs.
-                </p>
-                
-                <!-- Trust indicators -->
-                <div class="mt-8 flex items-center">
-                    <div class="flex -space-x-2">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-1.jpg" alt="Student">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-2.jpg" alt="Student">
-                        <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-3.jpg" alt="Student">
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-indigo-100">
-                            <span class="font-medium text-white">5,000+ students</span> enrolled last month
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+                    <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left" data-aos="fade-right">
+                        <h1 class="text-4xl tracking-tight font-extrabold sm:text-5xl md:text-6xl">
+                            <span class="block">Future-Ready</span>
+                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-300">Tech Education</span>
+                        </h1>
+                        <p class="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            Master in-demand skills with our self-paced programs in AI, Web3, Cybersecurity, and more. 
+                            Earn diplomas, degrees, or industry certifications with flexible 4-credit modules.
                         </p>
-                        <div class="flex items-center mt-1">
-                            <div class="flex items-center text-yellow-400">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+                        
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-800 bg-opacity-60 text-indigo-100">
+                                <i class="fas fa-robot mr-1" aria-hidden="true"></i> AI & ML
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-pink-800 bg-opacity-60 text-pink-100">
+                                <i class="fas fa-link mr-1" aria-hidden="true"></i> Blockchain
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-800 bg-opacity-60 text-purple-100">
+                                <i class="fas fa-shield-alt mr-1" aria-hidden="true"></i> Cybersecurity
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-800 bg-opacity-60 text-blue-100">
+                                <i class="fas fa-cloud mr-1" aria-hidden="true"></i> Cloud Computing
+                            </span>
+                        </div>
+                        
+                        <div class="mt-6 bg-indigo-900 bg-opacity-50 rounded-lg p-3 inline-flex items-center border border-indigo-700 hover:shadow-lg transition-all">
+                            <i class="fas fa-sync-alt text-indigo-300 mr-2" aria-hidden="true"></i>
+                            <span class="text-white text-sm font-medium">
+                                Start for <span class="font-bold">$29/month</span> with flexible payments. 
+                                <a href="#pricing" class="underline ml-1">See plans</a>
+                            </span>
+                        </div>
+                        
+                        <div class="mt-6 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
+                            <div class="flex flex-wrap gap-3">
+                                <a href="#courses" class="flex-1 flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-900 bg-white hover:bg-gray-50 md:py-4 md:text-lg transition duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-laptop-code mr-2" aria-hidden="true"></i> Explore Courses
+                                </a>
+                                <a href="#contact" class="flex-1 flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 md:py-4 md:text-lg transition duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-rocket mr-2" aria-hidden="true"></i> Get Started
+                                </a>
                             </div>
-                            <span class="ml-2 text-sm text-indigo-200">4.9/5 (1,200+ reviews)</span>
+                        </div>
+                        
+                        <div class="mt-8 flex items-center space-x-4">
+                            <div class="flex -space-x-2">
+                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-1.jpg" alt="Student testimonial" width="40" height="40" loading="lazy">
+                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-2.jpg" alt="Student testimonial" width="40" height="40" loading="lazy">
+                                <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="images/student-3.jpg" alt="Student testimonial" width="40" height="40" loading="lazy">
+                            </div>
+                            <div class="text-sm text-blue-100">
+                                <p>Join 5,000+ students advancing their careers</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                                        <i class="fas fa-star text-yellow-400" aria-hidden="true"></i>
+                                    </div>
+                                    <span class="ml-2">4.9/5 (1,200+ reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center" data-aos="fade-left">
+                        <div class="relative mx-auto w-full rounded-xl shadow-2xl lg:max-w-md overflow-hidden border-4 border-white border-opacity-20 transform hover:scale-105 transition duration-500">
+                            <img class="w-full h-auto" src="images/hero-image.png" alt="Student learning at Right Tech Centre" width="600" height="400" loading="eager">
+                            <div class="absolute top-4 left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce">NEW: AI Courses</div>
+                            <div class="absolute bottom-4 right-4 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">Trending Now</div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-12 lg:mt-0" data-aos="fade-left">
-                <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm rounded-xl p-8 border border-white border-opacity-20">
-                    <h3 class="text-xl font-bold text-white">Start your journey</h3>
-                    <div class="mt-6 grid grid-cols-1 gap-4">
-                        <a href="#courses" class="flex items-center justify-center px-6 py-4 border border-transparent text-lg font-medium rounded-lg shadow-sm text-indigo-900 bg-white hover:bg-indigo-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                            <i class="fas fa-search mr-3"></i> Explore Programs
-                        </a>
-                        <a href="#contact" class="flex items-center justify-center px-6 py-4 border border-transparent text-lg font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
-                            <i class="fas fa-user-graduate mr-3"></i> Apply Now
-                        </a>
-                    </div>
-                    <p class="mt-6 text-center text-sm text-indigo-200">
-                        <i class="fas fa-phone-alt mr-2"></i> Need help deciding? <a href="#contact" class="font-medium text-white hover:text-indigo-100">Speak with an advisor</a>
-                    </p>
+            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-30 py-3 overflow-hidden z-10">
+                <div class="flex items-center space-x-12 animate-scroll">
+                    <span class="text-sm text-white opacity-70 whitespace-nowrap">TRUSTED BY TECH LEADERS:</span>
+                    <img src="images/partner-1.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-2.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-3.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-4.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-5.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-1.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
+                    <img src="images/partner-2.png" alt="Tech Partner Logo" class="h-8 opacity-70 hover:opacity-100 transition" width="100" height="32" loading="lazy">
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- Contact Section -->
-<section id="contact" class="py-16 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:grid lg:grid-cols-2 lg:gap-12">
-            <!-- Contact Information (Left Column) -->
-            <div data-aos="fade-right">
-                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                    Get In Touch
-                </h2>
-                <p class="mt-3 text-lg text-gray-600">
-                    Our admissions team is ready to guide you through enrollment and answer all your questions.
-                </p>
-                
-                <div class="mt-8 space-y-6">
-                    <!-- Address -->
-                    <div class="flex">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <i class="fas fa-map-marker-alt text-indigo-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-lg font-medium text-gray-900">Our Location</p>
-                            <a href="https://maps.app.goo.gl/3CJ6Bh9EF2isVCRc9" 
-                               target="_blank" rel="noopener noreferrer"
-                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
-                                VGFM+98, North Gudele<br>Juba, South Sudan
-                            </a>
+        <!-- About Section -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">About Right Tech Centre</h2>
+                    <div class="mt-6 text-lg text-gray-600 space-y-4 text-left">
+                        <p>Welcome to Right Tech Centre, your premier online destination for high-quality tech courses. We are committed to providing top-notch educational resources to tech enthusiasts globally.</p>
+                        <p>Our focus is on offering a diverse range of courses in technology, creativity, and critical thinking, catering to individuals with medium-income levels.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mt-8">Our Mission</h3>
+                        <p>Right Tech Centre was founded with the vision of bridging the gap between technology education and accessibility. Our online platform allows us to reach a wider audience and provide flexible learning options.</p>
+                        <p>We understand the importance of continuous learning in today's fast-paced tech industry, and we are here to support our students on their educational journey.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programs Section -->
+        <section id="programs" class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center" data-aos="fade-up">
+                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Learning Paths</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">Our Programs</p>
+                    <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">Choose the path that matches your career goals and learning style.</p>
+                </div>
+                <div class="mt-16 grid gap-8 md:grid-cols-3">
+                    <div class="pt-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="flow-root bg-white rounded-lg px-6 pb-8 h-full border-t-4 border-pink-500 shadow-md">
+                            <div class="-mt-6">
+                                <div>
+                                    <span class="inline-flex items-center justify-center p-3 bg-pink-500 rounded-md shadow-lg">
+                                        <i class="fas fa-certificate text-white text-xl" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Certifications</h3>
+                                <p class="mt-5 text-base text-gray-500">Industry-recognized credentials in AI, Cybersecurity, and Cloud Computing. Complete in 3–6 months.</p>
+                                <div class="mt-4">
+                                    <span class="text-pink-600 font-bold">$300–$1,500</span>
+                                    <span class="text-gray-500 text-sm ml-2">or $49–$99/month</span>
+                                </div>
+                                <div class="mt-6"><a href="#certification-tab" class="text-pink-600 hover:text-pink-800 font-medium text-sm tab-link">View Certifications →</a></div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Phone -->
-                    <div class="flex">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <i class="fas fa-phone-alt text-indigo-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-lg font-medium text-gray-900">Call Us</p>
-                            <a href="tel:+211925522700" 
-                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
-                                +211 925 522 700
-                            </a>
-                            <p class="mt-1 text-sm text-gray-500">Mon-Fri, 8am-5pm</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Email -->
-                    <div class="flex">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <i class="fas fa-envelope text-indigo-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-lg font-medium text-gray-900">Email Us</p>
-                            <a href="mailto:righttechcentre@gmail.com" 
-                               class="mt-1 text-gray-600 hover:text-indigo-600 transition-colors duration-300">
-                                righttechcentre@gmail.com
-                            </a>
-                            <p class="mt-1 text-sm text-gray-500">Typically replies within 24 hours</p>
+
+                    <div class="pt-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="flow-root bg-white rounded-lg px-6 pb-8 h-full border-t-4 border-indigo-500 shadow-md">
+                            <div class="-mt-6">
+                                <div>
+                                    <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
+                                        <i class="fas fa-graduation-cap text-white text-xl" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Diploma Programs</h3>
+                                <p class="mt-5 text-base text-gray-500">60 credit hours (15 modules) in Web Dev, AI, or Cybersecurity. Complete in 12–18 months.</p>
+                                <div class="mt-4">
+                                    <span class="text-indigo-600 font-bold">$2,000–$7,000</span>
+                                    <span class="text-gray-500 text-sm ml-2">or $99–$199/month</span>
+                                </div>
+                                <div class="mt-6"><a href="#diploma-tab" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm tab-link">View Diplomas →</a></div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Social Media Links -->
-                    <div class="flex">
-                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <i class="fas fa-share-alt text-indigo-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-lg font-medium text-gray-900">Connect With Us</p>
-                            <div class="mt-2 flex space-x-4">
-                                <a href="https://www.facebook.com/share/1P2ydiamxx/" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors duration-300">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="https://x.com/righttechcentre?s=09" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors duration-300">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                                <a href="https://www.linkedin.com/in/right-tech-centre-368213369" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors duration-300">
-                                    <i class="fab fa-linkedin-in"></i>
-                                </a>
-                                <a href="https://www.instagram.com/righttechcentre?igsh=YzljYTk1ODg3Zg==" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors duration-300">
-                                    <i class="fab fa-instagram"></i>
-                                </a>
-                                <a href="https://youtube.com/@righttechcentre?si=fJA1rSvlomm79ZiN" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors duration-300">
-                                    <i class="fab fa-youtube"></i>
-                                </a>
+
+                    <div class="pt-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flow-root bg-white rounded-lg px-6 pb-8 h-full border-t-4 border-purple-500 shadow-md">
+                            <div class="-mt-6">
+                                <div>
+                                    <span class="inline-flex items-center justify-center p-3 bg-purple-500 rounded-md shadow-lg">
+                                        <i class="fas fa-university text-white text-xl" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Bachelor Degrees</h3>
+                                <p class="mt-5 text-base text-gray-500">120 credit hours (30 modules) in Computer Science or AI. Complete in 24 months.</p>
+                                <div class="mt-4">
+                                    <span class="text-purple-600 font-bold">$10,000–$25,000</span>
+                                    <span class="text-gray-500 text-sm ml-2">or $199–$299/month</span>
+                                </div>
+                                <div class="mt-6"><a href="#degree-tab" class="text-purple-600 hover:text-purple-800 font-medium text-sm tab-link">View Degrees →</a></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Enrollment Form (Right Column) -->
-            	
-            <div class="mt-12 lg:mt-0" data-aos="fade-left">
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Enrollment Form</h3>
-                    <p class="mt-2 text-sm text-gray-600">Fields marked with <span class="text-red-500">*</span> are required</p>
-                    <form action="https://formspree.io/f/mpwrznzd" method="POST">
-                    <form id="enrollment-form" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                        <!-- Form Success/Error Messages -->
-                        <div id="form-messages" class="hidden sm:col-span-2"></div>
-                        
-                        <!-- First Name -->
-                        <div>
-                            <label for="first-name" class="block text-sm font-medium text-gray-700">First name <span class="text-red-500">*</span></label>
-                            <div class="mt-1 relative">
-                                <input type="text" name="first-name" id="first-name" autocomplete="given-name" required 
-                                       class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                                       aria-required="true">
-                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-red-600 hidden" id="first-name-error"></p>
-                        </div>
-                        
-                        <!-- Last Name -->
-                        <div>
-                            <label for="last-name" class="block text-sm font-medium text-gray-700">Last name <span class="text-red-500">*</span></label>
-                            <div class="mt-1 relative">
-                                <input type="text" name="last-name" id="last-name" autocomplete="family-name" required 
-                                       class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                                       aria-required="true">
-                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-red-600 hidden" id="last-name-error"></p>
-                        </div>
-                        
-                        <!-- Email -->
-                        <div class="sm:col-span-2">
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
-                            <div class="mt-1 relative">
-                                <input id="email" name="email" type="email" autocomplete="email" required 
-                                       class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                                       aria-required="true">
-                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-red-600 hidden" id="email-error"></p>
-                        </div>
-                        
-                        <!-- Phone -->
-                        <div class="sm:col-span-2">
-                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
-                            <div class="mt-1 relative">
-                                <input type="tel" name="phone" id="phone" autocomplete="tel" required 
-                                       class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                                       aria-required="true">
-                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-red-600 hidden" id="phone-error"></p>
-                        </div>
-                        
-                        <!-- Program -->
-                        <div class="sm:col-span-2">
-                            <label for="program" class="block text-sm font-medium text-gray-700">Program of Interest <span class="text-red-500">*</span></label>
-                            <div class="mt-1 relative">
-                                <select id="program" name="program" required 
-                                        class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                                        aria-required="true">
-                                    <option value="">-- Select a program --</option>
-                                    <optgroup label="Diploma Programs">
-                                        <option value="web-dev">Diploma in Web Development</option>
-                                        <option value="ai">Diploma in Artificial Intelligence</option>
-                                        <option value="cyber">Diploma in Cybersecurity</option>
-                                        <option value="data-science">Diploma in Data Science</option>
-                                    </optgroup>
-                                    <optgroup label="Degree Programs">
-                                        <option value="bs-ai">Bachelor of Artificial Intelligence</option>
-                                        <option value="bs-cs">Bachelor of Computer Science</option>
-                                        <option value="bs-cyber">Bachelor of Science in Cybersecurity</option>
-                                    </optgroup>
-                                    <optgroup label="Certifications">
-                                        <option value="cert-ai">Certified AI Engineer</option>
-                                        <option value="cert-cyber">Certified Cybersecurity Analyst</option>
-                                        <option value="aws">AWS Certified Cloud Practitioner</option>
-                                    </optgroup>
-                                </select>
-                                <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p class="mt-1 text-sm text-red-600 hidden" id="program-error"></p>
-                        </div>
-                        
-                        <!-- Message -->
-                        <div class="sm:col-span-2">
-                            <label for="message" class="block text-sm font-medium text-gray-700">Questions or Comments</label>
-                            <div class="mt-1">
-                                <textarea id="message" name="message" rows="4" 
-                                          class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border border-gray-300 rounded-md"></textarea>
-                            </div>
-                        </div>
-                        
-                        <!-- Submit Button -->
-                        <div class="sm:col-span-2">
-                            <button type="submit" id="submit-btn" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span id="submit-text"><i class="fas fa-paper-plane mr-2"></i> Submit Application</span>
-                                <span id="spinner" class="hidden ml-2">
-                                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                </span>
+        </section>
+
+        <!-- Courses Section -->
+        <section id="courses" class="py-16 bg-gradient-to-br from-indigo-900 to-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center" data-aos="fade-up">
+                    <h2 class="text-base text-teal-300 font-semibold tracking-wide uppercase">Future-Ready Programs</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl">Cutting-Edge Course Catalog</p>
+                    <p class="mt-4 max-w-2xl text-xl text-indigo-100 lg:mx-auto">Industry-aligned programs designed for tomorrow's tech leaders</p>
+                </div>
+                <div class="mt-12">
+                    <div class="border-b border-gray-700">
+                        <nav class="-mb-px flex space-x-8 overflow-x-auto pb-4" aria-label="Course Categories">
+                            <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-white border-pink-400 flex items-center" data-tab="certification-tab" role="tab" aria-controls="certification-tab-content" aria-selected="true">
+                                <i class="fas fa-check-circle mr-2" aria-hidden="true"></i> Certifications
                             </button>
+                            <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-300 border-transparent hover:text-white hover:border-gray-500 flex items-center" data-tab="diploma-tab" role="tab" aria-controls="diploma-tab-content" aria-selected="false">
+                                <i class="fas fa-certificate mr-2" aria-hidden="true"></i> Diploma Programs
+                            </button>
+                            <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-300 border-transparent hover:text-white hover:border-gray-500 flex items-center" data-tab="degree-tab" role="tab" aria-controls="degree-tab-content" aria-selected="false">
+                                <i class="fas fa-graduation-cap mr-2" aria-hidden="true"></i> Bachelor Degrees
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <div id="certification-tab-content" class="tab-content active" role="tabpanel">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-400/20" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">Certified AI Engineer</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-pink-600 text-white">24 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Master TensorFlow, PyTorch, and ML deployment for industry-recognized certification.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-pink-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$1,200 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$99/month</span> (15 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-400/20" data-aos="fade-up" data-aos-delay="150">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">AWS Certified Architect</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-pink-600 text-white">20 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Design and deploy cloud solutions on AWS with professional certification.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-pink-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$1,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$89/month</span> (12 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-pink-400 transition-all duration-300 hover:shadow-lg hover:shadow-pink-400/20" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">Cybersecurity Analyst</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-pink-600 text-white">24 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Learn threat detection, ethical hacking, and security operations.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-pink-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$1,200 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$99/month</span> (15 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </form>
-                </form>
-               </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- Footer -->
-<footer class="bg-gray-900 text-white">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Programs</h3>
-                <ul class="mt-4 space-y-4">
-                    <li><a href="#diploma-tab" class="tab-link text-base text-gray-300 hover:text-white transition-colors duration-300">Diplomas</a></li>
-                    <li><a href="#degree-tab" class="tab-link text-base text-gray-300 hover:text-white transition-colors duration-300">Degrees</a></li>
-                    <li><a href="#certification-tab" class="tab-link text-base text-gray-300 hover:text-white transition-colors duration-300">Certifications</a></li>
-                    <li><a href="#structure" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Program Structure</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Admissions</h3>
-                <ul class="mt-4 space-y-4">
-                    <li><a href="#contact" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Application Process</a></li>
-                    <li><a href="#contact" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Tuition & Fees</a></li>
-                    <li><a href="#contact" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Financial Aid</a></li>
-                    <li><a href="#contact" class="text-base text-gray-300 hover:text-white transition-colors duration-300">FAQs</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Resources</h3>
-                <ul class="mt-4 space-y-4">
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Student Portal</a></li>
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Career Services</a></li>
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Alumni Network</a></li>
-                    <li><a href="#" class="text-base text-gray-300 hover:text-white transition-colors duration-300">Blog</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
-                <div class="mt-4 flex space-x-6">
-                    <a href="https://www.facebook.com/share/1P2ydiamxx/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <span class="sr-only">Facebook</span>
-                        <i class="fab fa-facebook-f text-lg"></i>
-                    </a>
-                    <a href="https://x.com/righttechcentre?s=09" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <span class="sr-only">Twitter</span>
-                        <i class="fab fa-twitter text-lg"></i>
-                    </a>
-                    <a href="https://www.instagram.com/righttechcentre?igsh=YzljYTk1ODg3Zg==
-" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <span class="sr-only">Instagram</span>
-                        <i class="fab fa-instagram text-lg"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/in/right-tech-centre-368213369" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <span class="sr-only">LinkedIn</span>
-                        <i class="fab fa-linkedin-in text-lg"></i>
-                    </a>
-                    <a href="https://youtube.com/@righttechcentre?si=fJA1rSvlomm79ZiN" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
-                        <span class="sr-only">YouTube</span>
-                        <i class="fab fa-youtube text-lg"></i>
-                    </a>
-                </div>
-                <div class="mt-6">
-                    <p class="text-gray-400">Subscribe to our newsletter</p>
-                    <form class="mt-2 flex">
-                        <input type="email" placeholder="Your email" required class="px-4 py-2 rounded-l-md text-gray-900 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <button type="submit" class="bg-indigo-600 px-4 py-2 rounded-r-md hover:bg-indigo-700 transition-colors duration-300">
-                            <span class="sr-only">Subscribe</span>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p class="text-gray-400 text-sm">
-    &copy; <span id="current-year"></span> Right Tech Centre. All rights reserved.
-</p>
-            <div class="mt-4 md:mt-0">
-                <a href="#" class="text-gray-400 hover:text-white text-sm mr-4 transition-colors duration-300">Privacy Policy</a>
-                <a href="#" class="text-gray-400 hover:text-white text-sm mr-4 transition-colors duration-300">Terms of Service</a>
-                <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors duration-300">Accessibility</a>
-            </div>
-        </div>
-    </div>
-</footer>
+                        <div id="diploma-tab-content" class="tab-content hidden" role="tabpanel">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">Diploma in Web Development</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white">60 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Master MERN stack, responsive design, and modern frameworks.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-teal-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$3,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$199/month</span> (18 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">Diploma in AI & ML</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white">60 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Learn neural networks, NLP, and deploy AI models.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-teal-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$3,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$199/month</span> (18 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-teal-400 transition-all duration-300 hover:shadow-lg hover:shadow-teal-400/20">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">Diploma in Cybersecurity</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white">60 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Develop expertise in ethical hacking and enterprise security.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-teal-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$3,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$199/month</span> (18 months)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-<!-- Back to Top Button -->
-<button id="back-to-top" 
-        class="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 transform hover:scale-110 group"
-        aria-label="Back to top">
-    <i class="fas fa-arrow-up text-lg group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-    <span class="sr-only">Back to top</span>
-</button>
+                        <div id="degree-tab-content" class="tab-content hidden" role="tabpanel">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">BSc in Artificial Intelligence</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-600 text-white">120 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Comprehensive study of AI systems and deep learning architectures.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-purple-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$6,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$299/month</span> (24 months)</span>
+                                        </div>
+                                        <div class="text-xs text-gray-400 mt-1">* Income Share Agreement available</div>
+                                    </div>
+                                </div>
+                                <div class="course-card bg-gray-800 bg-opacity-60 rounded-xl p-6 border border-gray-700 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20">
+                                    <div class="flex justify-between items-start">
+                                        <h3 class="text-xl font-bold text-white">BSc in Computer Science</h3>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-600 text-white">120 Credits</span>
+                                    </div>
+                                    <p class="mt-2 text-gray-300">Master algorithms, data structures, and distributed systems.</p>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-purple-300 font-medium">$50 per credit</span>
+                                            <span class="text-white font-bold">$6,000 total</span>
+                                        </div>
+                                        <div class="text-sm text-indigo-200 flex items-center">
+                                            <i class="fas fa-sync-alt mr-2" aria-hidden="true"></i> 
+                                            <span>or <span class="font-bold">$299/month</span> (24 months)</span>
+                                        </div>
+                                        <div class="text-xs text-gray-400 mt-1">* Income Share Agreement available</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Experience Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">Dynamic Learning Experience</h2>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-indigo-100 p-3 rounded-lg"><i class="fas fa-video text-indigo-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">Interactive Videos</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Engaging video content with interactive elements to enhance learning.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-purple-100 p-3 rounded-lg"><i class="fas fa-headphones-alt text-purple-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">Audio Lessons</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Learn on-the-go with downloadable audio lessons for every module.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-pink-100 p-3 rounded-lg"><i class="fas fa-tasks text-pink-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">Quizzes & Assessments</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Reinforce your knowledge with regular quizzes and practical assessments.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-teal-100 p-3 rounded-lg"><i class="fas fa-laptop-code text-teal-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">Hands-on Projects</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Build a portfolio of real-world projects to showcase your skills to employers.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-100 p-3 rounded-lg"><i class="fas fa-building text-blue-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">AI Company Internships</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Gain practical experience through optional internships with our tech partners.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-lg"><i class="fas fa-project-diagram text-yellow-600 text-xl" aria-hidden="true"></i></div>
+                            <h3 class="ml-4 text-lg font-medium text-gray-900">Final Capstone Project</h3>
+                        </div>
+                        <p class="mt-4 text-gray-600">Conclude your program with a comprehensive capstone project solving a real-world problem.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Structure Section -->
+        <section id="structure" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center" data-aos="fade-up">
+                    <h2 class="text-base text-teal-600 font-semibold tracking-wide uppercase">Innovative Learning Model</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">Future-Ready Program Structure</p>
+                    <p class="mt-4 max-w-2xl text-xl text-gray-600 lg:mx-auto">Designed for flexibility and real-world application</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="100">
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Modular 4-Credit System</h3>
+                        <p class="mt-3 text-gray-600">Focused learning in 4-credit modules that build comprehensive skills through sequential mastery.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="150">
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Flexible Pace</h3>
+                        <p class="mt-3 text-gray-600">Complete at your own speed: 12-18 months for diplomas or 24 months for degrees/certifications.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="200">
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Practical Assessments</h3>
+                        <p class="mt-3 text-gray-600">Hands-on projects, coding challenges, and real-world simulations that test applied knowledge.</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="250">
+                        <h3 class="mt-6 text-xl font-bold text-gray-900">Industry Capstone</h3>
+                        <p class="mt-3 text-gray-600">Final project solving real business challenges, often in collaboration with tech partners.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="relative bg-gradient-to-r from-indigo-900 to-purple-900 overflow-hidden">
+            <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
+                <div class="relative z-10 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+                    <div data-aos="fade-right">
+                        <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                            <span class="block">Ready to transform your future?</span>
+                            <span class="block text-indigo-200 mt-2">Take the first step toward tech mastery today.</span>
+                        </h2>
+                        <p class="mt-4 text-lg text-indigo-100 max-w-2xl">Join thousands of students who've accelerated their careers with our industry-leading programs.</p>
+                    </div>
+                    <div class="mt-12 lg:mt-0" data-aos="fade-left">
+                        <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm rounded-xl p-8 border border-white border-opacity-20">
+                            <h3 class="text-xl font-bold text-white">Start your journey</h3>
+                            <div class="mt-6 grid grid-cols-1 gap-4">
+                                <a href="#courses" class="flex items-center justify-center px-6 py-4 border border-transparent text-lg font-medium rounded-lg shadow-sm text-indigo-900 bg-white hover:bg-indigo-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-search mr-3" aria-hidden="true"></i> Explore Programs
+                                </a>
+                                <a href="#contact" class="flex items-center justify-center px-6 py-4 border border-transparent text-lg font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-user-graduate mr-3" aria-hidden="true"></i> Apply Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-16 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:grid lg:grid-cols-2 lg:gap-12">
+                    <div data-aos="fade-right">
+                        <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Get In Touch</h2>
+                        <p class="mt-3 text-lg text-gray-600">Our admissions team is ready to guide you through enrollment and answer all your questions.</p>
+                        <div class="mt-8 space-y-6">
+                            <div class="flex">
+                                <i class="fas fa-map-marker-alt text-indigo-600 mt-1 fa-2x" aria-hidden="true"></i>
+                                <div class="ml-4">
+                                    <p class="text-lg font-medium text-gray-900">Our Location</p>
+                                    <a href="https://maps.app.goo.gl/9QZ82aV4YVzFwBqA8" target="_blank" rel="noopener noreferrer" class="mt-1 text-gray-600 hover:text-indigo-600">VGFM+98, North Gudele<br>Juba, South Sudan</a>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <i class="fas fa-phone-alt text-indigo-600 mt-1 fa-2x" aria-hidden="true"></i>
+                                <div class="ml-4">
+                                    <p class="text-lg font-medium text-gray-900">Call Us</p>
+                                    <a href="tel:+211925522700" class="mt-1 text-gray-600 hover:text-indigo-600">+211 925 522 700</a>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <i class="fas fa-envelope text-indigo-600 mt-1 fa-2x" aria-hidden="true"></i>
+                                <div class="ml-4">
+                                    <p class="text-lg font-medium text-gray-900">Email Us</p>
+                                    <a href="mailto:righttechcentre@gmail.com" class="mt-1 text-gray-600 hover:text-indigo-600">righttechcentre@gmail.com</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-12 lg:mt-0" data-aos="fade-left">
+                        <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                            <h3 class="text-2xl font-bold text-gray-900">Enrollment Form</h3>
+                            <form id="enrollment-form" name="enrollment-form" method="POST" action="https://your-digitalocean-app.com/submit-form" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                                <!-- CSRF Token (uncomment if using server-side processing) -->
+                                <!-- <input type="hidden" name="_token" value="YOUR_CSRF_TOKEN"> -->
+                                
+                                <div>
+                                    <label for="first-name" class="block text-sm font-medium text-gray-700">First name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="first-name" id="first-name" autocomplete="given-name" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                   <label for="last-name" class="block text-sm font-medium text-gray-700">Last name <span class="text-red-500">*</span></label>
+                                   <input type="text" name="last-name" id="last-name" autocomplete="family-name" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                                    <input id="email" name="email" type="email" autocomplete="email" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                                </div>
+                                <div class="sm:col-span-2">
+                                   <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number <span class="text-red-500">*</span></label>
+                                   <input type="tel" name="phone" id="phone" autocomplete="tel" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="program" class="block text-sm font-medium text-gray-700">Program of Interest <span class="text-red-500">*</span></label>
+                                    <select id="program" name="program" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                                        <option value="">-- Select a program --</option>
+                                        <optgroup label="Certifications">
+                                            <option value="Certified AI Engineer">Certified AI Engineer</option>
+                                            <option value="AWS Certified Architect">AWS Certified Architect</option>
+                                        </optgroup>
+                                        <optgroup label="Diploma Programs">
+                                            <option value="Diploma in Web Development">Diploma in Web Development</option>
+                                            <option value="Diploma in Artificial Intelligence">Diploma in Artificial Intelligence</option>
+                                            <option value="Diploma in Cybersecurity">Diploma in Cybersecurity</option>
+                                        </optgroup>
+                                        <optgroup label="Degree Programs">
+                                            <option value="Bachelor of Artificial Intelligence">Bachelor of Artificial Intelligence</option>
+                                            <option value="Bachelor of Computer Science">Bachelor of Computer Science</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="sm:col-span-2">
+                                   <button type="submit" id="submit-btn" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+                                       <span id="submit-text"><i class="fas fa-paper-plane mr-2" aria-hidden="true"></i> Submit Application</span>
+                                   </button>
+                                </div>
+                           </form>
+                       </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                    <div class="flex items-center">
+                        <img src="images/logo-icon.png" alt="Right Tech Centre Icon" class="h-8 w-auto" loading="lazy">
+                        <span class="ml-2 text-xl font-bold tech-font">Right Tech Centre</span>
+                    </div>
+                    <p class="mt-4 text-gray-400 text-sm">Future-ready tech education for career advancement.</p>
+                    
+                    <div class="mt-6 flex space-x-4 md:hidden">
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Programs</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#certification-tab" class="text-gray-400 hover:text-white text-sm">Certifications</a></li>
+                        <li><a href="#diploma-tab" class="text-gray-400 hover:text-white text-sm">Diplomas</a></li>
+                        <li><a href="#degree-tab" class="text-gray-400 hover:text-white text-sm">Degrees</a></li>
+                        <li><a href="#courses" class="text-gray-400 hover:text-white text-sm">All Courses</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Support</h3>
+                    <ul class="mt-4 space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm">Admissions</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm">Student Portal</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white text-sm">FAQ</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white text-sm">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-4 bg-gray-800 rounded-xl p-6 border border-gray-700 hover:border-pink-500 transition-all">
+                    <div class="flex items-start">
+                        <div class="bg-pink-600 p-3 rounded-lg">
+                            <i class="fas fa-hand-holding-usd text-white" aria-hidden="true"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-bold">Earn 30% Commissions</h3>
+                            <p class="mt-1 text-gray-300 text-sm">Join our affiliate program and earn for every referred student.</p>
+                            <div class="mt-4 grid grid-cols-2 gap-3">
+                                <div class="bg-gray-900 bg-opacity-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-400">Per Certification</p>
+                                    <p class="font-bold text-pink-400">$150–$450</p>
+                                </div>
+                                <div class="bg-gray-900 bg-opacity-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-400">Per Degree</p>
+                                    <p class="font-bold text-pink-400">$1,800+</p>
+                                </div>
+                            </div>
+                            <a href="/affiliate" class="mt-4 inline-flex items-center justify-center w-full px-4 py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-lg text-sm font-medium transition-all">
+                                Become an Affiliate →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 border-t border-gray-800 pt-8">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="text-center md:text-left">
+                        <p class="text-xs text-gray-500">
+                            © <span id="current-year"></span> Right Tech Centre. All rights reserved.
+                            <a href="#" class="hover:text-white ml-4">Privacy Policy</a>
+                            <a href="#" class="hover:text-white ml-4">Terms of Service</a>
+                        </p>
+                    </div>
+                    
+                    <div class="mt-4 md:mt-0 flex justify-center space-x-6">
+                        <a href="https://www.facebook.com/share/1P2ydiamxx/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://x.com/righttechcentre?s=09" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/in/right-tech-centre-368213369" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.youtube.com/@RightTechCentre" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/righttechcentre?igsh=YzljYTk1ODg3Zg==" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-wrap justify-center gap-4">
+                    <img src="images/payment-visa.png" alt="Visa" class="h-8 opacity-80 hover:opacity-100 transition" loading="lazy">
+                    <img src="images/payment-mastercard.png" alt="Mastercard" class="h-8 opacity-80 hover:opacity-100 transition" loading="lazy">
+                    <img src="images/payment-paypal.png" alt="PayPal" class="h-8 opacity-80 hover:opacity-100 transition" loading="lazy">
+                    <img src="images/badge-ssl.png" alt="SSL Secure" class="h-8 opacity-80 hover:opacity-100 transition" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg opacity-0 invisible transition-all duration-300" aria-label="Back to top">
+        <i class="fas fa-arrow-up text-lg" aria-hidden="true"></i>
+    </button>
 
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- Javascript-->
     <script src="js/main.js" defer></script>
-    
+    <script>
+        // Initialize AOS animation
+        AOS.init({
+            duration: 800,
+            once: true,
+        });
+
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Back to top button functionality
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('invisible', 'opacity-0');
+                backToTopButton.classList.add('visible', 'opacity-100');
+            } else {
+                backToTopButton.classList.remove('visible', 'opacity-100');
+                backToTopButton.classList.add('invisible', 'opacity-0');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Form submission handling
+        const enrollmentForm = document.getElementById('enrollment-form');
+        if (enrollmentForm) {
+            enrollmentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('submit-btn');
+                const submitText = document.getElementById('submit-text');
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                const originalText = submitText.innerHTML;
+                submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                
+                try {
+                    // For DigitalOcean Apps, you would typically use Fetch API to submit the form
+                    const formData = new FormData(enrollmentForm);
+                    
+                    // Example fetch request (uncomment and modify for your DigitalOcean setup)
+                    /*
+                    const response = await fetch(enrollmentForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        // Success handling
+                        submitText.innerHTML = '<i class="fas fa-check mr-2"></i> Submitted!';
+                        enrollmentForm.reset();
+                        setTimeout(() => {
+                            submitText.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                    */
+                    
+                    // Temporary success message for demo
+                    submitText.innerHTML = '<i class="fas fa-check mr-2"></i> Submitted!';
+                    setTimeout(() => {
+                        submitText.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    submitText.innerHTML = '<i class="fas fa-times mr-2"></i> Error!';
+                    setTimeout(() => {
+                        submitText.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 3000);
+                }
+            });
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Update active tab button
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('text-white', 'border-pink-400', 'border-teal-400', 'border-purple-400');
+                    btn.classList.add('text-gray-300', 'border-transparent');
+                });
+                button.classList.remove('text-gray-300', 'border-transparent');
+                
+                // Set appropriate border color based on tab type
+                if (tabId.includes('certification')) {
+                    button.classList.add('text-white', 'border-pink-400');
+                } else if (tabId.includes('diploma')) {
+                    button.classList.add('text-white', 'border-teal-400');
+                } else {
+                    button.classList.add('text-white', 'border-purple-400');
+                }
+                
+                // Update tab content visibility
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+            });
+        });
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                mobileMenuButton.setAttribute('aria-expanded', !expanded);
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
 </body>
-    </html>
+</html>
