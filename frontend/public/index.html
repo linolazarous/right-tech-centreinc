@@ -9,7 +9,6 @@
     <meta name="author" content="Right Tech Centre">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Open Graph / Social Media -->
     <meta property="og:title" content="Right Tech Centre | Technology Education & Certification">
     <meta property="og:description" content="Empowering the next generation of tech professionals with affordable diploma, degree, and certification programs.">
     <meta property="og:type" content="website">
@@ -19,7 +18,6 @@
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Right Tech Centre">
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Right Tech Centre | Technology Education & Certification">
     <meta name="twitter:description" content="Affordable tech education with flexible payment options. Certifications, diplomas & degrees in cutting-edge technologies.">
@@ -28,7 +26,6 @@
     <title>Right Tech Centre | Affordable Tech Certifications, Diplomas & Degrees</title>
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 
-    <!-- Preload Critical Resources -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -40,23 +37,15 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style">
     <link rel="preload" href="css/main.css" as="style">
     <link rel="preload" href="images/hero-image.png" as="image" media="(min-width: 768px)">
+    <link rel="preload" href="js/main.js" as="script">
 
-    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
-    
-    <style>
-        /* Critical CSS */
-        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
-        @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(calc(-100% - 3rem))}.animate-scroll{animation:scroll 30s linear infinite;display:flex;width:max-content}
-        .header-gradient{background:linear-gradient(to right,#4f46e5,#7c3aed)}
-    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Header -->
     <header class="fixed w-full header-gradient z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
@@ -104,10 +93,9 @@
     </noscript>
 
     <main>
-        <!-- Hero Section -->
         <section id="home" class="relative text-white pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
             <div class="absolute inset-0 z-0">
-                <img src="images/bg-image.png" alt="Abstract technology background" class="w-full h-full object-cover" loading="eager" width="1920" height="1080">
+                <img src="images/bg-image.png" alt="Abstract technology background" class="w-full h-full object-cover" width="1920" height="1080">
                 <div class="absolute inset-0 bg-gradient-to-r from-indigo-900 to-purple-900 opacity-90"></div>
             </div>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -180,7 +168,7 @@
                     
                     <div class="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center" data-aos="fade-left">
                         <div class="relative mx-auto w-full rounded-xl shadow-2xl lg:max-w-md overflow-hidden border-4 border-white border-opacity-20 transform hover:scale-105 transition duration-500">
-                            <img class="w-full h-auto" src="images/hero-image.png" alt="Student learning at Right Tech Centre" width="600" height="400" loading="eager">
+                            <img class="w-full h-auto" src="images/hero-image.png" alt="Student learning at Right Tech Centre" width="600" height="400">
                             <div class="absolute top-4 left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce">NEW: AI Courses</div>
                             <div class="absolute bottom-4 right-4 bg-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">Trending Now</div>
                         </div>
@@ -202,7 +190,6 @@
             </div>
         </section>
 
-        <!-- About Section -->
         <section class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="lg:text-center">
@@ -218,7 +205,6 @@
             </div>
         </section>
 
-        <!-- Programs Section -->
         <section id="programs" class="py-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="lg:text-center" data-aos="fade-up">
@@ -287,7 +273,6 @@
             </div>
         </section>
 
-        <!-- Courses Section -->
         <section id="courses" class="py-16 bg-gradient-to-br from-indigo-900 to-gray-900 text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="lg:text-center" data-aos="fade-up">
@@ -468,7 +453,6 @@
             </div>
         </section>
 
-        <!-- Learning Experience Section -->
         <section class="py-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-3xl font-extrabold text-center text-gray-900 sm:text-4xl">Dynamic Learning Experience</h2>
@@ -519,7 +503,6 @@
             </div>
         </section>
 
-        <!-- Structure Section -->
         <section id="structure" class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="lg:text-center" data-aos="fade-up">
@@ -548,7 +531,6 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
         <section class="relative bg-gradient-to-r from-indigo-900 to-purple-900 overflow-hidden">
             <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-24 lg:px-8">
                 <div class="relative z-10 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
@@ -576,7 +558,6 @@
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section id="contact" class="py-16 bg-gradient-to-b from-gray-50 to-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="lg:grid lg:grid-cols-2 lg:gap-12">
@@ -610,10 +591,8 @@
                     <div class="mt-12 lg:mt-0" data-aos="fade-left">
                         <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
                             <h3 class="text-2xl font-bold text-gray-900">Enrollment Form</h3>
+                            <div id="form-messages" class="mt-4 hidden" aria-live="polite"></div>
                             <form id="enrollment-form" name="enrollment-form" method="POST" action="https://your-digitalocean-app.com/submit-form" class="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                                <!-- CSRF Token (uncomment if using server-side processing) -->
-                                <!-- <input type="hidden" name="_token" value="YOUR_CSRF_TOKEN"> -->
-                                
                                 <div>
                                     <label for="first-name" class="block text-sm font-medium text-gray-700">First name <span class="text-red-500">*</span></label>
                                     <input type="text" name="first-name" id="first-name" autocomplete="given-name" required class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
@@ -662,7 +641,6 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -684,9 +662,9 @@
                 <div class="md:col-span-2">
                     <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">Programs</h3>
                     <ul class="mt-4 space-y-3">
-                        <li><a href="#certification-tab" class="text-gray-400 hover:text-white text-sm">Certifications</a></li>
-                        <li><a href="#diploma-tab" class="text-gray-400 hover:text-white text-sm">Diplomas</a></li>
-                        <li><a href="#degree-tab" class="text-gray-400 hover:text-white text-sm">Degrees</a></li>
+                        <li><a href="#certification-tab" class="text-gray-400 hover:text-white text-sm tab-link">Certifications</a></li>
+                        <li><a href="#diploma-tab" class="text-gray-400 hover:text-white text-sm tab-link">Diplomas</a></li>
+                        <li><a href="#degree-tab" class="text-gray-400 hover:text-white text-sm tab-link">Degrees</a></li>
                         <li><a href="#courses" class="text-gray-400 hover:text-white text-sm">All Courses</a></li>
                     </ul>
                 </div>
@@ -756,143 +734,11 @@
         </div>
     </footer>
 
-    <!-- Back to Top Button -->
     <button id="back-to-top" class="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg opacity-0 invisible transition-all duration-300" aria-label="Back to top">
         <i class="fas fa-arrow-up text-lg" aria-hidden="true"></i>
     </button>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js" defer></script>
-    <script>
-        // Initialize AOS animation
-        AOS.init({
-            duration: 800,
-            once: true,
-        });
-
-        // Set current year in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
-        // Back to top button functionality
-        const backToTopButton = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopButton.classList.remove('invisible', 'opacity-0');
-                backToTopButton.classList.add('visible', 'opacity-100');
-            } else {
-                backToTopButton.classList.remove('visible', 'opacity-100');
-                backToTopButton.classList.add('invisible', 'opacity-0');
-            }
-        });
-        
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Form submission handling
-        const enrollmentForm = document.getElementById('enrollment-form');
-        if (enrollmentForm) {
-            enrollmentForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const submitBtn = document.getElementById('submit-btn');
-                const submitText = document.getElementById('submit-text');
-                
-                // Show loading state
-                submitBtn.disabled = true;
-                const originalText = submitText.innerHTML;
-                submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-                
-                try {
-                    // For DigitalOcean Apps, you would typically use Fetch API to submit the form
-                    const formData = new FormData(enrollmentForm);
-                    
-                    // Example fetch request (uncomment and modify for your DigitalOcean setup)
-                    /*
-                    const response = await fetch(enrollmentForm.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        // Success handling
-                        submitText.innerHTML = '<i class="fas fa-check mr-2"></i> Submitted!';
-                        enrollmentForm.reset();
-                        setTimeout(() => {
-                            submitText.innerHTML = originalText;
-                            submitBtn.disabled = false;
-                        }, 3000);
-                    } else {
-                        throw new Error('Form submission failed');
-                    }
-                    */
-                    
-                    // Temporary success message for demo
-                    submitText.innerHTML = '<i class="fas fa-check mr-2"></i> Submitted!';
-                    setTimeout(() => {
-                        submitText.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }, 3000);
-                    
-                } catch (error) {
-                    console.error('Form submission error:', error);
-                    submitText.innerHTML = '<i class="fas fa-times mr-2"></i> Error!';
-                    setTimeout(() => {
-                        submitText.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }, 3000);
-                }
-            });
-        }
-
-        // Tab functionality
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.getAttribute('data-tab');
-                
-                // Update active tab button
-                document.querySelectorAll('.tab-button').forEach(btn => {
-                    btn.classList.remove('text-white', 'border-pink-400', 'border-teal-400', 'border-purple-400');
-                    btn.classList.add('text-gray-300', 'border-transparent');
-                });
-                button.classList.remove('text-gray-300', 'border-transparent');
-                
-                // Set appropriate border color based on tab type
-                if (tabId.includes('certification')) {
-                    button.classList.add('text-white', 'border-pink-400');
-                } else if (tabId.includes('diploma')) {
-                    button.classList.add('text-white', 'border-teal-400');
-                } else {
-                    button.classList.add('text-white', 'border-purple-400');
-                }
-                
-                // Update tab content visibility
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.add('hidden');
-                    content.classList.remove('active');
-                });
-                document.getElementById(`${tabId}-content`).classList.remove('hidden');
-                document.getElementById(`${tabId}-content`).classList.add('active');
-            });
-        });
-
-        // Mobile menu toggle
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', () => {
-                const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-                mobileMenuButton.setAttribute('aria-expanded', !expanded);
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-    </script>
 </body>
 </html>
