@@ -1,20 +1,95 @@
 {
   "short_name": "RightTech",
-  "name": "Right Tech Centre",
+  "name": "Right Tech Centre - Digital Learning Platform",
+  "description": "Premium tech education with offline capabilities",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/static/media/logo-192x192.avif",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/avif",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo.png",
+      "src": "/static/media/logo-512x512.avif",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/avif",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/media/logo-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "theme_color": "#2563EB",
-  "background_color": "#ffffff"
+  "background_color": "#FFFFFF",
+  "screenshots": [
+    {
+      "src": "/static/media/screenshot1.avif",
+      "sizes": "1280x720",
+      "type": "image/avif",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/static/media/screenshot2.avif",
+      "sizes": "750x1334",
+      "type": "image/avif",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "My Courses",
+      "short_name": "Courses",
+      "description": "View your enrolled courses",
+      "url": "/courses?source=pwa"
+    },
+    {
+      "name": "Continue Learning",
+      "short_name": "Continue",
+      "description": "Pick up where you left off",
+      "url": "/continue?source=pwa"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.righttech.app",
+      "id": "com.righttech.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/us/app/right-tech/id123456789"
+    }
+  ],
+  "prefer_related_applications": false,
+  "protocol_handlers": [
+    {
+      "protocol": "web+righttech",
+      "url": "/open?url=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/open-pdf",
+      "accept": {
+        "application/pdf": [".pdf"]
+      }
+    }
+  ]
 }
