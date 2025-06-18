@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Prevent issues with body scroll on mobile menu open
             const isHidden = mobileMenu.classList.toggle('hidden');
             mobileMenuButton.setAttribute('aria-expanded', !isHidden);
-            document.body.style.overflow = isHidden ? '' : 'hidden';
+            document.body.style.overflow = isHidden ? '' : 'hidden'; // Prevent body scroll when menu is open
         });
     }
     
@@ -32,17 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
      * =============================================
      */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        // Exclude the back-to-top button from this logic
-        if (anchor.id === 'back-to-top') return;
+        // Exclude the back-to-top button from this logic and direct tab links
+        if (anchor.id === 'back-to-top' || anchor.classList.contains('tab-link')) return;
 
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
-            if (targetId.length <= 1) return;
+            if (targetId.length <= 1) return; // Handle empty or just '#' hrefs
 
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                const headerHeight = document.querySelector('header')?.offsetHeight || 80; // Get actual header height or default
                 const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - headerHeight;
 
                 window.scrollTo({
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth'
                 });
 
+                // Close mobile menu after clicking a link
                 if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                     mobileMenu.classList.add('hidden');
                     mobileMenuButton.setAttribute('aria-expanded', 'false');
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     /**
-     * 4. Back to Top Button (FIXED & IMPROVED)
+     * 4. Back to Top Button
      * =============================================
      */
     const backToTopButton = document.getElementById('back-to-top');
@@ -76,10 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     backToTopButton.classList.add('opacity-0', 'invisible');
                 }
-            }, 150);
-        }, { passive: true });
+            }, 150); // Throttle to prevent excessive calls
+        }, { passive: true }); // Use passive listener for better scroll performance
 
-        // Add the missing click event to scroll to top
+        // Click event to scroll to top
         backToTopButton.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
@@ -87,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
 
     /**
      * 5. Tabbed Interface Functionality
@@ -102,7 +102,21 @@ document.addEventListener('DOMContentLoaded', function() {
             tabButtons.forEach(btn => {
                 const isSelected = btn.dataset.tab === tabId;
                 btn.setAttribute('aria-selected', isSelected);
-                // Style changes are handled by Tailwind classes in the HTML
+                
+                // Remove all specific border classes before adding the correct one
+                btn.classList.remove('text-white', 'border-pink-400', 'border-teal-400', 'border-purple-400');
+                btn.classList.add('text-gray-300', 'border-transparent');
+
+                if (isSelected) {
+                    btn.classList.add('text-white');
+                    if (tabId.includes('certification')) {
+                        btn.classList.add('border-pink-400');
+                    } else if (tabId.includes('diploma')) {
+                        btn.classList.add('border-teal-400');
+                    } else { // degree-tab
+                        btn.classList.add('border-purple-400');
+                    }
+                }
             });
 
             tabContents.forEach(content => {
@@ -112,23 +126,45 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        // Event listeners for main tab buttons
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 activateTab(button.dataset.tab);
             });
         });
 
+        // Event listeners for links that activate tabs (e.g., from Programs section)
         document.querySelectorAll('.tab-link').forEach(link => {
             link.addEventListener('click', (e) => {
-                const tabId = new URL(link.href).hash.substring(1);
-                const targetButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
-                if(targetButton) {
-                    e.preventDefault();
-                    activateTab(tabId);
-                    targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const tabId = new URL(link.href).hash.substring(1); // Get tab ID from href hash
+                const targetButton = document.querySelector(`.tab-button[data-tab="${tabId.replace('-content', '')}"]`); // Find the corresponding button
+                
+                if (targetButton) {
+                    e.preventDefault(); // Prevent default anchor jump for internal tab links
+                    activateTab(targetButton.dataset.tab); // Activate the tab via its button's data-tab
+                    
+                    // Smooth scroll to the courses section after activating the tab
+                    const coursesSection = document.getElementById('courses');
+                    if (coursesSection) {
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                        const targetPosition = coursesSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             });
         });
+
+        // Activate the first tab on page load if no hash is present or if it's an invalid hash
+        const initialHash = window.location.hash.substring(1);
+        const initialTabButton = document.querySelector(`.tab-button[data-tab="${initialHash.replace('-content', '')}"]`);
+        if (initialTabButton) {
+            activateTab(initialTabButton.dataset.tab);
+        } else {
+            activateTab(tabButtons[0].dataset.tab); // Default to the first tab
+        }
     }
 
     /**
@@ -139,32 +175,59 @@ document.addEventListener('DOMContentLoaded', function() {
     if (enrollmentForm) {
         const submitBtn = document.getElementById('submit-btn');
         const submitText = document.getElementById('submit-text');
-        const formMessages = document.getElementById('form-messages'); // Ensure you have this element in your HTML
+        const formMessages = document.getElementById('form-messages'); // This element needs to exist in HTML
 
         enrollmentForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            if(formMessages) formMessages.classList.add('hidden');
+            
+            // Clear previous messages and hide
+            if(formMessages) {
+                formMessages.innerHTML = '';
+                formMessages.classList.add('hidden');
+            }
             
             submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
             submitBtn.disabled = true;
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Demo delay
+                // In a real production environment, you would replace this
+                // setTimeout with an actual fetch request to your backend.
+                // Example:
+                /*
+                const formData = new FormData(enrollmentForm);
+                const response = await fetch(enrollmentForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    // headers: { 'Accept': 'application/json' } // Uncomment if your backend expects JSON
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json(); // Assuming JSON error response
+                    throw new Error(errorData.message || 'Form submission failed');
+                }
+
+                // const successData = await response.json(); // Assuming JSON success response
+                */
+
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Demo delay for effect
                 
                 if (formMessages) {
-                    formMessages.innerHTML = `<div class="rounded-md bg-green-50 p-4"><div class="flex"><p class="text-sm font-medium text-green-800">Application submitted successfully!</p></div></div>`;
+                    formMessages.innerHTML = `<div class="rounded-md bg-green-50 p-4"><div class="flex"><p class="text-sm font-medium text-green-800">Application submitted successfully! We will be in touch shortly.</p></div></div>`;
                     formMessages.classList.remove('hidden');
                 }
                 enrollmentForm.reset();
             } catch (error) {
                 console.error("Form submission error:", error);
                  if (formMessages) {
-                    formMessages.innerHTML = `<div class="rounded-md bg-red-50 p-4"><div class="flex"><p class="text-sm font-medium text-red-800">There was an error. Please try again.</p></div></div>`;
+                    formMessages.innerHTML = `<div class="rounded-md bg-red-50 p-4"><div class="flex"><p class="text-sm font-medium text-red-800">There was an error submitting your application. Please try again.</p></div></div>`;
                     formMessages.classList.remove('hidden');
                 }
             } finally {
-                submitText.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Application';
-                submitBtn.disabled = false;
+                // Reset button state after a short delay for feedback
+                setTimeout(() => {
+                    submitText.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Application';
+                    submitBtn.disabled = false;
+                }, 2000); 
             }
         });
     }
