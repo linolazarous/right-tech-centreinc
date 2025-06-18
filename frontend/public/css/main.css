@@ -6,6 +6,10 @@
     --accent: #10b981;
 }
 
+/* Critical CSS */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+.header-gradient{background:linear-gradient(to right,#4f46e5,#7c3aed)}
+
 /* 1. Base Styles
 /* =================================== */
 body {
@@ -73,24 +77,7 @@ body {
 
 @keyframes scroll {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-.floating {
-    animation: float 6s ease-in-out infinite;
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-.animate-scroll {
-    display: inline-block;
-    animation: scroll 40s linear infinite;
-    will-change: transform;
-}
-
-@keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - 3rem)); } /* Adjust based on total width */
+    100% { transform: translateX(calc(-100% - 3rem)); } /* Adjust based on total width and gap */
 }
 
 .animate-scroll {
@@ -98,6 +85,7 @@ body {
     display: flex;
     width: max-content;
 }
+
 /* 4. Accessibility & Utilities
 /* =================================== */
 
