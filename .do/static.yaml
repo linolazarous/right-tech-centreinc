@@ -8,3 +8,9 @@ static_sites:
   output_dir: public
   routes:
   - path: /
+- name: mobile-web
+  github:
+    dir: mobile
+    branch: main
+  build_command: flutter build web
+  output_dir: build/web
