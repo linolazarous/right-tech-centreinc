@@ -1,1 +1,10 @@
-yuu
+name: right-tech-frontend
+static_sites:
+- name: web
+  github:
+    dir: frontend
+    branch: main
+  build_command: npm install && npm run build
+  output_dir: public
+  routes:
+  - path: /
