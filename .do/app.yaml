@@ -1,1 +1,12 @@
-kkkk
+name: right-tech-backend
+services:
+- name: api
+  github:
+    dir: backend
+    branch: main
+  build_command: cd src && npm install
+  run_command: node src/server.js
+  envs:
+  - key: NODE_ENV
+    value: production
+  instance_size_slug: professional-xs
