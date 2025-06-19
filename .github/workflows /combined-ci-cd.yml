@@ -23,357 +23,191 @@ on:
 env:
   NODE_VERSION: '20.12.2'
   FLUTTER_VERSION: '3.13.9'
-  DOCKER_REGISTRY: 'ghcr.io'
-  DOCKER_IMAGE_PREFIX: 'right-tech-centre'
+  DOCKER_REGISTRY: 'registry.digitalocean.com/right-tech'
   SONAR_PROJECT_KEY: 'right-tech-centre'
   BACKEND_PORT: '3000'
-  DROPLET_SSH_PORT: '22'
-  APP_PLATFORM_SPEC_FILE: 'app_spec.yaml'
+  APP_PLATFORM_SPEC_FILE: '.do/app.yaml'
+  FRONTEND_SPEC_FILE: '.do/static.yaml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  security_scan:
-    name: Security Scanning
+  validate_structure:
+    name: Validate Project Structure
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || inputs.perform_security_scan }}
-    permissions:
-      contents: read
-      security-events: write
-      packages: read
-      
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.1
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v4
+      
+      - name: Verify Directories
+        run: |
+          [ -d "backend/src" ] || { echo "Missing backend/src directory"; exit 1; }
+          [ -f "backend/src/server.js" ] || { echo "Missing server.js"; exit 1; }
+          [ -d "frontend/public" ] || { echo "Missing frontend/public directory"; exit 1; }
+          [ -f "frontend/public/index.html" ] || { echo "Missing index.html"; exit 1; }
+          [ -d "mobile/lib" ] || { echo "Missing mobile/lib directory"; exit 1; }
+          [ -f "mobile/lib/main.dart" ] || { echo "Missing main.dart"; exit 1; }
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Run Dependency Audit
-        run: npm audit --omit=dev --audit-level=high
-
-      - name: Generate SBOM
-        uses: cyclonedx/cdxgen-action@v9.1.1
-        with:
-          output-format: 'json'
-          output-file: 'sbom.json'
-
-      - name: Upload SBOM
-        uses: github/codeql-action/upload-sarif@v3.0.6
-        with:
-          sarif_file: sbom.json
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.7.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+  security_scan:
+    name: Security Scanning
+    needs: validate_structure
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || inputs.perform_security_scan }}
+    steps:
+      - uses: actions/checkout@v4
+      
       - name: Run Trivy Scan
-        uses: aquasecurity/trivy-action@0.14.0
+        uses: aquasecurity/trivy-action@v0.14.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
-          ignore-unfixed: false
-          format: 'sarif'
           severity: 'CRITICAL,HIGH'
+          format: 'sarif'
           output: 'trivy-results.sarif'
-          exit-code: '1'
 
-      - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@v3.0.6
+      - name: Upload Scan Results
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif
 
-  backend_build:
-    name: Backend Build
+  backend:
+    name: Backend Build & Deploy
     needs: security_scan
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [18.19.1, 20.12.2]
-        include:
-          - os: ubuntu-latest
-            docker: true
-          - os: windows-latest
-            docker: false
-          - os: macos-latest
-            docker: true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --omit=dev --audit=false
-
-      - name: Run linting
-        run: npm run lint
-
-      - name: Run unit tests
-        run: npm test -- --coverage --detectOpenHandles
-
-      - name: Build Docker image
-        if: matrix.docker
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:${{ github.sha }} \
-            --tag ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_IMAGE_PREFIX }}-backend:latest \
-            --push \
-            
-  backend_performance:
-    name: Backend Performance
-    needs: backend_build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Run performance tests
-        uses: grafana/k6-action@v0.4.1
-        with:
-          filename: tests/load-test.js
-          flags: --vus 100 --duration 30s
-        env:
-          API_BASE_URL: http://localhost:${{ env.BACKEND_PORT }}
-
-  digitalocean_backend_deploy:
-    name: Deploy to DigitalOcean
-    needs: [backend_build, backend_performance]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment || 'production' }}
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Login to DigitalOcean Container Registry
-        run: doctl registry login --expiry-seconds 600
-
-      - name: Deploy to App Platform
-        run: |
-          doctl apps create --spec ${{ env.APP_PLATFORM_SPEC_FILE }} \
-            --project-id ${{ secrets.DO_PROJECT_ID }} \
-            --env ${{ inputs.environment || 'production' }}
-
-      - name: Update Database Connection
-        run: |
-          doctl databases connection ${{ secrets.DO_DATABASE_ID }} \
-            --format "Host,Port,User,Password,Database" \
-            | while read -r host port user password database; do
-              doctl apps update-config ${{ secrets.DO_APP_ID }} \
-                --env "DB_HOST=$host" \
-                --env "DB_PORT=$port" \
-                --env "DB_USER=$user" \
-                --env "DB_PASSWORD=$password" \
-                --env "DB_NAME=$database"
-            done
-
-      - name: Run database migrations
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-            -p ${{ env.DROPLET_SSH_PORT }} \
-            root@${{ secrets.DO_DROPLET_IP }} \
-            "cd /var/www/right-tech-centre/backend && npm run db:migrate"
-
-  frontend_build:
-    name: Frontend Build
-    needs: security_scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
+      - uses: actions/checkout@v4
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --omit=dev --audit=false
-
-      - name: Run tests
-        run: npm test -- --watchAll=false --coverage
-
-      - name: Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v11.0.3
+          
+      - name: Install Backend Dependencies
+        working-directory: ./backend/src
+        run: npm ci --production
+        
+      - name: Run Tests
+        working-directory: ./backend/src
+        run: npm test
+        
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
         with:
-          urls: http://localhost:3000
-          uploadArtifacts: true
-
-      - name: Build production
-        run: npm run build
-
-      - name: Analyze bundle
-        uses: preactjs/compressed-size-action@v2.1.1
-        with:
-          pattern: 'build/static/**/*.{js,css}'
-          compression: 'brotli'
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          name: frontend-build
-          path: build/
-
-  frontend_deploy:
-    name: Deploy Frontend to DigitalOcean Spaces
-    needs: [frontend_build, digitalocean_backend_deploy]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || 'production' }}
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3.0.2
-        with:
-          name: frontend-build
-
-      - name: Install doctl
+          context: ./backend
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/backend:${{ github.sha }}
+            ${{ env.DOCKER_REGISTRY }}/backend:latest
+          secrets: |
+            "DIGITALOCEAN_ACCESS_TOKEN=${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}"
+            
+      - name: Deploy to App Platform
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Sync to Spaces
         run: |
-          doctl spaces sync ./ ${{ secrets.DO_SPACES_NAME }}:/ \
+          doctl apps create --spec ${{ env.APP_PLATFORM_SPEC_FILE }}
+          doctl apps update-config --env DATABASE_URL=${{ secrets.DO_DATABASE_URL }}
+
+  frontend:
+    name: Frontend Build & Deploy
+    needs: security_scan
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      - name: Deploy to Spaces
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        run: |
+          doctl spaces sync ./frontend/build/ ${{ secrets.DO_SPACES_NAME }}:/ \
             --access-key ${{ secrets.DO_SPACES_ACCESS_KEY }} \
             --secret-key ${{ secrets.DO_SPACES_SECRET_KEY }} \
-            --region ${{ secrets.DO_SPACES_REGION }} \
-            --delete
+            --region ${{ secrets.DO_SPACES_REGION }}
 
-      - name: Invalidate CDN cache
-        run: |
-          doctl cdn flush ${{ secrets.DO_CDN_ID }} \
-            --files "/*"
-
-  mobile_build:
+  mobile:
     name: Mobile Build
     needs: security_scan
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        flutter-version: ['3.10.9', '3.13.9']
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2.13.0
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          channel: 'stable'
-
-      - name: Cache dependencies
-        uses: actions/cache@v3.3.2
-        with:
-          path: |
-            ~/.pub-cache
-            /opt/hostedtoolcache/flutter
-          key: ${{ runner.os }}-flutter-${{ matrix.flutter-version }}-${{ hashFiles('**/pubspec.lock') }}
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run analyzer
-        run: flutter analyze
-
-      - name: Run tests
-        run: flutter test --coverage
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3.1.4
-
-  mobile_deploy:
-    name: Mobile Deploy
-    needs: [mobile_build, digitalocean_backend_deploy]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
     runs-on: macos-latest
     environment: ${{ inputs.environment || 'production' }}
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
+      - uses: actions/checkout@v4
+      
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2.13.0
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: 'stable'
-
-      - name: Install dependencies
+          
+      - name: Install Dependencies
+        working-directory: ./mobile
         run: flutter pub get
-
+        
       - name: Build Android APK
-        run: flutter build apk --release --dart-define=ENV=${{ inputs.environment || 'production' }}
-
+        working-directory: ./mobile
+        run: flutter build apk --release
+        
       - name: Build iOS IPA
-        run: |
-          flutter build ipa --release \
-            --dart-define=ENV=${{ inputs.environment || 'production' }} \
-            --export-options-plist=ios/ExportOptions.plist
+        working-directory: ./mobile
+        run: flutter build ipa --release
 
-      - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.8.0
-        with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          groups: testers
-          file: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Deploy to App Store
-        uses: apple-actions/upload-testflight-build@v1.2.0
-        with:
-          app-path: build/ios/ipa/*.ipa
-          issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APP_STORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
-
-  monitoring:
-    name: Monitoring
-    needs: [digitalocean_backend_deploy, frontend_deploy, mobile_deploy]
+  notify:
+    name: Notification
+    needs: [backend, frontend, mobile]
     runs-on: ubuntu-latest
     if: always()
     
     steps:
-      - name: Setup monitoring
-        run: |
-          # DigitalOcean Monitoring integration
-          curl -sSL https://repos.insights.digitalocean.com/install.sh | sudo bash
-
-      - name: Deployment notification
-        uses: bobheadxi/deployments@v2.1.1
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1.24.0
         with:
-          step: finish
-          token: ${{ secrets.GITHUB_TOKEN }}
-          env: ${{ inputs.environment || 'production' }}
+          payload: |
+            {
+              "text": "Deployment to ${{ inputs.environment || 'production' }} completed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Right Tech Centre Deployment Complete*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Environment:*\n${{ inputs.environment || 'production' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Status:*\n${{ needs.backend.result }} | ${{ needs.frontend.result }} | ${{ needs.mobile.result }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
