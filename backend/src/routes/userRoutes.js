@@ -1,8 +1,27 @@
 const express = require('express');
-   const userController = require('../controllers/userController');
-   const router = express.Router();
+const router = express.Router();
+const userController = require('../controllers/userController');
+const { 
+  validateUserRegistration, 
+  validateUserLogin,
+  validateRequest 
+} = require('../middleware/validationMiddleware');
+const rateLimit = require('../middleware/rateLimitMiddleware');
 
-   router.post('/register', userController.register);
-   router.post('/login', userController.login);
+router.post(
+  '/register',
+  validateUserRegistration,
+  validateRequest,
+  rateLimit('10req/hour'),
+  userController.register
+);
 
-   module.exports = router;
+router.post(
+  '/login',
+  validateUserLogin,
+  validateRequest,
+  rateLimit('20req/hour'),
+  userController.login
+);
+
+module.exports = router;
