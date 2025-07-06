@@ -1,10 +1,38 @@
 const corporateTrainingService = require('../services/corporateTrainingService');
+const logger = require('../utils/logger');
+const { validateTrainingRequest } = require('../validators/trainingValidator');
 
 exports.createTraining = async (req, res) => {
     try {
-        const training = await corporateTrainingService.createTraining(req.body);
-        res.status(201).json(training);
+        const trainingData = req.body;
+        
+        // Validate input
+        const validation = validateTrainingRequest(trainingData);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.message });
+        }
+
+        logger.info('Creating corporate training', { company: trainingData.companyName });
+        const training = await corporateTrainingService.createTraining(trainingData);
+
+        logger.info(`Corporate training created: ${training._id}`);
+        res.status(201).json({
+            trainingId: training._id,
+            company: training.companyName,
+            startDate: training.startDate,
+            status: training.status,
+            contactEmail: training.contactEmail
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error(`Error creating corporate training: ${error.message}`, { stack: error.stack });
+        
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
+        
+        res.status(500).json({ 
+            error: 'Failed to create corporate training',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
