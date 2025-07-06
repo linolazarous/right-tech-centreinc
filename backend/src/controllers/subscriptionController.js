@@ -1,23 +1,80 @@
 const { createSubscription, getSubscriptions } = require("../services/subscriptionService");
+const logger = require('../utils/logger');
+const { isValidObjectId } = require('../utils/helpers');
+const { validateSubscription } = require('../validators/subscriptionValidator');
 
 const subscribe = async (req, res) => {
-  const { userId, plan, duration } = req.body;
-  try {
-    const subscription = await createSubscription({ userId, plan, duration });
-    res.status(201).json(subscription);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    const { userId, plan, duration } = req.body;
+    
+    try {
+        // Validate inputs
+        if (!isValidObjectId(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
+        const validation = validateSubscription({ plan, duration });
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.message });
+        }
+
+        logger.info(`Creating subscription for user: ${userId}, plan: ${plan}`);
+        const subscription = await createSubscription({ 
+            userId, 
+            plan, 
+            duration: parseInt(duration)
+        });
+
+        res.status(201).json({
+            subscriptionId: subscription._id,
+            userId: subscription.userId,
+            plan: subscription.plan,
+            status: subscription.status,
+            startDate: subscription.startDate,
+            endDate: subscription.endDate
+        });
+    } catch (err) {
+        logger.error(`Subscription error: ${err.message}`, { stack: err.stack });
+        
+        if (err.message.includes('already has an active subscription')) {
+            return res.status(409).json({ error: err.message });
+        }
+        
+        res.status(500).json({ 
+            error: 'Failed to create subscription',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
 };
 
 const getUserSubscriptions = async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const subscriptions = await getSubscriptions(userId);
-    res.status(200).json(subscriptions);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    const { userId } = req.params;
+    
+    try {
+        // Validate inputs
+        if (!isValidObjectId(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
+        logger.info(`Fetching subscriptions for user: ${userId}`);
+        const subscriptions = await getSubscriptions(userId);
+
+        res.status(200).json({
+            userId,
+            activeSubscriptions: subscriptions.filter(s => s.status === 'active'),
+            expiredSubscriptions: subscriptions.filter(s => s.status === 'expired'),
+            cancelledSubscriptions: subscriptions.filter(s => s.status === 'cancelled'),
+            total: subscriptions.length
+        });
+    } catch (err) {
+        logger.error(`Subscriptions fetch error: ${err.message}`, { stack: err.stack });
+        res.status(500).json({ 
+            error: 'Failed to fetch subscriptions',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
 };
 
-module.exports = { subscribe, getUserSubscriptions };
+module.exports = { 
+    subscribe, 
+    getUserSubscriptions 
+};
