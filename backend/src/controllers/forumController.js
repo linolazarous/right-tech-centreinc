@@ -1,41 +1,43 @@
-const gamificationService = require('../services/gamificationService');
+const ForumPost = require('../models/ForumPost');
 const logger = require('../utils/logger');
 const { isValidObjectId } = require('../utils/helpers');
+const { validateForumPost } = require('../validators/forumValidator');
 
-exports.awardBadge = async (req, res) => {
+exports.createPost = async (req, res) => {
     try {
-        const { userId, badgeId, reason } = req.body;
+        const postData = req.body;
         
-        // Validate inputs
-        if (!isValidObjectId(userId) || !isValidObjectId(badgeId)) {
-            return res.status(400).json({ error: 'Invalid user ID or badge ID format' });
+        // Validate input
+        const validation = validateForumPost(postData);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.message });
         }
 
-        if (!reason || typeof reason !== 'string' || reason.length < 5) {
-            return res.status(400).json({ error: 'Reason must be at least 5 characters' });
+        if (!isValidObjectId(postData.author))) {
+            return res.status(400).json({ error: 'Invalid author ID format' });
         }
 
-        logger.info(`Awarding badge ${badgeId} to user ${userId}`);
-        const result = await gamificationService.awardBadge(userId, badgeId, reason);
+        logger.info('Creating forum post', { author: postData.author });
+        const post = new ForumPost(postData);
+        await post.save();
 
-        if (!result.success) {
-            logger.warn(`Badge award failed: ${result.message}`);
-            return res.status(400).json(result);
-        }
-
-        logger.info(`Badge ${badgeId} successfully awarded to user ${userId}`);
-        res.status(200).json({
-            success: true,
-            userId,
-            badgeId,
-            badgeName: result.badgeName,
-            awardedAt: new Date().toISOString(),
-            pointsEarned: result.pointsEarned
+        logger.info(`Forum post created: ${post._id}`);
+        res.status(201).json({
+            postId: post._id,
+            title: post.title,
+            author: post.author,
+            tags: post.tags,
+            createdAt: post.createdAt
         });
     } catch (error) {
-        logger.error(`Error awarding badge: ${error.message}`, { stack: error.stack });
+        logger.error(`Error creating forum post: ${error.message}`, { stack: error.stack });
+        
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ error: error.message });
+        }
+        
         res.status(500).json({ 
-            error: 'Failed to award badge',
+            error: 'Failed to create forum post',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
