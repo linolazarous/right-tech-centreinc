@@ -1,21 +1,69 @@
 const analyticsService = require('../services/analyticsService');
+const logger = require('../utils/logger');
+const { isValidObjectId } = require('../utils/helpers');
 
+/**
+ * Get student progress analytics
+ */
 exports.getStudentProgress = async (req, res) => {
     try {
         const { userId } = req.params;
+
+        // Validate user ID
+        if (!isValidObjectId(userId)) {
+            logger.warn(`Invalid user ID format: ${userId}`);
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
         const progress = await analyticsService.getStudentProgress(userId);
+        
+        if (!progress) {
+            logger.info(`No progress data found for user: ${userId}`);
+            return res.status(404).json({ message: 'No progress data available' });
+        }
+
+        logger.info(`Successfully retrieved progress for user: ${userId}`);
         res.status(200).json(progress);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error(`Error getting student progress: ${error.message}`, { stack: error.stack });
+        res.status(500).json({ 
+            error: 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
+/**
+ * Get student engagement metrics
+ */
 exports.getEngagementMetrics = async (req, res) => {
     try {
         const { userId } = req.params;
-        const metrics = await analyticsService.getEngagementMetrics(userId);
-        res.status(200).json(metrics);
+        const { timeframe = '30d' } = req.query;
+
+        // Validate inputs
+        if (!isValidObjectId(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
+        const validTimeframes = ['7d', '30d', '90d', 'all'];
+        if (!validTimeframes.includes(timeframe)) {
+            return res.status(400).json({ error: 'Invalid timeframe parameter' });
+        }
+
+        const metrics = await analyticsService.getEngagementMetrics(userId, timeframe);
+        
+        logger.info(`Successfully retrieved engagement metrics for user: ${userId}`);
+        res.status(200).json({
+            userId,
+            timeframe,
+            metrics
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error(`Error getting engagement metrics: ${error.message}`, { stack: error.stack });
+        res.status(500).json({ 
+            error: 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
