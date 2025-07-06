@@ -1,13 +1,43 @@
 const { createVREvent } = require("../services/vrCareerFairService");
+const logger = require('../utils/logger');
+const { validateVREvent } = require('../validators/vrValidator');
 
 const createEvent = async (req, res) => {
-  const { eventName, eventDetails } = req.body;
-  try {
-    const event = await createVREvent(eventName, eventDetails);
-    res.status(201).json(event);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    const { eventName, eventDetails } = req.body;
+    
+    try {
+        // Validate inputs
+        const validation = validateVREvent({ eventName, ...eventDetails });
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.message });
+        }
+
+        logger.info(`Creating VR career event: ${eventName}`);
+        const event = await createVREvent(eventName, eventDetails);
+
+        res.status(201).json({
+            eventId: event._id,
+            eventName: event.name,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            vrWorldId: event.vrWorldId,
+            accessUrl: event.accessUrl,
+            createdAt: event.createdAt
+        });
+    } catch (err) {
+        logger.error(`VR event creation error: ${err.message}`, { stack: err.stack });
+        
+        if (err.code === 11000) {
+            return res.status(409).json({ error: 'Event with this name already exists' });
+        }
+        
+        res.status(500).json({ 
+            error: 'Failed to create VR event',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
 };
 
-module.exports = { createEvent };
+module.exports = { 
+    createEvent 
+};
