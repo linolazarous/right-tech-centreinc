@@ -1,21 +1,60 @@
 const User = require('../models/User');
 const Course = require('../models/Course');
+const logger = require('../utils/logger');
 
+/**
+ * Get student progress analytics
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} Course progress data
+ */
 exports.getStudentProgress = async (userId) => {
-    const user = await User.findById(userId).populate('enrolledCourses');
-    const progress = user.enrolledCourses.map((course) => ({
-        courseId: course._id,
-        courseTitle: course.title,
-        progress: Math.floor(Math.random() * 100), // Mock progress
+  try {
+    logger.info(`Fetching progress for user ${userId}`);
+    const user = await User.findById(userId)
+      .populate({
+        path: 'enrolledCourses.course',
+        select: 'title description'
+      });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user.enrolledCourses.map((enrollment) => ({
+      courseId: enrollment.course._id,
+      courseTitle: enrollment.course.title,
+      progress: enrollment.progress || 0,
+      lastAccessed: enrollment.lastAccessed
     }));
-    return progress;
+  } catch (error) {
+    logger.error(`Error getting progress for user ${userId}: ${error.message}`);
+    throw error;
+  }
 };
 
+/**
+ * Get student engagement metrics
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} Engagement metrics
+ */
 exports.getEngagementMetrics = async (userId) => {
+  try {
+    logger.info(`Fetching engagement metrics for user ${userId}`);
     const user = await User.findById(userId);
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Calculate actual metrics from user activity
     return {
-        timeSpent: Math.floor(Math.random() * 100), // Mock time spent
-        quizzesTaken: Math.floor(Math.random() * 10), // Mock quizzes taken
-        coursesCompleted: Math.floor(Math.random() * 5), // Mock courses completed
+      timeSpent: user.totalLearningTime || 0,
+      quizzesTaken: user.quizzesCompleted?.length || 0,
+      coursesCompleted: user.completedCourses?.length || 0,
+      lastActive: user.lastActive
     };
+  } catch (error) {
+    logger.error(`Error getting engagement for user ${userId}: ${error.message}`);
+    throw error;
+  }
 };
