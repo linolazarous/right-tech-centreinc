@@ -1,23 +1,32 @@
-const express = require("express");
-const { postToSocialMedia } = require("./path/to/your/module"); // Adjust the path to your module
+const express = require('express');
 const router = express.Router();
+const socialMediaController = require('../controllers/socialMediaController');
+const authMiddleware = require('../middleware/authMiddleware');
+const { validateSocialMediaPost } = require('../middleware/validationMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
+const rateLimit = require('../middleware/rateLimitMiddleware');
 
-// Route to post content to a social media platform
-router.post("/post/:platform", async (req, res) => {
-  const { platform } = req.params; // Get the platform from the URL parameter
-  const { content } = req.body; // Get the content from the request body
+router.post(
+  '/post/:platform',
+  authMiddleware,
+  roleMiddleware(['admin', 'marketing']),
+  validateSocialMediaPost,
+  rateLimit('10req/hour'),
+  socialMediaController.createPost
+);
 
-  if (!content) {
-    return res.status(400).json({ error: "Content is required" });
-  }
+router.get(
+  '/posts',
+  authMiddleware,
+  rateLimit('50req/hour'),
+  socialMediaController.getUserPosts
+);
 
-  try {
-    const result = await postToSocialMedia(platform, content);
-    res.status(200).json({ success: true, data: result });
-  } catch (error) {
-    console.error("Error posting to social media:", error.message);
-    res.status(500).json({ error: "Failed to post to social media" });
-  }
-});
+router.delete(
+  '/posts/:postId',
+  authMiddleware,
+  rateLimit('20req/hour'),
+  socialMediaController.deletePost
+);
 
 module.exports = router;
