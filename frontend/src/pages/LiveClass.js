@@ -1,19 +1,54 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import PageLayout from '../layouts/PageLayout';
+import LiveClassList from '../components/learning/LiveClassList';
+import { useLiveClasses } from '../hooks/useLiveClasses';
+import { logger } from '../utils/logger';
+import { usePageTracking } from '../hooks/usePageTracking';
+import ErrorBoundary from '../components/ErrorBoundary';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorAlert from '../components/ui/ErrorAlert';
 
-const LiveClass = () => {
-    return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">Live Classes</h1>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-gray-600">Join live classes and interact with instructors in real-time.</p>
-                <div className="mt-4">
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        Join Now
-                    </button>
-                </div>
-            </div>
+const LiveClassPage = () => {
+  const { classes, loading, error, refetch } = useLiveClasses();
+  usePageTracking();
+
+  useEffect(() => {
+    if (!loading && classes) {
+      logger.info('Live classes loaded', {
+        classCount: classes.length
+      });
+    }
+  }, [classes, loading]);
+
+  return (
+    <PageLayout 
+      title="Live Classes"
+      seoTitle="Upcoming Live Classes | Right Tech Centre"
+      seoDescription="Join interactive live classes with expert instructors"
+    >
+      <ErrorBoundary>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <ErrorAlert 
+              message="Failed to load live classes"
+              error={error}
+              onRetry={refetch}
+            />
+          ) : (
+            <LiveClassList 
+              classes={classes}
+              loading={loading}
+              error={error}
+              onRefresh={refetch}
+              className="bg-white rounded-lg shadow"
+            />
+          )}
         </div>
-    );
+      </ErrorBoundary>
+    </PageLayout>
+  );
 };
 
-export default LiveClass;
+export default React.memo(LiveClassPage);
