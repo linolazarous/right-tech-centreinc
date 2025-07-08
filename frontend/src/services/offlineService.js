@@ -1,8 +1,13 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const downloadCourse = async (courseId) => {
-    const response = await axios.get(`${API_BASE_URL}/offline/download/${courseId}`);
+  try {
+    const response = await api.get(`/offline/download/${courseId}`, {
+      responseType: 'blob' // Important for file downloads
+    });
     return response.data;
+  } catch (error) {
+    console.error('Failed to download course:', error);
+    throw new Error(error.response?.data?.message || 'Failed to download course');
+  }
 };
