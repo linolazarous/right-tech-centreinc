@@ -1,45 +1,70 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { createVRLesson } from '../services/vrService';
+import PageLayout from '../layouts/PageLayout';
+import VRLessonForm from '../components/VRLessonForm';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { logger } from '../utils/logger';
+import { usePageTracking } from '../hooks/usePageTracking';
+import ErrorBoundary from '../components/ErrorBoundary';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-const VRLearning = () => {
-  const [lessonName, setLessonName] = useState("");
-  const [vrContent, setVrContent] = useState("");
-  const [lesson, setLesson] = useState(null);
+const VRLearningPage = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  usePageTracking();
 
-  const createLesson = async () => {
+  useEffect(() => {
+    logger.info('VR lesson creation accessed', {
+      userId: currentUser?.id
+    });
+  }, [currentUser?.id]);
+
+  const handleSubmit = async (formData) => {
+    if (!currentUser?.id) return;
+    
+    setSubmitting(true);
     try {
-      const response = await axios.post("/api/vrlearning/create", {
-        lessonName,
-        vrContent,
+      const lesson = await createVRLesson({
+        ...formData,
+        creatorId: currentUser.id
       });
-      setLesson(response.data);
+      
+      toast.success('VR lesson created successfully!');
+      logger.info('VR lesson created', {
+        lessonId: lesson.id,
+        creatorId: currentUser.id
+      });
+      navigate('/vr-lessons');
     } catch (error) {
-      console.error("Error creating lesson:", error);
+      logger.error('VR lesson creation failed', error);
+      toast.error(error.response?.data?.message || 'Failed to create lesson');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div>
-      <Navbar />
-      <h1>Create VR Lesson</h1>
-      <input
-        type="text"
-        placeholder="Lesson Name"
-        value={lessonName}
-        onChange={(e) => setLessonName(e.target.value)}
-      />
-      <textarea
-        placeholder="VR Content"
-        value={vrContent}
-        onChange={(e) => setVrContent(e.target.value)}
-      />
-      <button onClick={createLesson}>Create Lesson</button>
-      {lesson && <pre>{JSON.stringify(lesson, null, 2)}</pre>}
-      <Footer />
-    </div>
+    <PageLayout 
+      title="Create VR Lesson" 
+      protectedRoute
+      seoTitle="Create VR Lesson | Right Tech Centre"
+      seoDescription="Design immersive virtual reality learning experiences"
+    >
+      <ErrorBoundary>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {submitting && <LoadingSpinner overlay />}
+          <VRLessonForm 
+            onSubmit={handleSubmit}
+            disabled={submitting}
+            className="bg-white rounded-lg shadow-lg p-6"
+          />
+        </div>
+      </ErrorBoundary>
+    </PageLayout>
   );
 };
 
-export default VRLearning;
+export default React.memo(VRLearningPage);
