@@ -1,21 +1,11 @@
 import api from './api';
 
-export const login = async (email, password) => {
+export const generateARVRContent = async (courseId) => {
   try {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post('/arvr/generate', { courseId });
     return response.data;
   } catch (error) {
-    console.error('Login failed:', error);
-    throw new Error(error.response?.data?.message || 'Login failed');
-  }
-};
-
-export const register = async (name, email, password) => {
-  try {
-    const response = await api.post('/auth/register', { name, email, password });
-    return response.data;
-  } catch (error) {
-    console.error('Registration failed:', error);
-    throw new Error(error.response?.data?.message || 'Registration failed');
+    console.error('Failed to generate AR/VR content:', error);
+    throw new Error(error.response?.data?.message || 'Failed to generate content');
   }
 };
