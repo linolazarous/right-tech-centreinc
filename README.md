@@ -1,39 +1,110 @@
-# right-tech-centre
-Source Code
-=======
-# Right Tech Centre
+# DigitalOcean Production Environment
 
-**Right Tech Centre** is an advanced eLearning platform designed to empower tomorrow's innovators. It includes a **backend**, **frontend**, and **mobile app** built with modern technologies.
+This repository contains the runbook and operational documentation for our production infrastructure hosted on DigitalOcean.
 
-## Technologies Used
+## Table of Contents
+- [Service Overview](#service-overview)
+- [Monitoring & Observability](#monitoring--observability)
+- [Scaling Procedures](#scaling-procedures)
+- [Security Practices](#security-practices)
+- [Incident Response](#incident-response)
+- [Maintenance Schedule](#maintenance-schedule)
 
-- **Backend**: Node.js, Express.js, AWS Lambda, PostgreSQL, AWS S3
-- **Frontend**: React.js, Tailwind CSS
-- **Mobile App**: Flutter
+## Service Overview
 
-## Features
+### Backend Services
+- DigitalOcean Droplets with auto-scaling
+- Managed Databases with read replicas
+- Load Balancers with TLS termination
+- OpenTelemetry for distributed tracing
 
-### Core Features
-- **AI-Powered Course Authoring**: Automatically generate course content using AI.
-- **Blockchain-Based Certification**: Issue verifiable credentials using Ethereum smart contracts.
-- **AR/VR Integration**: Provide immersive learning experiences for complex topics.
-- **Live Classes**: Schedule and stream live classes using Zoom API.
-- **Gamification**: Leaderboards, badges, and rewards system.
+### Frontend Services
+- DigitalOcean App Platform deployment
+- Global CDN configuration
+- Real User Monitoring (RUM)
+- Edge caching policies
 
-### Additional Features
-- **Advanced Analytics and Reporting**: Track student progress and engagement.
-- **Social Learning Features**: Study groups, peer reviews, and discussion forums.
-- **AI-Powered Career Coaching**: Personalized career advice based on skills and goals.
-- **Interactive Coding Challenges**: Practice coding skills in a hands-on environment.
-- **Virtual Reality (VR) Labs**: Perform experiments in a virtual environment.
-- **AI-Powered Resume Builder**: Generate professional resumes based on user skills and course history.
-- **Corporate Training (B2B Modules)**: Custom training programs for businesses.
-- **Internship & Job Portal**: Partner with companies to offer internships and job placements.
-- **Scholarship Management**: Allow donors to sponsor students and automate scholarship allocation.
-- **Community Forum**: AI-powered discussion moderation and peer interaction.
+### Mobile App Services
+- WebSockets for push notifications
+- Redis for connection persistence
+- Mobile performance monitoring
+- Secure API communication
 
-## Setup
+## Monitoring & Observability
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/right-tech-centreinc.git
+### Key Metrics
+- **Infrastructure**: CPU, memory, disk via DO Monitoring
+- **Application**: Prometheus metrics & Grafana dashboards
+- **User Experience**: RUM and Sentry error tracking
+
+### Logging
+- Centralized logging with DigitalOcean Spaces + Vector
+- Structured logging format enforced
+- Retention policy: 30 days hot, 1 year cold
+
+## Scaling Procedures
+
+### Vertical Scaling
+1. Monitor performance metrics
+2. Resize droplets via API during maintenance windows
+3. Validate scaling impact
+
+### Horizontal Scaling
+1. Configure auto-scaling rules in Load Balancer
+2. Set minimum/maximum instance counts
+3. Test scaling triggers
+
+### Database Scaling
+1. Add read replicas via Managed Database interface
+2. Configure connection pooling
+3. Update application configuration
+
+## Security Practices
+
+### Network Security
+- VPC with private networking
+- Cloud Firewall rules reviewed monthly
+- DDoS protection enabled
+
+### Application Security
+- Automated dependency updates
+- Quarterly penetration tests
+- CSP headers enforced
+
+### Credential Management
+- Secrets stored in DigitalOcean Secrets Manager
+- Quarterly credential rotation
+- Minimal privilege access policies
+
+## Incident Response
+
+### Severity Classification
+| Level     | Response Time | Communication |
+|-----------|---------------|---------------|
+| Critical  | Immediate     | All channels  |
+| Major     | 30 minutes    | Team alerts   |
+| Minor     | Next business day | Ticket system |
+
+### Common Runbooks
+- **Database Failover**: Automated promotion of read replicas
+- **DDoS Mitigation**: Cloud Firewall rate limiting
+- **Deployment Rollback**: Versioned App Platform deployments
+
+## Maintenance Schedule
+
+Regular maintenance tasks are performed according to the following schedule:
+
+| Task                      | Frequency  | Owner         |
+|---------------------------|------------|---------------|
+| OS Updates                | Monthly    | Infrastructure|
+| Dependency Updates        | Weekly     | Development   |
+| Backup Tests              | Quarterly  | DevOps        |
+| Security Audits           | Bi-annual  | Security      |
+
+For urgent issues, contact the on-call engineer via PagerDuty.
+
+---
+
+**Last Updated**: {current_date}  
+**Maintainer**: Infrastructure Team  
+**DigitalOcean Resources**: [API Docs](https://docs.digitalocean.com/) | [Status Page](https://status.digitalocean.com/)
