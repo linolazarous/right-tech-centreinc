@@ -1,8 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const generateARVRContent = async (courseId) => {
-    const response = await axios.post(`${API_BASE_URL}/arvr/generate`, { courseId });
+  try {
+    const response = await api.post('/arvr/generate', { courseId });
     return response.data;
+  } catch (error) {
+    console.error('Failed to generate AR/VR content:', error);
+    throw new Error(error.response?.data?.message || 'Failed to generate content');
+  }
 };
