@@ -98,7 +98,7 @@ This repository contains the production runbook and operational documentation fo
 **Right Tech Centre**  
 *Empowering the next generation of technology leaders*  
 
-**Last Updated**: {current_date}  
+**Last Updated**: July 9 2025  
 **Infrastructure Team**: infra@righttechcentre.com  
 **Academic Support**: support@righttechcentre.com  
 
