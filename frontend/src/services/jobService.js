@@ -1,8 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const getJobRecommendations = async (userId) => {
-    const response = await axios.get(`${API_BASE_URL}/jobs/recommendations/${userId}`);
+  try {
+    const response = await api.get(`/jobs/recommendations/${userId}`);
     return response.data;
+  } catch (error) {
+    console.error('Failed to get job recommendations:', error);
+    throw new Error(error.response?.data?.message || 'Failed to load recommendations');
+  }
 };
