@@ -1,8 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const sendNotification = async (userId, message) => {
-    const response = await axios.post(`${API_BASE_URL}/notifications/send`, { userId, message });
+  try {
+    const response = await api.post('/notifications/send', { userId, message });
     return response.data;
+  } catch (error) {
+    console.error('Failed to send push notification:', error);
+    throw new Error(error.response?.data?.message || 'Failed to send notification');
+  }
 };
