@@ -1,8 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const createTraining = async (trainingData) => {
-    const response = await axios.post(`${API_BASE_URL}/corporate/training`, trainingData);
+  try {
+    const response = await api.post('/corporate/training', trainingData);
     return response.data;
+  } catch (error) {
+    console.error('Failed to create training:', error);
+    throw new Error(error.response?.data?.message || 'Failed to create training');
+  }
 };
