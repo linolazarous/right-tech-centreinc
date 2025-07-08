@@ -1,110 +1,105 @@
-# DigitalOcean Production Environment
+<p align="center">
+  <img src="../public/images/logo.png" alt="Right Tech Centre Logo" width="200">
+</p>
 
-This repository contains the runbook and operational documentation for our production infrastructure hosted on DigitalOcean.
-
-## Table of Contents
-- [Service Overview](#service-overview)
-- [Monitoring & Observability](#monitoring--observability)
-- [Scaling Procedures](#scaling-procedures)
-- [Security Practices](#security-practices)
-- [Incident Response](#incident-response)
-- [Maintenance Schedule](#maintenance-schedule)
-
-## Service Overview
-
-### Backend Services
-- DigitalOcean Droplets with auto-scaling
-- Managed Databases with read replicas
-- Load Balancers with TLS termination
-- OpenTelemetry for distributed tracing
-
-### Frontend Services
-- DigitalOcean App Platform deployment
-- Global CDN configuration
-- Real User Monitoring (RUM)
-- Edge caching policies
-
-### Mobile App Services
-- WebSockets for push notifications
-- Redis for connection persistence
-- Mobile performance monitoring
-- Secure API communication
-
-## Monitoring & Observability
-
-### Key Metrics
-- **Infrastructure**: CPU, memory, disk via DO Monitoring
-- **Application**: Prometheus metrics & Grafana dashboards
-- **User Experience**: RUM and Sentry error tracking
-
-### Logging
-- Centralized logging with DigitalOcean Spaces + Vector
-- Structured logging format enforced
-- Retention policy: 30 days hot, 1 year cold
-
-## Scaling Procedures
-
-### Vertical Scaling
-1. Monitor performance metrics
-2. Resize droplets via API during maintenance windows
-3. Validate scaling impact
-
-### Horizontal Scaling
-1. Configure auto-scaling rules in Load Balancer
-2. Set minimum/maximum instance counts
-3. Test scaling triggers
-
-### Database Scaling
-1. Add read replicas via Managed Database interface
-2. Configure connection pooling
-3. Update application configuration
-
-## Security Practices
-
-### Network Security
-- VPC with private networking
-- Cloud Firewall rules reviewed monthly
-- DDoS protection enabled
-
-### Application Security
-- Automated dependency updates
-- Quarterly penetration tests
-- CSP headers enforced
-
-### Credential Management
-- Secrets stored in DigitalOcean Secrets Manager
-- Quarterly credential rotation
-- Minimal privilege access policies
-
-## Incident Response
-
-### Severity Classification
-| Level     | Response Time | Communication |
-|-----------|---------------|---------------|
-| Critical  | Immediate     | All channels  |
-| Major     | 30 minutes    | Team alerts   |
-| Minor     | Next business day | Ticket system |
-
-### Common Runbooks
-- **Database Failover**: Automated promotion of read replicas
-- **DDoS Mitigation**: Cloud Firewall rate limiting
-- **Deployment Rollback**: Versioned App Platform deployments
-
-## Maintenance Schedule
-
-Regular maintenance tasks are performed according to the following schedule:
-
-| Task                      | Frequency  | Owner         |
-|---------------------------|------------|---------------|
-| OS Updates                | Monthly    | Infrastructure|
-| Dependency Updates        | Weekly     | Development   |
-| Backup Tests              | Quarterly  | DevOps        |
-| Security Audits           | Bi-annual  | Security      |
-
-For urgent issues, contact the on-call engineer via PagerDuty.
+<h1 align="center">Right Tech Centre - DigitalOcean Production Environment</h1>
+<h3 align="center">Tech Education Platform Infrastructure</h3>
 
 ---
 
+This repository contains the production runbook and operational documentation for Right Tech Centre's educational platform hosted on DigitalOcean.
+
+## Table of Contents
+- [Educational Platform Overview](#educational-platform-overview)
+- [Monitoring & Observability](#monitoring--observability)
+- [Scaling for Learning Demand](#scaling-for-learning-demand)
+- [Security for Student Data](#security-for-student-data)
+- [Incident Response](#incident-response)
+- [Maintenance Schedule](#maintenance-schedule)
+
+## Educational Platform Overview
+
+### Learning Management System
+- DigitalOcean Droplets for course delivery
+- Managed Databases for student progress tracking
+- Load Balancers for global student access
+- OpenTelemetry for educational content performance
+
+### Student Frontend
+- App Platform for web-based learning environment
+- CDN for global delivery of educational assets
+- Real User Monitoring for student experience
+
+### Mobile Learning
+- WebSockets for real-time classroom updates
+- Redis for live quiz functionality
+- Mobile performance monitoring
+
+## Monitoring & Observability
+
+### Key Educational Metrics
+- **Platform Health**: Course delivery performance
+- **Student Experience**: Page load times and error rates
+- **Engagement**: Concurrent classroom connections
+
+### Educational Data Protection
+- Centralized logging with access controls
+- FERPA-compliant retention policies
+- Anonymized analytics where applicable
+
+## Scaling for Learning Demand
+
+### Semester Preparation
+1. Pre-scale before new semester launches
+2. Load test with simulated classroom traffic
+3. Configure auto-scaling for lecture periods
+
+### Special Event Scaling
+- Live workshop capacity planning
+- Recording server scaling for video processing
+- Database optimization for assessment periods
+
+## Security for Student Data
+
+### Education-Focused Security
+- VPC isolation for student records
+- Regular EdTech security audits
+- Student data encryption at rest and in transit
+
+### Compliance
+- Regular FERPA compliance checks
+- Secure exam proctoring infrastructure
+- Role-based access for educators
+
+## Incident Response
+
+### Classroom Priority
+| Severity | Example Scenario | Response Target |
+|----------|------------------|-----------------|
+| Critical | Live class outage | Immediate |
+| High | Assignment submission failures | 30 minutes |
+| Medium | Discussion board delays | 4 hours |
+
+### Education-Specific Runbooks
+- **Exam Period Scaling**: Additional capacity provisioning
+- **Lecture Recording Backup**: Failover procedures
+- **Gradebook Integrity**: Data recovery processes
+
+## Maintenance Schedule
+
+| Task                      | Frequency  | Academic Consideration |
+|---------------------------|------------|------------------------|
+| Platform Updates          | Semester breaks | Avoid exam periods |
+| Data Backups              | Daily encrypted backups | 7-year retention |
+| Security Training         | Pre-semester | Faculty onboarding |
+
+---
+
+**Right Tech Centre**  
+*Empowering the next generation of technology leaders*  
+
 **Last Updated**: {current_date}  
-**Maintainer**: Infrastructure Team  
-**DigitalOcean Resources**: [API Docs](https://docs.digitalocean.com/) | [Status Page](https://status.digitalocean.com/)
+**Infrastructure Team**: infra@righttechcentre.com  
+**Academic Support**: support@righttechcentre.com  
+
+[DigitalOcean Resources](https://docs.digitalocean.com/) | [Academic Calendar](https://righttechcentre.com/calendar)
