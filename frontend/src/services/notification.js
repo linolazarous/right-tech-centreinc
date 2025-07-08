@@ -1,8 +1,11 @@
+import api from './api';
+
 export const sendNotification = async (userId, message) => {
-    const response = await fetch('/api/notifications/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, message }),
-    });
-    return response.json();
+  try {
+    const response = await api.post('/notifications/send', { userId, message });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to send notification:', error);
+    throw new Error(error.response?.data?.message || 'Failed to send notification');
+  }
 };
