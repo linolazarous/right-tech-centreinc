@@ -1,8 +1,11 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const allocateScholarship = async (studentId, criteria) => {
-    const response = await axios.post(`${API_BASE_URL}/scholarships/allocate`, { studentId, criteria });
+  try {
+    const response = await api.post('/scholarships/allocate', { studentId, criteria });
     return response.data;
+  } catch (error) {
+    console.error('Failed to allocate scholarship:', error);
+    throw new Error(error.response?.data?.message || 'Failed to allocate scholarship');
+  }
 };
