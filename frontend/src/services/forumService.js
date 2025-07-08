@@ -1,13 +1,21 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import api from './api';
 
 export const createPost = async (postData) => {
-    const response = await axios.post(`${API_BASE_URL}/forum/posts`, postData);
+  try {
+    const response = await api.post('/forum/posts', postData);
     return response.data;
+  } catch (error) {
+    console.error('Failed to create post:', error);
+    throw new Error(error.response?.data?.message || 'Failed to create post');
+  }
 };
 
 export const getPosts = async () => {
-    const response = await axios.get(`${API_BASE_URL}/forum/posts`);
+  try {
+    const response = await api.get('/forum/posts');
     return response.data;
+  } catch (error) {
+    console.error('Failed to fetch posts:', error);
+    throw new Error(error.response?.data?.message || 'Failed to load posts');
+  }
 };
