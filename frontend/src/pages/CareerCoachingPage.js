@@ -1,13 +1,45 @@
-import React from 'react';
-  import CareerCoaching from '../components/CareerCoaching';
+import React, { useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import CareerCoaching from '../components/career/CareerCoaching';
+import PageLayout from '../layouts/PageLayout';
+import { logger } from '../utils/logger';
+import { usePageTracking } from '../hooks/usePageTracking';
+import ErrorBoundary from '../components/ErrorBoundary';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-  const CareerCoachingPage = () => {
-      const userId = localStorage.getItem('userId'); // Replace with actual user ID
-      return (
-          <div>
-              <CareerCoaching userId={userId} />
-          </div>
-      );
-  };
+const CareerCoachingPage = () => {
+  const { currentUser, loading: authLoading } = useAuth();
+  usePageTracking();
 
-  export default CareerCoachingPage;
+  useEffect(() => {
+    if (currentUser) {
+      logger.info('User accessed career coaching', {
+        userId: currentUser.id,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [currentUser]);
+
+  if (authLoading) {
+    return (
+      <PageLayout>
+        <LoadingSpinner fullScreen />
+      </PageLayout>
+    );
+  }
+
+  return (
+    <PageLayout 
+      title="Career Coaching" 
+      protectedRoute
+      seoTitle="Career Coaching | Right Tech Centre"
+      seoDescription="Get personalized career guidance and coaching from industry experts"
+    >
+      <ErrorBoundary>
+        <CareerCoaching userId={currentUser?.id} />
+      </ErrorBoundary>
+    </PageLayout>
+  );
+};
+
+export default React.memo(CareerCoachingPage);
