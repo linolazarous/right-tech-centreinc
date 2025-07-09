@@ -7,11 +7,19 @@
 }
 
 /* Critical CSS */
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
-.header-gradient{background:linear-gradient(to right,#4f46e5,#7c3aed)}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border-width: 0;
+}
 
-/* 1. Base Styles
-/* =================================== */
+/* Base Styles */
 body {
     font-family: 'Inter', sans-serif;
     scroll-behavior: smooth;
@@ -22,8 +30,7 @@ body {
     font-family: 'Space Grotesk', sans-serif;
 }
 
-/* 2. Header & Navigation
-/* =================================== */
+/* Header & Navigation */
 .header-gradient {
     background: linear-gradient(135deg, rgba(17,24,39,0.98) 0%, rgba(31,41,55,0.98) 100%);
     backdrop-filter: blur(10px);
@@ -53,8 +60,7 @@ body {
     width: 100%;
 }
 
-/* 3. Animations & Transitions
-/* =================================== */
+/* Animations & Transitions */
 .tab-content {
     display: none;
 }
@@ -64,32 +70,12 @@ body {
     animation: fadeIn 0.5s ease-in;
 }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - 3rem)); } /* Adjust based on total width and gap */
-}
-
-.animate-scroll {
-    animation: scroll 30s linear infinite;
-    display: flex;
-    width: max-content;
-}
-
-/* 4. Accessibility & Utilities
-/* =================================== */
-
-/* Focus styles for accessibility */
+/* Accessibility & Utilities */
 a:focus-visible, 
 button:focus-visible,
 input:focus-visible,
@@ -100,20 +86,7 @@ textarea:focus-visible {
     border-radius: 0.25rem;
 }
 
-/* Screen-reader only class (already in HTML style tag, but belongs here) */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-/* Reduced motion media query */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -125,8 +98,7 @@ textarea:focus-visible {
     }
 }
 
-/* 5. Print Styles
-/* =================================== */
+/* Print Styles */
 @media print {
     header, footer, .no-print {
         display: none !important;
@@ -143,5 +115,22 @@ textarea:focus-visible {
         font-size: 0.8em;
         font-weight: normal;
         color: #333;
+    }
+}
+
+/* Modal transitions */
+#auth-modal {
+    transition: opacity 0.3s ease;
+}
+
+/* Form styling */
+#login-form input, #register-form input {
+    transition: border-color 0.3s ease;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+    #auth-modal .sm-align-middle {
+        align-items: flex-end;
     }
 }
