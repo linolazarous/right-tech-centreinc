@@ -4,6 +4,7 @@ static_sites:
   github:
     dir: frontend
     branch: main
+  runtime: nodejs  # <-- ADD THIS LINE
   build_command: npm install --include=dev && npm run build
   output_dir: public
   routes:
