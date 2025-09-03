@@ -3,7 +3,7 @@ static_sites:
 - name: web
   github:
     dir: frontend
-    branch: main
+    branch: master
   runtime: nodejs  # <-- ADD THIS LINE
   build_command: npm install --include=dev && npm run build
   output_dir: public
@@ -12,6 +12,6 @@ static_sites:
 - name: mobile-web
   github:
     dir: mobile
-    branch: main
+    branch: master
   build_command: flutter build web
   output_dir: build/web
