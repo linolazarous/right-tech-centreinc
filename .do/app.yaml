@@ -2,8 +2,8 @@ name: right-tech-backend
 services:
 - name: api
   github:
-    dir: backend
-    branch: main
+    dir: backend # Root of the backend project
+    branch: master
   build_command: cd src && npm install
   run_command: node src/server.js
   envs:
