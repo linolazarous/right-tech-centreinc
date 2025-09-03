@@ -4,9 +4,7 @@ static_sites:
   github:
     dir: frontend
     branch: master
-  runtime: nodejs
   build_command: npm install --include=dev && npm run build
-  run_command: npm run serve  # <-- CHANGE to use the serve script
-  output_dir: public
+  output_dir: build  # ← Change from 'public' to 'build'
   routes:
   - path: /
