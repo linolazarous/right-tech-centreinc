@@ -4,7 +4,8 @@ static_sites:
   github:
     dir: frontend
     branch: master
-  build_command: npm install --include=dev && npm run build
-  output_dir: build  # ← Change from 'public' to 'build'
+  source_dir: /  # Build from the frontend root
+  build_command: npm install && npm run build
+  output_dir: build  # react-scripts builds to 'build', not 'public'
   routes:
   - path: /
