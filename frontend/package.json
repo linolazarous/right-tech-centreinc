@@ -17,11 +17,27 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",           // <-- For development
-    "build": "react-scripts build",           // <-- You already have this
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "serve": "npx serve -s build -l 8080"     // <-- ADD THIS for production
+    "eject": "react-scripts eject"
   },
-  // ... rest of your package.json
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
