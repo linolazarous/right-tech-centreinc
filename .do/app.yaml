@@ -2,11 +2,11 @@ name: right-tech-backend
 services:
 - name: api
   github:
-    dir: backend # Root of the backend project
+    dir: backend
     branch: master
   build_command: cd src && npm install
   run_command: node src/index.js
   envs:
   - key: NODE_ENV
     value: production
-  instance_size_slug: professional-xs
+  instance_size_slug: basic-xxs
