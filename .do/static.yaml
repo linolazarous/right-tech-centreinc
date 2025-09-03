@@ -4,14 +4,9 @@ static_sites:
   github:
     dir: frontend
     branch: master
-  runtime: nodejs  # <-- ADD THIS LINE
+  runtime: nodejs
   build_command: npm install --include=dev && npm run build
+  run_command: npm run serve  # <-- CHANGE to use the serve script
   output_dir: public
   routes:
   - path: /
-- name: mobile-web
-  github:
-    dir: mobile
-    branch: master
-  build_command: flutter build web
-  output_dir: build/web
