@@ -5,8 +5,8 @@
   "main": "src/app.js",
   "type": "module",
   "engines": {
-    "node": "24.x",
-    "npm": ">=10.0.0"
+    "node": ">=18.0.0 <21.0.0",
+    "npm": ">=8.0.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node --enable-source-maps src/app.js",
