@@ -1,12 +1,76 @@
-name: right-tech-backend
+name: right-tech-centre
+region: nyc
+
 services:
-- name: api
-  github:
-    dir: backend
-    branch: master
-  build_command: cd src && npm install
-  run_command: node src/server.js
-  envs:
-  - key: NODE_ENV
-    value: production
-  instance_size_slug: basic-xxs
+  - name: backend
+    github:
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    envs:
+      # Core application settings
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: production
+      - key: ALLOWED_ORIGINS
+        scope: RUN_TIME
+        value: ${ALLOWED_ORIGINS}
+      - key: RATE_LIMIT_MAX
+        scope: RUN_TIME
+        value: "300"
+      
+      # Database configuration
+      - key: MONGO_URI
+        scope: RUN_TIME
+        value: ${MONGO_URI}
+      
+      # Scheduler configuration
+      - key: SCHEDULER_TIMEZONE
+        scope: RUN_TIME
+        value: "UTC"
+      - key: SCHEDULER_ENABLED
+        scope: RUN_TIME
+        value: "true"
+      
+      # Firebase configuration
+      - key: FIREBASE_PROJECT_ID
+        scope: RUN_TIME
+        value: ${FIREBASE_PROJECT_ID}
+      - key: FIREBASE_CLIENT_EMAIL
+        scope: RUN_TIME
+        value: ${FIREBASE_CLIENT_EMAIL}
+      - key: FIREBASE_PRIVATE_KEY
+        scope: RUN_TIME
+        value: ${FIREBASE_PRIVATE_KEY}
+      - key: FIREBASE_DATABASE_URL
+        scope: RUN_TIME
+        value: ${FIREBASE_DATABASE_URL}
+    
+    http_port: 8080
+    routes:
+      - path: /
+    instance_size: basic-xs
+    instance_count: 1
+    
+    health_check:
+      path: /health
+      initial_delay_seconds: 10
+      period_seconds: 15
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+    
+    logs:
+      max_size: 10MB
+      max_files: 5
+      retention_days: 7
+
+databases:
+  - name: main-mongodb
+    engine: MONGODB
+    version: "6.0"
+    size: db-s-1vcpu-1gb
+    num_nodes: 1
+    connection_pool:
+      min_connections: 3
+      max_connections: 15
