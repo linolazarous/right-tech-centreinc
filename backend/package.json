@@ -2,7 +2,7 @@
   "name": "right-tech-backend",
   "version": "1.0.0",
   "description": "Backend for Right Tech Centre - eLearning Platform",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "type": "module",
   "engines": {
     "node": "20.x",
@@ -99,3 +99,4 @@
     "trailingComma": "es5"
   }
 }
+
