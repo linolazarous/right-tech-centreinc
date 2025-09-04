@@ -5,7 +5,7 @@ services:
     dir: backend
     branch: master
   build_command: cd src && npm install
-  run_command: node src/index.js
+  run_command: node src/server.js
   envs:
   - key: NODE_ENV
     value: production
