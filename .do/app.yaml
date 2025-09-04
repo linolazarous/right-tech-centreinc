@@ -1,10 +1,10 @@
-name: right-tech-centre
+2name: right-tech-centre
 region: nyc
 
 services:
   - name: backend
     github:
-      branch: main
+      branch: master 
       deploy_on_push: true
     source_dir: /
     envs:
