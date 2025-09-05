@@ -1,6 +1,6 @@
-const rateLimit = require('express-rate-limit');
-const RedisStore = require('rate-limit-redis');
-const { createClient } = require('redis');
+import rateLimit from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
+import { createClient } from 'redis';
 
 let store;
 if (process.env.REDIS_URL) {
@@ -19,7 +19,7 @@ if (process.env.REDIS_URL) {
     });
 }
 
-const apiLimiter = rateLimit({
+export const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: process.env.RATE_LIMIT_MAX || 100,
     message: 'Too many requests, please try again later',
@@ -28,11 +28,11 @@ const apiLimiter = rateLimit({
     store
 });
 
-const authLimiter = rateLimit({
+export const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: process.env.AUTH_RATE_LIMIT_MAX || 10,
     message: 'Too many login attempts, please try again later',
     skip: req => req.ip === '::1' // Skip for localhost in development
 });
 
-module.exports = { apiLimiter, authLimiter };
+export default { apiLimiter, authLimiter };
