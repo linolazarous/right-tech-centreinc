@@ -54,11 +54,12 @@ mongoose.connect(process.env.MONGO_URI || db.mongoURI, mongoOptions)
   });
 
 // ==============================================
-// Start Server (CRITICAL for DigitalOcean)
+// Start Server (CRITICAL FIX FOR DIGITALOCEAN)
 // ==============================================
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Health check: http://0.0.0.0:${PORT}/health`);
 });
 
+// Export for testing
 export default app;
