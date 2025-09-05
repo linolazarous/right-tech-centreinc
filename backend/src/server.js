@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import db from './db.js';
+import routes from './routes/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -28,15 +29,15 @@ app.get('/health', (req, res) => {
 });
 
 // ==============================================
-// Basic Routes (Replace with your actual routes)
+// Basic Routes
 // ==============================================
 app.get('/', (req, res) => {
   res.json({ message: 'Backend API is working!' });
 });
 
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Test endpoint working' });
-});
+// Use your routes
+app.use('/api/auth', routes.authRoutes);
+app.use('/api/users', routes.userRoutes);
 
 // ==============================================
 // Database Connection
