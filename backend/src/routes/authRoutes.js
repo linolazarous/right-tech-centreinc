@@ -1,12 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const AuthController = require('../controllers/authController');
-const { 
+import express from 'express';
+import AuthController from '../controllers/authController.js';
+import { 
   validateUserRegistration, 
   validateLogin,
   validateRequest 
-} = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+} from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+
+const router = express.Router();
 
 // User login with rate limiting
 router.post(
@@ -30,4 +32,4 @@ router.post(
 router.post('/enable-2fa', authMiddleware, AuthController.enable2FA);
 router.post('/verify-2fa', authMiddleware, AuthController.verify2FA);
 
-module.exports = router;
+export default router;
