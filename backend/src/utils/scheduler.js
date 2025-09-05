@@ -1,7 +1,7 @@
-const { generateAndPostAd } = require("../controllers/adController");
-const cron = require("node-cron");
-const logger = require("./logger");
-const { isMainProcess } = require("./utils"); // Helper to check if in main process
+import { generateAndPostAd } from "../controllers/adController.js";
+import cron from "node-cron";
+import logger from "./logger.js";
+import { isMainProcess } from "./utils.js"; // Helper to check if in main process
 
 class AdScheduler {
   constructor() {
@@ -93,4 +93,4 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-module.exports = schedulerInstance;
+export default schedulerInstance;
