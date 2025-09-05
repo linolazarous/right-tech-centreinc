@@ -1,14 +1,14 @@
-const { body, query, param, validationResult } = require('express-validator');
-const createError = require('http-errors');
+import { body, query, param, validationResult } from 'express-validator';
+import createError from 'http-errors';
 
 // Common validation chains
-const emailValidator = body('email')
+export const emailValidator = body('email')
     .trim()
     .isEmail()
     .withMessage('Invalid email format')
     .normalizeEmail();
 
-const passwordValidator = body('password')
+export const passwordValidator = body('password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters')
     .matches(/[A-Z]/)
@@ -35,12 +35,12 @@ const validatePagination = [
     query('limit').optional().isInt({ min: 1, max: 100 }).toInt()
 ];
 
-const validateObjectId = param('id')
+export const validateObjectId = param('id')
     .isMongoId()
     .withMessage('Invalid ID format');
 
 // Validation middleware
-const validateRequest = (req, res, next) => {
+export const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const errorMessages = errors.array().map(err => ({
@@ -56,10 +56,14 @@ const validate = (schemas) => {
     return [...schemas, validateRequest];
 };
 
-module.exports = {
-    validateUserRegistration: validate(validateUserRegistration),
-    validateLogin: validate(validateLogin),
-    validatePagination: validate(validatePagination),
+export const validateUserRegistrationSchema = validate(validateUserRegistration);
+export const validateLoginSchema = validate(validateLogin);
+export const validatePaginationSchema = validate(validatePagination);
+
+export default {
+    validateUserRegistration: validateUserRegistrationSchema,
+    validateLogin: validateLoginSchema,
+    validatePagination: validatePaginationSchema,
     validateObjectId,
     validateRequest,
     emailValidator,
