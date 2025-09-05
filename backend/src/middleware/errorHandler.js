@@ -1,7 +1,8 @@
-const createError = require('http-errors');
+import createError from 'http-errors';
+
 const { NODE_ENV } = process.env;
 
-exports.errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res, next) => {
     // Handle Joi validation errors
     if (err.isJoi) {
         err.status = 422;
@@ -32,6 +33,8 @@ exports.errorHandler = (err, req, res, next) => {
     });
 };
 
-exports.notFoundHandler = (req, res, next) => {
+export const notFoundHandler = (req, res, next) => {
     next(createError.NotFound('Endpoint not found'));
 };
+
+export default { errorHandler, notFoundHandler };
