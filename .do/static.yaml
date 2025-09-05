@@ -1,11 +1,37 @@
 name: right-tech-frontend
+region: nyc
+
 static_sites:
-- name: web
-  github:
-    dir: frontend
-    branch: master
-  source_dir: /  # Build from the frontend root
-  build_command: npm install && npm run build
-  output_dir: build  # react-scripts builds to 'build', not 'public'
-  routes:
-  - path: /
+  - name: frontend
+    github:
+      branch: master
+      deploy_on_push: true
+      repo: linolazarous/right-tech-centreinc
+    source_dir: /frontend
+    build_command: npm install && npm run build
+    output_dir: build
+    routes:
+      - path: /
+    envs:
+      # React Environment Variables (Build Time)
+      - key: REACT_APP_API_BASE_URL
+        value: ${REACT_APP_API_BASE_URL}
+        scope: BUILD_TIME
+      - key: REACT_APP_AUTH0_CLIENT_ID
+        value: ${AUTH0_CLIENT_ID}
+        scope: BUILD_TIME
+      - key: REACT_APP_AUTH0_CLIENT_SECRET
+        value: ${AUTH0_CLIENT_SECRET}
+        scope: BUILD_TIME
+      - key: REACT_APP_STRIPE_PUBLISHABLE_KEY
+        value: ${STRIPE_PUBLISHABLE_KEY}
+        scope: BUILD_TIME
+      - key: REACT_APP_FIREBASE_APP_ID
+        value: ${FIREBASE_APP_ID}
+        scope: BUILD_TIME
+      - key: REACT_APP_ZOOM_API_KEY
+        value: ${ZOOM_API_KEY}
+        scope: BUILD_TIME
+      - key: REACT_APP_OPENAI_API_KEY
+        value: ${OPENAI_API_KEY}
+        scope: BUILD_TIME
