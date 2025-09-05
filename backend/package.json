@@ -1,6 +1,7 @@
 {
-  "name": "right-tech-backend",
+  "name": "backend",
   "version": "1.0.0",
+  "type": "module",  // ← ADD THIS LINE
   "description": "Backend API",
   "main": "src/server.js",
   "scripts": {
