@@ -1,12 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const { 
+import express from 'express';
+import userController from '../controllers/userController.js';
+import { 
   validateUserRegistration, 
   validateUserLogin,
   validateRequest 
-} = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+} from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
+
+const router = express.Router();
 
 router.post(
   '/register',
@@ -24,4 +25,4 @@ router.post(
   userController.login
 );
 
-module.exports = router;
+export default router;
