@@ -1,6 +1,6 @@
-const admin = require('firebase-admin');
-const logger = require('./logger');
-const User = require('./models/user'); // Assuming you have a User model
+import admin from 'firebase-admin';
+import logger from './logger.js';
+import User from './models/user.js'; // Assuming you have a User model
 
 // Initialize Firebase Admin with environment variables
 const initializeFirebase = () => {
@@ -10,7 +10,7 @@ const initializeFirebase = () => {
         credential: admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
         }),
         databaseURL: process.env.FIREBASE_DATABASE_URL
       });
@@ -22,7 +22,7 @@ const initializeFirebase = () => {
   }
 };
 
-// Initialize on require
+// Initialize on import
 initializeFirebase();
 
 // Notification service with enhanced features
@@ -194,4 +194,4 @@ const notificationService = {
   }
 };
 
-module.exports = notificationService;
+export default notificationService;
