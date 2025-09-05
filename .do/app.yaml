@@ -1,4 +1,4 @@
-2name: right-tech-centre
+name: right-tech-centre
 region: nyc
 
 services:
@@ -6,7 +6,9 @@ services:
     github:
       branch: master 
       deploy_on_push: true
-    source_dir: /
+      repo: linolazarous/right-tech-centreinc
+    source_dir: /backend
+    environment_slug: node-js
     envs:
       # Core application settings
       - key: NODE_ENV
@@ -45,25 +47,46 @@ services:
       - key: FIREBASE_DATABASE_URL
         scope: RUN_TIME
         value: ${FIREBASE_DATABASE_URL}
+      
+      # Other secrets
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        value: ${JWT_SECRET}
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        value: ${STRIPE_SECRET_KEY}
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        value: ${OPENAI_API_KEY}
+      - key: ZOOM_API_KEY
+        scope: RUN_TIME
+        value: ${ZOOM_API_KEY}
+      - key: ZOOM_API_SECRET
+        scope: RUN_TIME
+        value: ${ZOOM_API_SECRET}
+      - key: DATADOG_API_KEY
+        scope: RUN_TIME
+        value: ${DATADOG_API_KEY}
+      - key: FIREBASE_SERVICE_ACCOUNT
+        scope: RUN_TIME
+        value: ${FIREBASE_SERVICE_ACCOUNT}
+      - key: SONAR_TOKEN
+        scope: RUN_TIME
+        value: ${SONAR_TOKEN}
     
     http_port: 8080
     routes:
-      - path: /
-    instance_size: basic-xs
+      - path: /api
+    instance_size_slug: basic-xs
     instance_count: 1
     
     health_check:
-      path: /health
+      http_path: /health
       initial_delay_seconds: 10
       period_seconds: 15
       timeout_seconds: 5
       success_threshold: 1
       failure_threshold: 3
-    
-    logs:
-      max_size: 10MB
-      max_files: 5
-      retention_days: 7
 
 databases:
   - name: main-mongodb
@@ -71,6 +94,3 @@ databases:
     version: "6.0"
     size: db-s-1vcpu-1gb
     num_nodes: 1
-    connection_pool:
-      min_connections: 3
-      max_connections: 15
