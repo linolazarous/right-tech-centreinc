@@ -90,4 +90,4 @@ export const verify2FA = async (req, res) => {
 export default { 
     enable2FA, 
     verify2FA 
-};l
+};
