@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
-const createError = require('http-errors');
+import jwt from 'jsonwebtoken';
+import createError from 'http-errors';
 
-exports.authenticate = (req, res, next) => {
+export const authenticate = (req, res, next) => {
     const authHeader = req.header('Authorization');
     if (!authHeader) return next(createError.Unauthorized('Authorization header missing'));
 
@@ -32,7 +32,7 @@ exports.authenticate = (req, res, next) => {
     }
 };
 
-exports.authorize = (roles = []) => {
+export const authorize = (roles = []) => {
     return (req, res, next) => {
         if (!req.user) return next(createError.Unauthorized('User not authenticated'));
         if (roles.length && !roles.includes(req.user.role)) {
@@ -41,3 +41,5 @@ exports.authorize = (roles = []) => {
         next();
     };
 };
+
+export default { authenticate, authorize };
