@@ -1,4 +1,4 @@
-const winston = require('winston');
+import winston from 'winston';
 const { format } = winston;
 const { combine, timestamp, printf, errors, json, colorize } = format;
 
@@ -98,4 +98,4 @@ process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-module.exports = logger;
+export default logger;
