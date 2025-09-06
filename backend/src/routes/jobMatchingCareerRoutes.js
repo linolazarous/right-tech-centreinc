@@ -1,18 +1,18 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { 
+import { 
   getJobMatches, 
   createResume, 
   getInterviewQuestions, 
   conductMockInterview 
-} = require('../controllers/careerController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { 
+} from '../controllers/careerController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { 
   validateJobMatchRequest,
   validateResumeRequest,
   validateInterviewRequest
-} = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+} from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/job-matches',
@@ -46,4 +46,4 @@ router.post(
   conductMockInterview
 );
 
-module.exports = router;
+export default router;
