@@ -1,8 +1,8 @@
-const corporateTrainingService = require('../services/corporateTrainingService');
-const logger = require('../utils/logger');
-const { validateTrainingRequest } = require('../validators/trainingValidator');
+import corporateTrainingService from '../services/corporateTrainingService.js';
+import logger from '../utils/logger.js';
+import { validateTrainingRequest } from '../validators/trainingValidator.js';
 
-exports.createTraining = async (req, res) => {
+export const createTraining = async (req, res) => {
     try {
         const trainingData = req.body;
         
@@ -35,4 +35,8 @@ exports.createTraining = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    createTraining
 };
