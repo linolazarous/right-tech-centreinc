@@ -1,13 +1,13 @@
-const CorporateTraining = require('../models/CorporateTraining');
-const logger = require('../utils/logger');
-const { validateCorporateTraining } = require('../validators/corporateValidator');
+import CorporateTraining from '../models/CorporateTraining.js';
+import logger from '../utils/logger.js';
+import { validateCorporateTraining } from '../validators/corporateValidator.js';
 
 /**
  * Create corporate training program
  * @param {Object} trainingData - Training program data
  * @returns {Promise<Object>} Created training program
  */
-exports.createTraining = async (trainingData) => {
+export const createTraining = async (trainingData) => {
   try {
     const validation = validateCorporateTraining(trainingData);
     if (!validation.valid) {
