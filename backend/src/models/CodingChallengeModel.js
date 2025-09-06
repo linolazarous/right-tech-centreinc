@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const codingChallengeSchema = new mongoose.Schema({
   title: { 
@@ -175,7 +175,7 @@ codingChallengeSchema.statics.getRandomChallenge = function(difficulty, category
   if (category) query.category = category;
 
   return this.aggregate([
-    { $match: query },
+  { $match: query },
     { $sample: { size: 1 } }
   ]);
 };
@@ -208,4 +208,6 @@ codingChallengeSchema.methods.toggleActive = function() {
   return this.save();
 };
 
-module.exports = mongoose.model('CodingChallenge', codingChallengeSchema);
+const CodingChallenge = mongoose.model('CodingChallenge', codingChallengeSchema);
+
+export default CodingChallenge;
