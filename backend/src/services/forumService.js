@@ -1,14 +1,14 @@
-const ForumPost = require('../models/ForumPost');
-const logger = require('../utils/logger');
-const { validateForumPost } = require('../validators/forumValidator');
-const { moderateContent } = require('./moderationService');
+import ForumPost from '../models/ForumPost.js';
+import logger from '../utils/logger.js';
+import { validateForumPost } from '../validators/forumValidator.js';
+import { moderateContent } from './moderationService.js';
 
 /**
  * Create forum post
  * @param {Object} postData - Post data
  * @returns {Promise<Object>} Created post
  */
-exports.createPost = async (postData) => {
+export const createPost = async (postData) => {
   try {
     const validation = validateForumPost(postData);
     if (!validation.valid) {
@@ -44,7 +44,7 @@ exports.createPost = async (postData) => {
  * @param {Object} options - Pagination and filter options
  * @returns {Promise<Object>} Paginated posts
  */
-exports.getPosts = async (options = { page: 1, limit: 20 }) => {
+export const getPosts = async (options = { page: 1, limit: 20 }) => {
   try {
     const { page, limit } = options;
     
