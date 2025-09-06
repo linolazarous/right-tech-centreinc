@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const corporateSchema = new mongoose.Schema({
   name: { 
@@ -242,4 +242,6 @@ corporateSchema.methods.addAdmin = function(userId) {
   return this.save();
 };
 
-module.exports = mongoose.model('Corporate', corporateSchema);
+const Corporate = mongoose.model('Corporate', corporateSchema);
+
+export default Corporate;
