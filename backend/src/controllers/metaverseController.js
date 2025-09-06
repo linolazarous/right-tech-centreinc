@@ -1,7 +1,7 @@
-const { createVirtualCampus } = require("../services/metaverseService");
-const logger = require('../utils/logger');
+import { createVirtualCampus } from "../services/metaverseService.js";
+import logger from '../utils/logger.js';
 
-const createCampus = async (req, res) => {
+export const createCampus = async (req, res) => {
     const { campusName, template = 'default', capacity = 100 } = req.body;
     
     try {
@@ -48,6 +48,6 @@ const createCampus = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createCampus 
 };
