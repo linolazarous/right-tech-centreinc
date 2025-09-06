@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const gamificationController = require('../controllers/gamificationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateBadgeAward } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import gamificationController from '../controllers/gamificationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateBadgeAward } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/award-badge',
@@ -15,4 +15,4 @@ router.post(
   gamificationController.awardBadge
 );
 
-module.exports = router;
+export default router;
