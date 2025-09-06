@@ -1,6 +1,6 @@
-const User = require('../models/User');
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
+import User from '../models/User.js';
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
 
 class ResumeBuilderService {
   static async generateResume(userId) {
@@ -42,4 +42,4 @@ class ResumeBuilderService {
   }
 }
 
-module.exports = ResumeBuilderService;
+export default ResumeBuilderService;
