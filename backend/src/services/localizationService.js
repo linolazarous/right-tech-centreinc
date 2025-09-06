@@ -1,6 +1,6 @@
-const { TranslationServiceClient } = require('@google-cloud/translate').v3;
-const logger = require('../utils/logger');
-const { validateLocalization } = require('../validators/localizationValidator');
+import { TranslationServiceClient } from '@google-cloud/translate';
+import logger from '../utils/logger.js';
+import { validateLocalization } from '../validators/localizationValidator.js';
 
 const translationClient = new TranslationServiceClient({
   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
@@ -13,7 +13,7 @@ const translationClient = new TranslationServiceClient({
  * @param {string} [context] - Translation context
  * @returns {Promise<string|Array>} Translated content
  */
-const translateContent = async (content, targetLanguage, context = 'general') => {
+export const translateContent = async (content, targetLanguage, context = 'general') => {
   try {
     const validation = validateLocalization({ content, targetLanguage, context });
     if (!validation.valid) {
@@ -55,5 +55,3 @@ const translateContent = async (content, targetLanguage, context = 'general') =>
     throw new Error('Failed to localize content');
   }
 };
-
-module.exports = { translateContent };
