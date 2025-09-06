@@ -1,5 +1,5 @@
-const OpenAI = require('openai');
-const logger = require('../utils/logger');
+import OpenAI from 'openai';
+import logger from '../utils/logger.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -38,4 +38,4 @@ class VirtualTutorService {
   }
 }
 
-module.exports = VirtualTutorService;
+export default VirtualTutorService;
