@@ -1,5 +1,5 @@
-const LeaderboardService = require('../services/leaderboardService');
-const logger = require('../utils/logger');
+import LeaderboardService from '../services/leaderboardService.js';
+import logger from '../utils/logger.js';
 
 class LeaderboardController {
     static async getLeaderboard(req, res) {
@@ -37,4 +37,4 @@ class LeaderboardController {
     }
 }
 
-module.exports = LeaderboardController;
+export default LeaderboardController;
