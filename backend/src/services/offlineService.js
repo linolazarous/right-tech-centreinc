@@ -1,14 +1,14 @@
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
-const { validateCourseId } = require('../validators/courseValidator');
-const { generateCoursePackage } = require('../utils/offlineUtils');
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
+import { validateCourseId } from '../validators/courseValidator.js';
+import { generateCoursePackage } from '../utils/offlineUtils.js';
 
 /**
  * Download course for offline use
  * @param {string} courseId - Course ID
  * @returns {Promise<Object>} Course download package
  */
-exports.downloadCourse = async (courseId) => {
+export const downloadCourse = async (courseId) => {
   try {
     const validation = validateCourseId(courseId);
     if (!validation.valid) {
