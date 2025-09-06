@@ -1,7 +1,7 @@
-const UserService = require('../services/userService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
-const { validateUserProfile } = require('../validators/userValidator');
+import UserService from '../services/userService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
+import { validateUserProfile } from '../validators/userValidator.js';
 
 class UserController {
     static async getUserProfile(req, res) {
@@ -17,8 +17,8 @@ class UserController {
             const user = await UserService.getUserProfile(userId);
 
             if (!user) {
-                logger.warn(`User not found: ${userId}`);
-                return res.status(404).json({ error: 'User not found' });
+            logger.warn(`User not found: ${userId}`);
+            return res.status(404).json({ error: 'User not found' });
             }
 
             // Omit sensitive data
@@ -77,4 +77,4 @@ class UserController {
     }
 }
 
-module.exports = UserController;
+export default UserController;
