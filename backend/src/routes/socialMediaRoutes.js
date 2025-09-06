@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const socialMediaController = require('../controllers/socialMediaController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateSocialMediaPost } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import socialMediaController from '../controllers/socialMediaController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateSocialMediaPost } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/post/:platform',
@@ -29,4 +29,4 @@ router.delete(
   socialMediaController.deletePost
 );
 
-module.exports = router;
+export default router;
