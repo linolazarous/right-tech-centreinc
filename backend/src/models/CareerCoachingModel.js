@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const careerCoachingSchema = new mongoose.Schema({
   userId: { 
@@ -180,4 +180,6 @@ careerCoachingSchema.methods.rescheduleSession = function(newDate) {
   return this.save();
 };
 
-module.exports = mongoose.model('CareerCoaching', careerCoachingSchema);
+const CareerCoaching = mongoose.model('CareerCoaching', careerCoachingSchema);
+
+export default CareerCoaching;
