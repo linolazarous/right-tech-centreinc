@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const forumController = require('../controllers/forumController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateForumPost } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import forumController from '../controllers/forumController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateForumPost } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/forum-posts',
@@ -13,4 +13,4 @@ router.post(
   forumController.createPost
 );
 
-module.exports = router;
+export default router;
