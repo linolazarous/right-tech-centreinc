@@ -1,8 +1,8 @@
-const jobPortalService = require('../services/jobPortalService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import jobPortalService from '../services/jobPortalService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.getJobRecommendations = async (req, res) => {
+export const getJobRecommendations = async (req, res) => {
     try {
         const { userId } = req.params;
         const { limit = 10, location, remote } = req.query;
@@ -37,4 +37,8 @@ exports.getJobRecommendations = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getJobRecommendations
 };
