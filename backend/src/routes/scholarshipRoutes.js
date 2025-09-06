@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const scholarshipController = require('../controllers/scholarshipController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateScholarship } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import scholarshipController from '../controllers/scholarshipController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateScholarship } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/scholarships/allocate',
@@ -15,4 +15,4 @@ router.post(
   scholarshipController.allocateScholarship
 );
 
-module.exports = router;
+export default router;
