@@ -1,5 +1,5 @@
-const VirtualLab = require('../models/VirtualLab');
-const logger = require('../utils/logger');
+import VirtualLab from '../models/VirtualLab.js';
+import logger from '../utils/logger.js';
 
 class VirtualLabService {
   static async getVirtualLabs(filters = {}) {
@@ -20,4 +20,4 @@ class VirtualLabService {
   }
 }
 
-module.exports = VirtualLabService;
+export default VirtualLabService;
