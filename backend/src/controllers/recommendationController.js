@@ -1,8 +1,8 @@
-const RecommendationService = require('../services/recommendationService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import RecommendationService from '../services/recommendationService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.getRecommendations = async (req, res) => {
+export const getRecommendations = async (req, res) => {
     try {
         const userId = req.user.id;
         const { type = 'courses', limit = 10 } = req.query;
@@ -42,4 +42,8 @@ exports.getRecommendations = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getRecommendations
 };
