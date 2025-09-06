@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const Job = require('../models/Job');
-const logger = require('../utils/logger');
-const { validateJobMatchInput } = require('../validators/jobValidator');
+import User from '../models/User.js';
+import Job from '../models/Job.js';
+import logger from '../utils/logger.js';
+import { validateJobMatchInput } from '../validators/jobValidator.js';
 
 /**
  * Match jobs based on user skills and preferences
@@ -9,7 +9,7 @@ const { validateJobMatchInput } = require('../validators/jobValidator');
  * @param {Object} userPreferences - User preferences
  * @returns {Promise<Array>} Matched jobs
  */
-const matchJobs = async (userSkills, userPreferences) => {
+export const matchJobs = async (userSkills, userPreferences) => {
   try {
     const validation = validateJobMatchInput({ userSkills, userPreferences });
     if (!validation.valid) {
@@ -54,7 +54,7 @@ const matchJobs = async (userSkills, userPreferences) => {
     logger.info(`Found ${sortedJobs.length} matching jobs`);
     return sortedJobs;
   } catch (error) {
-    logger.error(`Job matching failed: ${error.message}`);
+    logger.error(`Job matching failed: ${error.message`);
     throw error;
   }
 };
@@ -83,4 +83,4 @@ const calculateMatchScore = (job, userSkills, preferences) => {
   return Math.min(skillScore + preferenceScore, 100);
 };
 
-module.exports = { matchJobs };
+export { matchJobs };
