@@ -1,8 +1,8 @@
-const { provideTutoring } = require("../services/virtualTutorService");
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import { provideTutoring } from "../services/virtualTutorService.js";
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-const askTutor = async (req, res) => {
+export const askTutor = async (req, res) => {
     const { userId, question, context } = req.body;
     
     try {
@@ -38,6 +38,6 @@ const askTutor = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     askTutor 
 };
