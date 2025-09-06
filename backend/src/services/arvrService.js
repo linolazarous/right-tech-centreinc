@@ -1,13 +1,13 @@
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
-const { validateCourseId } = require('../validators/courseValidator');
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
+import { validateCourseId } from '../validators/courseValidator.js';
 
 /**
  * Generate AR/VR content for a course
  * @param {string} courseId - Course ID
  * @returns {Promise<Object>} Generation result
  */
-exports.generateARVRContent = async (courseId) => {
+export const generateARVRContent = async (courseId) => {
   try {
     const validation = validateCourseId(courseId);
     if (!validation.valid) {
