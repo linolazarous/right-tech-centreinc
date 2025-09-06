@@ -1,5 +1,5 @@
-const AccessibilitySetting = require('../models/AccessibilitySettingModel');
-const logger = require('../utils/logger');
+import AccessibilitySetting from '../models/AccessibilitySettingModel.js';
+import logger from '../utils/logger.js';
 
 class AccessibilitySettingController {
   /**
@@ -80,4 +80,4 @@ class AccessibilitySettingController {
   }
 }
 
-module.exports = AccessibilitySettingController;
+export default AccessibilitySettingController;
