@@ -1,5 +1,6 @@
-const User = require('../models/User');
-const logger = require('../utils/logger');
+import User from '../models/User.js';
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
 
 class RecommendationService {
   static async getRecommendations(userId) {
@@ -36,4 +37,4 @@ class RecommendationService {
   }
 }
 
-module.exports = RecommendationService;
+export default RecommendationService;
