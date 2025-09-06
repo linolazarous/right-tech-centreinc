@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const LeaderboardController = require('../controllers/leaderboardController');
-const { validateLeaderboardQuery } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import LeaderboardController from '../controllers/leaderboardController.js';
+import { validateLeaderboardQuery } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/leaderboard',
@@ -11,4 +11,4 @@ router.get(
   LeaderboardController.getLeaderboard
 );
 
-module.exports = router;
+export default router;
