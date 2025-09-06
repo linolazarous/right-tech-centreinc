@@ -1,8 +1,8 @@
-const socialService = require('../services/socialService');
-const logger = require('../utils/logger');
-const { validateStudyGroup } = require('../validators/socialValidator');
+import socialService from '../services/socialService.js';
+import logger from '../utils/logger.js';
+import { validateStudyGroup } from '../validators/socialValidator.js';
 
-exports.createStudyGroup = async (req, res) => {
+export const createStudyGroup = async (req, res) => {
     try {
         const groupData = req.body;
         
@@ -37,7 +37,7 @@ exports.createStudyGroup = async (req, res) => {
     }
 };
 
-exports.getStudyGroups = async (req, res) => {
+export const getStudyGroups = async (req, res) => {
     try {
         const { subject, limit = 20 } = req.query;
         
@@ -64,4 +64,9 @@ exports.getStudyGroups = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    createStudyGroup,
+    getStudyGroups
 };
