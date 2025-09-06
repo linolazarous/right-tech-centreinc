@@ -1,8 +1,8 @@
-const TranslationService = require('../services/translationService');
-const logger = require('../utils/logger');
-const { supportedLanguages } = require('../config/languages');
+import TranslationService from '../services/translationService.js';
+import logger from '../utils/logger.js';
+import { supportedLanguages } from '../config/languages.js';
 
-exports.translateText = async (req, res) => {
+export const translateText = async (req, res) => {
     try {
         const { text, targetLanguage, sourceLanguage } = req.body;
         
@@ -59,9 +59,14 @@ exports.translateText = async (req, res) => {
 };
 
 // Add endpoint to get supported languages
-exports.getSupportedLanguages = async (req, res) => {
+export const getSupportedLanguages = async (req, res) => {
     res.status(200).json({ 
         supportedLanguages,
         lastUpdated: '2025-01-01'
     });
+};
+
+export default {
+    translateText,
+    getSupportedLanguages
 };
