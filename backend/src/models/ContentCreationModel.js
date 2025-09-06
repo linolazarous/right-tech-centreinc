@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const contentCreationSchema = new mongoose.Schema({
   title: { 
@@ -13,7 +13,7 @@ const contentCreationSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Description is required'],
     trim: true,
-    maxlength: [2000, 'Description cannot exceed 2000 characters']
+  maxlength: [2000, 'Description cannot exceed 2000 characters']
   },
   shortDescription: {
     type: String,
@@ -243,4 +243,6 @@ contentCreationSchema.methods.addCollaborator = function(userId, role) {
   return this.save();
 };
 
-module.exports = mongoose.model('ContentCreation', contentCreationSchema);
+const ContentCreation = mongoose.model('ContentCreation', contentCreationSchema);
+
+export default ContentCreation;
