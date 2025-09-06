@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const certificateSchema = new mongoose.Schema({
   userId: { 
@@ -193,4 +193,6 @@ certificateSchema.methods.generateVerificationUrl = function() {
   return this.save();
 };
 
-module.exports = mongoose.model('Certificate', certificateSchema);
+const Certificate = mongoose.model('Certificate', certificateSchema);
+
+export default Certificate;
