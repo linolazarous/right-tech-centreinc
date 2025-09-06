@@ -1,6 +1,6 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
-const { validateMetaverseCampus } = require('../validators/metaverseValidator');
+import axios from 'axios';
+import logger from '../utils/logger.js';
+import { validateMetaverseCampus } from '../validators/metaverseValidator.js';
 
 /**
  * Create virtual campus in metaverse
@@ -9,7 +9,7 @@ const { validateMetaverseCampus } = require('../validators/metaverseValidator');
  * @param {number} [capacity] - User capacity
  * @returns {Promise<Object>} Created campus
  */
-const createVirtualCampus = async (campusName, template = 'default', capacity = 100) => {
+export const createVirtualCampus = async (campusName, template = 'default', capacity = 100) => {
   try {
     const validation = validateMetaverseCampus({ campusName, template, capacity });
     if (!validation.valid) {
@@ -58,5 +58,3 @@ const createVirtualCampus = async (campusName, template = 'default', capacity = 
     throw new Error('Failed to create virtual campus');
   }
 };
-
-module.exports = { createVirtualCampus };
