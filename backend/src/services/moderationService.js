@@ -1,6 +1,6 @@
-const OpenAI = require("openai");
-const logger = require('../utils/logger');
-const { validateModerationInput } = require('../validators/moderationValidator');
+import OpenAI from "openai";
+import logger from '../utils/logger.js';
+import { validateModerationInput } from '../validators/moderationValidator.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -10,7 +10,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * @param {string} [contentType] - Content type (text, image, video)
  * @returns {Promise<Object>} Moderation result
  */
-const moderateContent = async (content, contentType = 'text') => {
+export const moderateContent = async (content, contentType = 'text') => {
   try {
     const validation = validateModerationInput({ content, contentType });
     if (!validation.valid) {
@@ -50,5 +50,3 @@ const moderateContent = async (content, contentType = 'text') => {
     throw error;
   }
 };
-
-module.exports = { moderateContent };
