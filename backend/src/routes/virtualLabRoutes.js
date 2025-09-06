@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const virtualLabController = require('../controllers/virtualLabController');
-const { validateLabQuery } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import virtualLabController from '../controllers/virtualLabController.js';
+import { validateLabQuery } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/labs',
@@ -11,4 +11,4 @@ router.get(
   virtualLabController.getVirtualLabs
 );
 
-module.exports = router;
+export default router;
