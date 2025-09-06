@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const analyticsController = require('../controllers/analyticsController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateUserIdParam } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import analyticsController from '../controllers/analyticsController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateUserIdParam } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/progress/:userId',
@@ -21,4 +21,4 @@ router.get(
   analyticsController.getEngagementMetrics
 );
 
-module.exports = router;
+export default router;
