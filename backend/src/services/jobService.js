@@ -1,7 +1,7 @@
-const Job = require('../models/Job');
-const User = require('../models/User');
-const logger = require('../utils/logger');
-const { validateUserId } = require('../validators/userValidator');
+import Job from '../models/Job.js';
+import User from '../models/User.js';
+import logger from '../utils/logger.js';
+import { validateUserId } from '../validators/userValidator.js';
 
 /**
  * Get job recommendations for user
@@ -9,7 +9,7 @@ const { validateUserId } = require('../validators/userValidator');
  * @param {Object} options - Filter options
  * @returns {Promise<Array>} Recommended jobs
  */
-exports.getJobRecommendations = async (userId, options = {}) => {
+export const getJobRecommendations = async (userId, options = {}) => {
   try {
     const validation = validateUserId(userId);
     if (!validation.valid) {
