@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const Badge = require('../models/Badge');
-const logger = require('../utils/logger');
-const { validateBadgeAward } = require('../validators/gamificationValidator');
+import User from '../models/User.js';
+import Badge from '../models/Badge.js';
+import logger from '../utils/logger.js';
+import { validateBadgeAward } from '../validators/gamificationValidator.js';
 
 /**
  * Award badge to user
@@ -9,7 +9,7 @@ const { validateBadgeAward } = require('../validators/gamificationValidator');
  * @param {string} badgeId - Badge ID
  * @returns {Promise<Object>} Award result
  */
-exports.awardBadge = async (userId, badgeId) => {
+export const awardBadge = async (userId, badgeId) => {
   try {
     const validation = validateBadgeAward({ userId, badgeId });
     if (!validation.valid) {
