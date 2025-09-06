@@ -1,13 +1,13 @@
-const UserModel = require('../models/userModel');
-const logger = require('../utils/logger');
+import UserModel from '../models/userModel.js';
+import logger from '../utils/logger.js';
 
 class LeaderboardService {
   /**
    * Get leaderboard with optional filters
-   * @param {string} type - Time period (weekly, monthly, alltime)
-   * @param {number} limit - Number of results
-   * @returns {Promise<Array>} Leaderboard data
-   */
+ * @param {string} type - Time period (weekly, monthly, alltime)
+ * @param {number} limit - Number of results
+ * @returns {Promise<Array>} Leaderboard data
+ */
   static async getLeaderboard(type = 'weekly', limit = 10) {
     try {
       const validTypes = ['weekly', 'monthly', 'alltime'];
@@ -44,4 +44,4 @@ class LeaderboardService {
   }
 }
 
-module.exports = LeaderboardService;
+export default LeaderboardService;
