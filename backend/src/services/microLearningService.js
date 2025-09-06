@@ -1,13 +1,13 @@
-const MicroLesson = require('../models/MicroLesson');
-const logger = require('../utils/logger');
-const { validateMicroLesson } = require('../validators/microlearningValidator');
+import MicroLesson from '../models/MicroLesson.js';
+import logger from '../utils/logger.js';
+import { validateMicroLesson } from '../validators/microlearningValidator.js';
 
 /**
  * Create micro lesson
  * @param {Object} lessonData - Lesson data
  * @returns {Promise<Object>} Created lesson
  */
-const createMicroLesson = async (lessonData) => {
+export const createMicroLesson = async (lessonData) => {
   try {
     const validation = validateMicroLesson(lessonData);
     if (!validation.valid) {
@@ -50,7 +50,7 @@ const createMicroLesson = async (lessonData) => {
  * @param {Object} filters - Filter criteria
  * @returns {Promise<Array>} List of lessons
  */
-const getMicroLessons = async (filters = {}) => {
+export const getMicroLessons = async (filters = {}) => {
   try {
     const { tag, maxDuration, limit = 20 } = filters;
     
@@ -77,5 +77,3 @@ const getMicroLessons = async (filters = {}) => {
     throw error;
   }
 };
-
-module.exports = { createMicroLesson, getMicroLessons };
