@@ -1,6 +1,6 @@
-const admin = require('firebase-admin');
-const User = require('../models/User');
-const logger = require('../utils/logger');
+import admin from 'firebase-admin';
+import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
 // Initialize Firebase Admin SDK with environment variables
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
@@ -51,4 +51,4 @@ class PushNotificationService {
   }
 }
 
-module.exports = PushNotificationService;
+export default PushNotificationService;
