@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const vrLabController = require('../controllers/vrLabController');
-const { validateVRLabQuery } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import vrLabController from '../controllers/vrLabController.js';
+import { validateVRLabQuery } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/labs',
@@ -11,4 +11,4 @@ router.get(
   vrLabController.getVRLabs
 );
 
-module.exports = router;
+export default router;
