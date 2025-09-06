@@ -1,9 +1,9 @@
-const ForumPost = require('../models/ForumPost');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
-const { validateForumPost } = require('../validators/forumValidator');
+import ForumPost from '../models/ForumPost.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
+import { validateForumPost } from '../validators/forumValidator.js';
 
-exports.createPost = async (req, res) => {
+export const createPost = async (req, res) => {
     try {
         const postData = req.body;
         
@@ -13,7 +13,7 @@ exports.createPost = async (req, res) => {
             return res.status(400).json({ error: validation.message });
         }
 
-        if (!isValidObjectId(postData.author))) {
+        if (!isValidObjectId(postData.author)) {
             return res.status(400).json({ error: 'Invalid author ID format' });
         }
 
@@ -41,4 +41,8 @@ exports.createPost = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    createPost
 };
