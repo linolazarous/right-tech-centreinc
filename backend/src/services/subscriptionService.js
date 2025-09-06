@@ -1,5 +1,5 @@
-const Subscription = require('../models/Subscription');
-const logger = require('../utils/logger');
+import Subscription from '../models/Subscription.js';
+import logger from '../utils/logger.js';
 
 class SubscriptionService {
   static async createSubscription(subscriptionData) {
@@ -43,4 +43,4 @@ class SubscriptionService {
   }
 }
 
-module.exports = SubscriptionService;
+export default SubscriptionService;
