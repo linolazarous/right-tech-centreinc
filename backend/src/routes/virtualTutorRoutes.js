@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { askTutor } = require('../controllers/virtualTutorController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateTutorQuestion } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { askTutor } from '../controllers/virtualTutorController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateTutorQuestion } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/ask',
@@ -13,4 +13,4 @@ router.post(
   askTutor
 );
 
-module.exports = router;
+export default router;
