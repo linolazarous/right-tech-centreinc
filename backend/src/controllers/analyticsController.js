@@ -1,11 +1,11 @@
-const analyticsService = require('../services/analyticsService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import analyticsService from '../services/analyticsService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
 /**
  * Get student progress analytics
  */
-exports.getStudentProgress = async (req, res) => {
+export const getStudentProgress = async (req, res) => {
     try {
         const { userId } = req.params;
 
@@ -36,7 +36,7 @@ exports.getStudentProgress = async (req, res) => {
 /**
  * Get student engagement metrics
  */
-exports.getEngagementMetrics = async (req, res) => {
+export const getEngagementMetrics = async (req, res) => {
     try {
         const { userId } = req.params;
         const { timeframe = '30d' } = req.query;
@@ -66,4 +66,9 @@ exports.getEngagementMetrics = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getStudentProgress,
+    getEngagementMetrics
 };
