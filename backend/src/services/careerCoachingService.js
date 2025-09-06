@@ -1,6 +1,6 @@
-const User = require('../models/User');
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
+import User from '../models/User.js';
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
 
 /**
  * Get personalized career advice
@@ -8,7 +8,7 @@ const logger = require('../utils/logger');
  * @param {string} type - Advice type (general, technical, etc.)
  * @returns {Promise<Object>} Career advice
  */
-exports.getCareerAdvice = async (userId, type = 'general') => {
+export const getCareerAdvice = async (userId, type = 'general') => {
   try {
     logger.info(`Generating career advice for user ${userId}, type ${type}`);
     
@@ -28,8 +28,8 @@ exports.getCareerAdvice = async (userId, type = 'general') => {
     const advice = {
       type,
       skillsAnalysis: skills.join(', '),
-      recommendedPaths: this.generateRecommendations(skills, completedCourses),
-      suggestedCourses: this.suggestCourses(skills),
+      recommendedPaths: generateRecommendations(skills, completedCourses),
+      suggestedCourses: suggestCourses(skills),
       generatedAt: new Date().toISOString()
     };
 
@@ -41,7 +41,7 @@ exports.getCareerAdvice = async (userId, type = 'general') => {
 };
 
 // Helper methods
-exports.generateRecommendations = (skills, completedCourses) => {
+const generateRecommendations = (skills, completedCourses) => {
   // Simplified logic - real implementation would be more sophisticated
   if (skills.includes('JavaScript') && skills.includes('React')) {
     return ['Frontend Developer', 'Full Stack Developer'];
@@ -52,10 +52,12 @@ exports.generateRecommendations = (skills, completedCourses) => {
   return ['Software Developer', 'Technical Consultant'];
 };
 
-exports.suggestCourses = (skills) => {
+const suggestCourses = (skills) => {
   // Simplified logic - real implementation would query the database
   if (skills.includes('JavaScript')) {
     return ['Advanced React', 'Node.js Fundamentals'];
   }
   return ['Introduction to Programming', 'Career Development'];
 };
+
+export { generateRecommendations, suggestCourses };
