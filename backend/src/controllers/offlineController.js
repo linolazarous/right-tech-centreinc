@@ -1,8 +1,8 @@
-const OfflineService = require('../services/offlineService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import OfflineService from '../services/offlineService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.downloadCourse = async (req, res) => {
+export const downloadCourse = async (req, res) => {
     try {
         const { courseId } = req.params;
         
@@ -38,4 +38,68 @@ exports.downloadCourse = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export const getDownloadableCourses = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        // Validate inputs
+        if (!isValidObjectId(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
+        logger.info(`Fetching downloadable courses for user: ${userId}`);
+        const courses = await OfflineService.getDownloadableCourses(userId);
+
+        res.status(200).json({
+            userId,
+            count: courses.length,
+            courses,
+            retrievedAt: new Date().toISOString()
+        });
+    } catch (error) {
+        logger.error(`Downloadable courses error: ${error.message}`, { stack: error.stack });
+        res.status(500).json({ 
+            error: 'Failed to get downloadable courses',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+export const removeDownloadedCourse = async (req, res) => {
+    try {
+        const { courseId, userId } = req.body;
+        
+        // Validate inputs
+        if (!isValidObjectId(courseId) || !isValidObjectId(userId)) {
+            return res.status(400).json({ error: 'Invalid course ID or user ID format' });
+        }
+
+        logger.info(`Removing downloaded course: ${courseId} for user: ${userId}`);
+        const result = await OfflineService.removeDownloadedCourse(courseId, userId);
+
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Course removed from downloads',
+            courseId,
+            userId
+        });
+    } catch (error) {
+        logger.error(`Remove downloaded course error: ${error.message}`, { stack: error.stack });
+        res.status(500).json({ 
+            error: 'Failed to remove downloaded course',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+export default {
+    downloadCourse,
+    getDownloadableCourses,
+    removeDownloadedCourse
 };
