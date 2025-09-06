@@ -1,8 +1,8 @@
-const User = require("../models/User");
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import User from "../models/User.js";
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-const getPrivacyPolicy = async (req, res) => {
+export const getPrivacyPolicy = async (req, res) => {
     try {
         const policyVersion = '1.0.2';
         const effectiveDate = '2023-01-01';
@@ -23,7 +23,7 @@ const getPrivacyPolicy = async (req, res) => {
     }
 };
 
-const deleteUserData = async (req, res) => {
+export const deleteUserData = async (req, res) => {
     const { userId, confirmation = false } = req.body;
     
     try {
@@ -61,7 +61,7 @@ const deleteUserData = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     getPrivacyPolicy, 
     deleteUserData 
 };
