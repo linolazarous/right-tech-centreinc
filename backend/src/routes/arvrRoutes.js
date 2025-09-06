@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const arvrController = require('../controllers/arvrController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateARVRContent } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import arvrController from '../controllers/arvrController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateARVRContent } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 // Generate AR/VR content for a course
 router.post(
@@ -16,4 +16,4 @@ router.post(
   arvrController.generateARVRContent
 );
 
-module.exports = router;
+export default router;
