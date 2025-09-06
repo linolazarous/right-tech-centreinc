@@ -1,7 +1,7 @@
-const OpenAI = require("openai");
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
-const { validateTopic } = require('../validators/contentValidator');
+import OpenAI from "openai";
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
+import { validateTopic } from '../validators/contentValidator.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -34,7 +34,7 @@ const generateCourseContent = async ({ topic, audience = 'beginners', depth = 'i
     const content = response.choices[0].text.trim();
     
     // Parse and structure the generated content
-    const structuredContent = this.parseGeneratedContent(content);
+    const structuredContent = parseGeneratedContent(content);
     
     logger.info('Successfully generated course content');
     return {
@@ -55,7 +55,7 @@ const generateCourseContent = async ({ topic, audience = 'beginners', depth = 'i
  * @param {string} content - Raw generated content
  * @returns {Object} Structured content
  */
-parseGeneratedContent = (content) => {
+const parseGeneratedContent = (content) => {
   // Basic parsing logic - would be more sophisticated in production
   const sections = content.split('\n\n');
   const result = {
@@ -77,4 +77,4 @@ parseGeneratedContent = (content) => {
   return result;
 };
 
-module.exports = { generateCourseContent };
+export { generateCourseContent };
