@@ -1,6 +1,6 @@
-const CourseModel = require('../models/courseModel');
-const logger = require('../utils/logger');
-const { validateCourse } = require('../validators/courseValidator');
+import CourseModel from '../models/courseModel.js';
+import logger from '../utils/logger.js';
+import { validateCourse } from '../validators/courseValidator.js';
 
 class CourseService {
   /**
@@ -67,4 +67,4 @@ class CourseService {
   }
 }
 
-module.exports = CourseService;
+export default CourseService;
