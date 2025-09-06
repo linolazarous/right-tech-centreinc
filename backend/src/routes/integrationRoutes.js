@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const integrationController = require('../controllers/integrationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateGoogleIntegration } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import integrationController from '../controllers/integrationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateGoogleIntegration } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/integrate-google',
@@ -15,4 +15,4 @@ router.post(
   integrationController.integrateGoogleWorkspace
 );
 
-module.exports = router;
+export default router;
