@@ -1,8 +1,8 @@
-const { translateContent } = require("../services/localizationService");
-const logger = require('../utils/logger');
-const { supportedLanguages } = require('../config/languages');
+import { translateContent } from "../services/localizationService.js";
+import logger from '../utils/logger.js';
+import { supportedLanguages } from '../config/languages.js';
 
-const translate = async (req, res) => {
+export const translate = async (req, res) => {
     const { content, targetLanguage, context } = req.body;
     
     try {
@@ -37,7 +37,9 @@ const translate = async (req, res) => {
     }
 };
 
-module.exports = { 
+export const getSupportedLanguages = (req, res) => res.status(200).json({ supportedLanguages });
+
+export default { 
     translate,
-    getSupportedLanguages: (req, res) => res.status(200).json({ supportedLanguages })
+    getSupportedLanguages
 };
