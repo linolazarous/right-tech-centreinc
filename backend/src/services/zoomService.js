@@ -1,5 +1,5 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
+import axios from 'axios';
+import logger from '../utils/logger.js';
 
 // Configure Zoom client with environment variables
 const zoomClient = axios.create({
@@ -30,7 +30,7 @@ class ZoomService {
         topic: meetingData.topic,
         type: 2, // Scheduled meeting
         start_time: startTime.toISOString(),
-        duration: Math.min(Math.max(meetingData.duration, 15), // Clamp between 15-240
+        duration: Math.min(Math.max(meetingData.duration, 15), 240), // Clamp between 15-240
         timezone: meetingData.timezone || 'UTC',
         password: meetingData.password || this.generateRandomPassword(),
         settings: {
@@ -69,4 +69,4 @@ class ZoomService {
   }
 }
 
-module.exports = ZoomService;
+export default ZoomService;
