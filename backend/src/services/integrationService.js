@@ -1,14 +1,14 @@
-const User = require('../models/User');
-const logger = require('../utils/logger');
-const { validateUserId } = require('../validators/userValidator');
-const { google } = require('googleapis');
+import User from '../models/User.js';
+import logger from '../utils/logger.js';
+import { validateUserId } from '../validators/userValidator.js';
+import { google } from 'googleapis';
 
 /**
  * Integrate Google Workspace for user
  * @param {string} userId - User ID
  * @returns {Promise<Object>} Integration result
  */
-exports.integrateGoogleWorkspace = async (userId) => {
+export const integrateGoogleWorkspace = async (userId) => {
   try {
     const validation = validateUserId(userId);
     if (!validation.valid) {
