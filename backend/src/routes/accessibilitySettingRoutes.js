@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const AccessibilitySettingController = require('../controllers/accessibilitySettingController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateUserIdParam } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import AccessibilitySettingController from '../controllers/accessibilitySettingController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateUserIdParam } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 // Get accessibility settings for a user
 router.get(
@@ -23,4 +23,4 @@ router.put(
   AccessibilitySettingController.updateSettings
 );
 
-module.exports = router;
+export default router;
