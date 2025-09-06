@@ -1,8 +1,8 @@
-const { createARLesson } = require("../services/arLearningService");
-const logger = require('../utils/logger');
-const { validateARContent } = require('../validators/arValidator');
+import { createARLesson } from "../services/arLearningService.js";
+import logger from '../utils/logger.js';
+import { validateARContent } from '../validators/arValidator.js';
 
-const createLesson = async (req, res) => {
+export const createLesson = async (req, res) => {
     const { lessonName, arContent } = req.body;
     
     try {
@@ -39,6 +39,6 @@ const createLesson = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createLesson 
 };
