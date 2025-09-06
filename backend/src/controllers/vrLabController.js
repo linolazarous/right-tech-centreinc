@@ -1,7 +1,7 @@
-const vrLabService = require('../services/vrLabService');
-const logger = require('../utils/logger');
+import vrLabService from '../services/vrLabService.js';
+import logger from '../utils/logger.js';
 
-exports.getVRLabs = async (req, res) => {
+export const getVRLabs = async (req, res) => {
     try {
         const { category, equipment, limit = 20 } = req.query;
         
@@ -29,4 +29,8 @@ exports.getVRLabs = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getVRLabs
 };
