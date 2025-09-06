@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const blockchainSchema = new mongoose.Schema({
   userId: { 
@@ -159,4 +159,6 @@ blockchainSchema.statics.updateTransactionStatus = function(transactionHash, sta
   );
 };
 
-module.exports = mongoose.model('Blockchain', blockchainSchema);
+const Blockchain = mongoose.model('Blockchain', blockchainSchema);
+
+export default Blockchain;
