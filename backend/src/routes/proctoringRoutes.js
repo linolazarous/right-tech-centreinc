@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const proctoringController = require('../controllers/proctoringController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateProctoring } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import proctoringController from '../controllers/proctoringController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateProctoring } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/monitor-exam',
@@ -13,4 +13,4 @@ router.post(
   proctoringController.monitorExam
 );
 
-module.exports = router;
+export default router;
