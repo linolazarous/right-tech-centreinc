@@ -1,5 +1,5 @@
-const ProctoringModel = require('../models/proctoringModel');
-const logger = require('../utils/logger');
+import ProctoringModel from '../models/proctoringModel.js';
+import logger from '../utils/logger.js';
 
 class ProctoringService {
   static async startProctoringSession(sessionData) {
@@ -53,4 +53,4 @@ class ProctoringService {
   }
 }
 
-module.exports = ProctoringService;
+export default ProctoringService;
