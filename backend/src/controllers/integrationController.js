@@ -1,8 +1,8 @@
-const integrationService = require('../services/integrationService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import integrationService from '../services/integrationService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.integrateGoogleWorkspace = async (req, res) => {
+export const integrateGoogleWorkspace = async (req, res) => {
     try {
         const { userId } = req.body;
         
@@ -35,4 +35,8 @@ exports.integrateGoogleWorkspace = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    integrateGoogleWorkspace
 };
