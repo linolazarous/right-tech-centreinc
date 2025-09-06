@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const UserModel = require('../models/userModel');
-const logger = require('../utils/logger');
-const { validateUserRegistration } = require('../validators/userValidator');
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import UserModel from '../models/userModel.js';
+import logger from '../utils/logger.js';
+import { validateUserRegistration } from '../validators/userValidator.js';
 
 class AuthService {
   /**
@@ -96,4 +96,4 @@ class AuthService {
   }
 }
 
-module.exports = AuthService;
+export default AuthService;
