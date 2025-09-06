@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const validator = require('validator');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import validator from 'validator';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 // Constants for security parameters
 const MAX_LOGIN_ATTEMPTS = 5;
@@ -12,7 +12,7 @@ const EMAIL_VERIFICATION_EXPIRATION = 24 * 60 * 60 * 1000; // 24 hours
 
 const authSchema = new mongoose.Schema({
   email: {
-    type: String,
+  type: String,
     required: [true, 'Email is required'],
     unique: true,
     trim: true,
@@ -312,7 +312,7 @@ authSchema.statics.findByCredentials = async function(email, password) {
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    // Increment login attempts
+  // Increment login attempts
     user.loginAttempts += 1;
     
     // Lock account after MAX_LOGIN_ATTEMPTS failed attempts
@@ -355,4 +355,6 @@ authSchema.virtual('status').get(function() {
   return 'Active';
 });
 
-module.exports = mongoose.model('Auth', authSchema);
+const Auth = mongoose.model('Auth', authSchema);
+
+export default Auth;
