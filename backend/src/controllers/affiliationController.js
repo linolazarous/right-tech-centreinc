@@ -1,6 +1,6 @@
-const AffiliationService = require('../services/affiliationService');
-const logger = require('../utils/logger');
-const { validateAffiliationData } = require('../validators/affiliationValidator');
+import AffiliationService from '../services/affiliationService.js';
+import logger from '../utils/logger.js';
+import { validateAffiliationData } from '../validators/affiliationValidator.js';
 
 class AffiliationController {
   /**
@@ -69,4 +69,4 @@ class AffiliationController {
   }
 }
 
-module.exports = AffiliationController;
+export default AffiliationController;
