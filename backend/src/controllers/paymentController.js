@@ -1,8 +1,9 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const logger = require('../utils/logger');
-const { validatePayment } = require('../validators/paymentValidator');
+import stripePackage from 'stripe';
+const stripe = stripePackage(process.env.STRIPE_SECRET_KEY);
+import logger from '../utils/logger.js';
+import { validatePayment } from '../validators/paymentValidator.js';
 
-exports.createPaymentIntent = async (req, res) => {
+export const createPaymentIntent = async (req, res) => {
     try {
         const { amount, currency, metadata = {} } = req.body;
         
@@ -48,4 +49,8 @@ exports.createPaymentIntent = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    createPaymentIntent
 };
