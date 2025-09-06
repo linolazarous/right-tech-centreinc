@@ -1,9 +1,9 @@
-const { createSubscription, getSubscriptions } = require("../services/subscriptionService");
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
-const { validateSubscription } = require('../validators/subscriptionValidator');
+import { createSubscription, getSubscriptions } from "../services/subscriptionService.js";
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
+import { validateSubscription } from '../validators/subscriptionValidator.js';
 
-const subscribe = async (req, res) => {
+export const subscribe = async (req, res) => {
     const { userId, plan, duration } = req.body;
     
     try {
@@ -46,7 +46,7 @@ const subscribe = async (req, res) => {
     }
 };
 
-const getUserSubscriptions = async (req, res) => {
+export const getUserSubscriptions = async (req, res) => {
     const { userId } = req.params;
     
     try {
@@ -74,7 +74,7 @@ const getUserSubscriptions = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     subscribe, 
     getUserSubscriptions 
 };
