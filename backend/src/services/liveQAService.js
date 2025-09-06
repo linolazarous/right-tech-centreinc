@@ -1,14 +1,14 @@
-const LiveSession = require('../models/LiveSession');
-const logger = require('../utils/logger');
-const { validateLiveSession } = require('../validators/liveValidator');
-const { sendNotification } = require('./notificationService');
+import LiveSession from '../models/LiveSession.js';
+import logger from '../utils/logger.js';
+import { validateLiveSession } from '../validators/liveValidator.js';
+import { sendNotification } from './notificationService.js';
 
 /**
  * Schedule live Q&A session
  * @param {Object} sessionData - Session data
  * @returns {Promise<Object>} Scheduled session
  */
-exports.scheduleLiveQA = async (sessionData) => {
+export const scheduleLiveQA = async (sessionData) => {
   try {
     const validation = validateLiveSession(sessionData);
     if (!validation.valid) {
