@@ -1,8 +1,8 @@
-const arvrService = require('../services/arvrService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import arvrService from '../services/arvrService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.generateARVRContent = async (req, res) => {
+export const generateARVRContent = async (req, res) => {
     try {
         const { courseId, options = {} } = req.body;
 
@@ -38,4 +38,8 @@ exports.generateARVRContent = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    generateARVRContent
 };
