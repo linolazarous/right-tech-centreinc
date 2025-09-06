@@ -1,7 +1,7 @@
-const { moderateContent } = require("../services/moderationService");
-const logger = require('../utils/logger');
+import { moderateContent } from "../services/moderationService.js";
+import logger from '../utils/logger.js';
 
-const moderate = async (req, res) => {
+export const moderate = async (req, res) => {
     const { content, contentType = 'text' } = req.body;
     
     try {
@@ -38,6 +38,6 @@ const moderate = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     moderate 
 };
