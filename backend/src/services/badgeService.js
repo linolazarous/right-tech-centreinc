@@ -1,6 +1,6 @@
-const BadgeModel = require('../models/badgeModel');
-const UserModel = require('../models/userModel');
-const logger = require('../utils/logger');
+import BadgeModel from '../models/badgeModel.js';
+import UserModel from '../models/userModel.js';
+import logger from '../utils/logger.js';
 
 class BadgeService {
   /**
@@ -56,4 +56,4 @@ class BadgeService {
   }
 }
 
-module.exports = BadgeService;
+export default BadgeService;
