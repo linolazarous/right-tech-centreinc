@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { generateAndPostAd } = require('../controllers/adController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateAdCreation } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { generateAndPostAd } from '../controllers/adController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateAdCreation } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/generate-ad',
@@ -15,4 +15,4 @@ router.post(
   generateAndPostAd
 );
 
-module.exports = router;
+export default router;
