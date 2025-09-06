@@ -1,5 +1,5 @@
-const VRLab = require('../models/VRLab');
-const logger = require('../utils/logger');
+import VRLab from '../models/VRLab.js';
+import logger from '../utils/logger.js';
 
 class VRLabService {
   static async getVRLabs(filters = {}) {
@@ -20,4 +20,4 @@ class VRLabService {
   }
 }
 
-module.exports = VRLabService;
+export default VRLabService;
