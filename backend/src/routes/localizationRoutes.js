@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { translate } = require('../controllers/localizationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateLocalization } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { translate } from '../controllers/localizationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateLocalization } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/translate',
@@ -13,4 +13,4 @@ router.post(
   translate
 );
 
-module.exports = router;
+export default router;
