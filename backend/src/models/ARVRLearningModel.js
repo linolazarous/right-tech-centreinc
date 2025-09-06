@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const arVrLearningSchema = new mongoose.Schema({
   title: { 
@@ -75,4 +75,6 @@ arVrLearningSchema.virtual('status').get(function() {
   return this.isActive ? 'Active' : 'Inactive';
 });
 
-module.exports = mongoose.model('ARVRLearning', arVrLearningSchema);
+const ARVRLearning = mongoose.model('ARVRLearning', arVrLearningSchema);
+
+export default ARVRLearning;
