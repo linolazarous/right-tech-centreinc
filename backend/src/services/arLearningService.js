@@ -1,6 +1,6 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
-const { validateARContent } = require('../validators/arValidator');
+import axios from 'axios';
+import logger from '../utils/logger.js';
+import { validateARContent } from '../validators/arValidator.js';
 
 /**
  * Create an AR lesson
@@ -49,4 +49,4 @@ const createARLesson = async (lessonName, arContent) => {
   }
 };
 
-module.exports = { createARLesson };
+export { createARLesson };
