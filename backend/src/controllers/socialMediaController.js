@@ -1,6 +1,6 @@
-const { postToSocialMedia } = require('./socialMediaService');
-const { validationResult } = require('express-validator');
-const SocialMediaPost = require('../models/SocialMediaPost'); // Assuming you have this model
+import { postToSocialMedia } from './socialMediaService.js';
+import { validationResult } from 'express-validator';
+import SocialMediaPost from '../models/SocialMediaPost.js'; // Assuming you have this model
 
 const socialMediaController = {
   /**
@@ -180,4 +180,4 @@ const socialMediaController = {
   }
 };
 
-module.exports = socialMediaController;
+export default socialMediaController;
