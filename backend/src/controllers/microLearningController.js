@@ -1,7 +1,7 @@
-const { createMicroLesson, getMicroLessons } = require("../services/microLearningService");
-const logger = require('../utils/logger');
+import { createMicroLesson, getMicroLessons } from "../services/microLearningService.js";
+import logger from '../utils/logger.js';
 
-const createLesson = async (req, res) => {
+export const createLesson = async (req, res) => {
     const { title, content, duration, tags = [] } = req.body;
     
     try {
@@ -51,7 +51,7 @@ const createLesson = async (req, res) => {
     }
 };
 
-const getAllLessons = async (req, res) => {
+export const getAllLessons = async (req, res) => {
     try {
         const { tag, duration, limit = 20 } = req.query;
         
@@ -81,7 +81,7 @@ const getAllLessons = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createLesson, 
     getAllLessons 
 };
