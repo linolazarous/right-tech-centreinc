@@ -1,8 +1,8 @@
-const blockchainService = require('../services/blockchainService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import blockchainService from '../services/blockchainService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.issueCertificate = async (req, res) => {
+export const issueCertificate = async (req, res) => {
     try {
         const { studentAddress, courseId, certificateHash } = req.body;
         
@@ -42,4 +42,8 @@ exports.issueCertificate = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    issueCertificate
 };
