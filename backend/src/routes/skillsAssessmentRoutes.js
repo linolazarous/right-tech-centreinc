@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const skillAssessmentController = require('../controllers/skillAssessmentController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateSkillAssessment } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import skillAssessmentController from '../controllers/skillAssessmentController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateSkillAssessment } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/assess',
@@ -13,4 +13,4 @@ router.post(
   skillAssessmentController.assessSkill
 );
 
-module.exports = router;
+export default router;
