@@ -1,6 +1,6 @@
-const BadgeService = require('../services/badgeService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import BadgeService from '../services/badgeService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
 class BadgeController {
     static async getAllBadges(req, res) {
@@ -60,4 +60,4 @@ class BadgeController {
     }
 }
 
-module.exports = BadgeController;
+export default BadgeController;
