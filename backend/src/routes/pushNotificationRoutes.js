@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const notificationController = require('../controllers/pushNotificationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateNotification } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import notificationController from '../controllers/pushNotificationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateNotification } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/send',
@@ -13,4 +13,4 @@ router.post(
   notificationController.sendNotification
 );
 
-module.exports = router;
+export default router;
