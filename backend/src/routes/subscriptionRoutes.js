@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { subscribe, getUserSubscriptions } = require('../controllers/subscriptionController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateSubscription } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { subscribe, getUserSubscriptions } from '../controllers/subscriptionController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateSubscription } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/',
@@ -20,4 +20,4 @@ router.get(
   getUserSubscriptions
 );
 
-module.exports = router;
+export default router;
