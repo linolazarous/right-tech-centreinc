@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const blockchainController = require('../controllers/blockchainController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateCertificate } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import blockchainController from '../controllers/blockchainController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateCertificate } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/issue-certificate',
@@ -15,4 +15,4 @@ router.post(
   blockchainController.issueCertificate
 );
 
-module.exports = router;
+export default router;
