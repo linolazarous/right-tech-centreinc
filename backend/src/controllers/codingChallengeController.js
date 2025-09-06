@@ -1,7 +1,7 @@
-const codingChallengeService = require('../services/codingChallengeService');
-const logger = require('../utils/logger');
+import codingChallengeService from '../services/codingChallengeService.js';
+import logger from '../utils/logger.js';
 
-exports.getCodingChallenges = async (req, res) => {
+export const getCodingChallenges = async (req, res) => {
     try {
         const { difficulty, language, limit = 20 } = req.query;
         
@@ -33,4 +33,8 @@ exports.getCodingChallenges = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getCodingChallenges
 };
