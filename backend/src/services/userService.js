@@ -1,5 +1,5 @@
-const UserModel = require('../models/userModel');
-const logger = require('../utils/logger');
+import UserModel from '../models/userModel.js';
+import logger from '../utils/logger.js';
 
 class UserService {
   static async getUserProfile(userId) {
@@ -56,4 +56,4 @@ class UserService {
   }
 }
 
-module.exports = UserService;
+export default UserService;
