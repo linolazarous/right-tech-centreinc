@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const gamificationSchema = new mongoose.Schema({
   userId: { 
@@ -94,4 +94,6 @@ gamificationSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Gamification', gamificationSchema);
+const Gamification = mongoose.model('Gamification', gamificationSchema);
+
+export default Gamification;
