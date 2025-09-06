@@ -1,5 +1,5 @@
-const AffiliationModel = require('../models/affiliationModel');
-const logger = require('../utils/logger');
+import AffiliationModel from '../models/affiliationModel.js';
+import logger from '../utils/logger.js';
 
 class AffiliationService {
   /**
@@ -39,4 +39,4 @@ class AffiliationService {
   }
 }
 
-module.exports = AffiliationService;
+export default AffiliationService;
