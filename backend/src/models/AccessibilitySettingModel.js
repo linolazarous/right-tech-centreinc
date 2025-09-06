@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const accessibilitySettingSchema = new mongoose.Schema({
   userId: {
@@ -160,4 +160,4 @@ accessibilitySettingSchema.query.activeSettings = function() {
 
 const AccessibilitySetting = mongoose.model('AccessibilitySetting', accessibilitySettingSchema);
 
-module.exports = AccessibilitySetting;
+export default AccessibilitySetting;
