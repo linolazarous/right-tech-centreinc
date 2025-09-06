@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
-const { validateUserId } = require('../validators/userValidator');
+import User from '../models/User.js';
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
+import { validateUserId } from '../validators/userValidator.js';
 
 /**
  * Get personalized learning path for user
@@ -9,7 +9,7 @@ const { validateUserId } = require('../validators/userValidator');
  * @param {boolean} refresh - Force refresh of path
  * @returns {Promise<Object>} Learning path
  */
-exports.getLearningPath = async (userId, refresh = false) => {
+export const getLearningPath = async (userId, refresh = false) => {
   try {
     const validation = validateUserId(userId);
     if (!validation.valid) {
