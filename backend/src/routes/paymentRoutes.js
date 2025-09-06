@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const paymentController = require('../controllers/paymentController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validatePayment } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import paymentController from '../controllers/paymentController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validatePayment } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/create-payment-intent',
@@ -13,4 +13,4 @@ router.post(
   paymentController.createPaymentIntent
 );
 
-module.exports = router;
+export default router;
