@@ -1,8 +1,8 @@
-const zoom = require('../services/zoomService');
-const logger = require('../utils/logger');
-const { validateZoomMeeting } = require('../validators/zoomValidator');
+import zoom from '../services/zoomService.js';
+import logger from '../utils/logger.js';
+import { validateZoomMeeting } from '../validators/zoomValidator.js';
 
-exports.scheduleMeeting = async (req, res) => {
+export const scheduleMeeting = async (req, res) => {
     try {
         const meetingData = req.body;
         
@@ -41,4 +41,8 @@ exports.scheduleMeeting = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    scheduleMeeting
 };
