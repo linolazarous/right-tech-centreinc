@@ -1,7 +1,7 @@
-const virtualLabService = require('../services/virtualLabService');
-const logger = require('../utils/logger');
+import virtualLabService from '../services/virtualLabService.js';
+import logger from '../utils/logger.js';
 
-exports.getVirtualLabs = async (req, res) => {
+export const getVirtualLabs = async (req, res) => {
     try {
         const { subject, difficulty, limit = 20 } = req.query;
         
@@ -29,4 +29,8 @@ exports.getVirtualLabs = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getVirtualLabs
 };
