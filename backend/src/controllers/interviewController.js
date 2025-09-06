@@ -1,7 +1,7 @@
-const { generateInterviewQuestions, simulateInterview } = require("../services/interviewService");
-const logger = require('../utils/logger');
+import { generateInterviewQuestions, simulateInterview } from "../services/interviewService.js";
+import logger from '../utils/logger.js';
 
-const getInterviewQuestions = async (req, res) => {
+export const getInterviewQuestions = async (req, res) => {
     const { jobRole, difficulty = 'medium', count = 10 } = req.body;
     
     try {
@@ -37,7 +37,7 @@ const getInterviewQuestions = async (req, res) => {
     }
 };
 
-const conductMockInterview = async (req, res) => {
+export const conductMockInterview = async (req, res) => {
     const { jobRole, userResponses } = req.body;
     
     try {
@@ -68,7 +68,7 @@ const conductMockInterview = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     getInterviewQuestions, 
     conductMockInterview 
 };
