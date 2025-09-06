@@ -1,5 +1,5 @@
-const { TranslationServiceClient } = require('@google-cloud/translate').v3;
-const logger = require('../utils/logger');
+import { TranslationServiceClient } from '@google-cloud/translate';
+import logger from '../utils/logger.js';
 
 const translationClient = new TranslationServiceClient({
   projectId: process.env.GOOGLE_PROJECT_ID,
@@ -35,4 +35,4 @@ class TranslationService {
   }
 }
 
-module.exports = TranslationService;
+export default TranslationService;
