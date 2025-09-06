@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const learningPathController = require('../controllers/learningPathController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateUserIdParam } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import learningPathController from '../controllers/learningPathController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateUserIdParam } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/learning-path/:userId',
@@ -13,4 +13,4 @@ router.get(
   learningPathController.getLearningPath
 );
 
-module.exports = router;
+export default router;
