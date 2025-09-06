@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const BadgeController = require('../controllers/badgeController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateBadgeAssignment } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import BadgeController from '../controllers/badgeController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateBadgeAssignment } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 // Get all badges
 router.get(
@@ -21,4 +21,4 @@ router.post(
   BadgeController.assignBadgeToUser
 );
 
-module.exports = router;
+export default router;
