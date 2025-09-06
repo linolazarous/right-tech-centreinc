@@ -1,12 +1,12 @@
-const CodingChallenge = require('../models/CodingChallenge');
-const logger = require('../utils/logger');
+import CodingChallenge from '../models/CodingChallenge.js';
+import logger from '../utils/logger.js';
 
 /**
  * Get coding challenges with filters
  * @param {Object} filters - Filter criteria
  * @returns {Promise<Array>} List of coding challenges
  */
-exports.getCodingChallenges = async (filters = {}) => {
+export const getCodingChallenges = async (filters = {}) => {
   try {
     const { difficulty, language, limit = 20 } = filters;
 
