@@ -1,5 +1,5 @@
-const PaymentModel = require('../models/paymentModel');
-const logger = require('../utils/logger');
+import PaymentModel from '../models/paymentModel.js';
+import logger from '../utils/logger.js';
 
 class PaymentService {
   static async processPayment(paymentData) {
@@ -43,4 +43,4 @@ class PaymentService {
   }
 }
 
-module.exports = PaymentService;
+export default PaymentService;
