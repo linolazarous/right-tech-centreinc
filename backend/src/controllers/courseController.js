@@ -1,8 +1,8 @@
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
-const { validateCourse } = require('../validators/courseValidator');
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
+import { validateCourse } from '../validators/courseValidator.js';
 
-exports.createCourse = async (req, res) => {
+export const createCourse = async (req, res) => {
     try {
         const courseData = req.body;
         
@@ -42,7 +42,7 @@ exports.createCourse = async (req, res) => {
     }
 };
 
-exports.getCourses = async (req, res) => {
+export const getCourses = async (req, res) {
     try {
         const { category, instructor, limit = 20 } = req.query;
         
@@ -73,4 +73,9 @@ exports.getCourses = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    createCourse,
+    getCourses
 };
