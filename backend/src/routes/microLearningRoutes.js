@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { createLesson, getAllLessons } = require('../controllers/microLearningController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateMicroLesson } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { createLesson, getAllLessons } from '../controllers/microLearningController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateMicroLesson } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/',
@@ -21,4 +21,4 @@ router.get(
   getAllLessons
 );
 
-module.exports = router;
+export default router;
