@@ -1,8 +1,8 @@
-const pushNotificationService = require('../services/pushNotificationService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import pushNotificationService from '../services/pushNotificationService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.sendNotification = async (req, res) => {
+export const sendNotification = async (req, res) => {
     try {
         const { userId, message, data = {}, priority = 'normal' } = req.body;
         
@@ -45,4 +45,8 @@ exports.sendNotification = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    sendNotification
 };
