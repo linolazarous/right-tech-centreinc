@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const { URL_REGEX } = require('../constants/regexPatterns');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const adSchema = new mongoose.Schema({
   title: { 
@@ -274,4 +273,4 @@ adSchema.query.byAudience = function(audience) {
 
 const Ad = mongoose.model('Ad', adSchema);
 
-module.exports = Ad;
+export default Ad;
