@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const socialController = require('../controllers/socialController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateStudyGroup } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import socialController from '../controllers/socialController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateStudyGroup } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/study-groups',
@@ -20,4 +20,4 @@ router.get(
   socialController.getStudyGroups
 );
 
-module.exports = router;
+export default router;
