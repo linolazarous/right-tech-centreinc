@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const certificateController = require('../controllers/certificateController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateCertificate } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import certificateController from '../controllers/certificateController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateCertificate } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/issue-certificate',
@@ -15,4 +15,4 @@ router.post(
   certificateController.issueCertificate
 );
 
-module.exports = router;
+export default router;
