@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const { v4: uuidv4 } = require('uuid');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import { v4 as uuidv4 } from 'uuid';
 
 const arLearningSchema = new mongoose.Schema({
   // Core Content Information
@@ -442,4 +442,4 @@ arLearningSchema.methods = {
 
 const ARLearning = mongoose.model('ARLearning', arLearningSchema);
 
-module.exports = ARLearning;
+export default ARLearning;
