@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const forumSchema = new mongoose.Schema({
   title: { 
@@ -47,4 +47,6 @@ forumSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Forum', forumSchema);
+const Forum = mongoose.model('Forum', forumSchema);
+
+export default Forum;
