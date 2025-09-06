@@ -1,8 +1,8 @@
-const skillAssessmentService = require('../services/skillAssessmentService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import skillAssessmentService from '../services/skillAssessmentService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.assessSkill = async (req, res) => {
+export const assessSkill = async (req, res) => {
     try {
         const { userId, skill, assessmentType = 'auto' } = req.body;
         
@@ -39,4 +39,8 @@ exports.assessSkill = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    assessSkill
 };
