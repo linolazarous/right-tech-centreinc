@@ -1,13 +1,13 @@
-const User = require('../models/User');
-const Course = require('../models/Course');
-const logger = require('../utils/logger');
+import User from '../models/User.js';
+import Course from '../models/Course.js';
+import logger from '../utils/logger.js';
 
 /**
  * Get student progress analytics
  * @param {string} userId - User ID
  * @returns {Promise<Array>} Course progress data
  */
-exports.getStudentProgress = async (userId) => {
+export const getStudentProgress = async (userId) => {
   try {
     logger.info(`Fetching progress for user ${userId}`);
     const user = await User.findById(userId)
@@ -29,7 +29,7 @@ exports.getStudentProgress = async (userId) => {
   } catch (error) {
     logger.error(`Error getting progress for user ${userId}: ${error.message}`);
     throw error;
-  }
+    }
 };
 
 /**
@@ -37,7 +37,7 @@ exports.getStudentProgress = async (userId) => {
  * @param {string} userId - User ID
  * @returns {Promise<Object>} Engagement metrics
  */
-exports.getEngagementMetrics = async (userId) => {
+export const getEngagementMetrics = async (userId) => {
   try {
     logger.info(`Fetching engagement metrics for user ${userId}`);
     const user = await User.findById(userId);
