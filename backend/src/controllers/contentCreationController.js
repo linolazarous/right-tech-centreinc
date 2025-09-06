@@ -1,7 +1,7 @@
-const { generateCourseContent } = require("../services/contentCreationService");
-const logger = require('../utils/logger');
+import { generateCourseContent } from "../services/contentCreationService.js";
+import logger from '../utils/logger.js';
 
-const createCourseContent = async (req, res) => {
+export const createCourseContent = async (req, res) => {
     const { topic, audience, depth = 'intermediate' } = req.body;
     
     try {
@@ -39,6 +39,6 @@ const createCourseContent = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createCourseContent 
 };
