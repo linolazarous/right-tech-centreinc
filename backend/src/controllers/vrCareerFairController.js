@@ -1,8 +1,8 @@
-const { createVREvent } = require("../services/vrCareerFairService");
-const logger = require('../utils/logger');
-const { validateVREvent } = require('../validators/vrValidator');
+import { createVREvent } from "../services/vrCareerFairService.js";
+import logger from '../utils/logger.js';
+import { validateVREvent } from '../validators/vrValidator.js';
 
-const createEvent = async (req, res) => {
+export const createEvent = async (req, res) => {
     const { eventName, eventDetails } = req.body;
     
     try {
@@ -38,6 +38,6 @@ const createEvent = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createEvent 
 };
