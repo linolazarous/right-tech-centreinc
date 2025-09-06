@@ -1,6 +1,6 @@
-const Web3 = require('web3');
-const contractABI = require('../contracts/CertificateContract.json');
-const logger = require('../utils/logger');
+import Web3 from 'web3';
+import contractABI from '../contracts/CertificateContract.json' assert { type: 'json' };
+import logger from '../utils/logger.js';
 
 const web3 = new Web3(process.env.BLOCKCHAIN_NODE_URL);
 const contractAddress = process.env.CERTIFICATE_CONTRACT_ADDRESS;
@@ -13,7 +13,7 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
  * @param {string} certificateHash - Certificate hash
  * @returns {Promise<Object>} Transaction result
  */
-exports.issueCertificate = async (studentAddress, courseId, certificateHash) => {
+export const issueCertificate = async (studentAddress, courseId, certificateHash) => {
   try {
     // Validate inputs
     if (!web3.utils.isAddress(studentAddress)) {
