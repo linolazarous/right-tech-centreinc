@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const slugify = require('slugify');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import slugify from 'slugify';
 
 const AffiliationSchema = new mongoose.Schema({
   name: {
@@ -277,4 +277,4 @@ AffiliationSchema.query.byLocation = function(city) {
 
 const Affiliation = mongoose.model('Affiliation', AffiliationSchema);
 
-module.exports = Affiliation;
+export default Affiliation;
