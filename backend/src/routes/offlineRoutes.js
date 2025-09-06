@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const offlineController = require('../controllers/offlineController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateCourseId } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import offlineController from '../controllers/offlineController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateCourseId } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/download-course/:courseId',
@@ -13,4 +13,4 @@ router.get(
   offlineController.downloadCourse
 );
 
-module.exports = router;
+export default router;
