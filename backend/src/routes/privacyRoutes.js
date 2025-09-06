@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { getPrivacyPolicy, deleteUserData } = require('../controllers/privacyController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateDataDeletion } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { getPrivacyPolicy, deleteUserData } from '../controllers/privacyController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateDataDeletion } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/privacy-policy',
@@ -19,4 +19,4 @@ router.delete(
   deleteUserData
 );
 
-module.exports = router;
+export default router;
