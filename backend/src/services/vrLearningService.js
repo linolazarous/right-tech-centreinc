@@ -1,5 +1,5 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
+import axios from 'axios';
+import logger from '../utils/logger.js';
 
 class VRLearningService {
   static async createVRLesson(lessonName, vrContent) {
@@ -46,4 +46,4 @@ class VRLearningService {
   }
 }
 
-module.exports = VRLearningService;
+export default VRLearningService;
