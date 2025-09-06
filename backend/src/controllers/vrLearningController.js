@@ -1,8 +1,8 @@
-const { createVRLesson } = require("../services/vrLearningService");
-const logger = require('../utils/logger');
-const { validateVRLesson } = require('../validators/vrValidator');
+import { createVRLesson } from "../services/vrLearningService.js";
+import logger from '../utils/logger.js';
+import { validateVRLesson } from '../validators/vrValidator.js';
 
-const createLesson = async (req, res) => {
+export const createLesson = async (req, res) => {
     const { lessonName, vrContent, duration, difficulty } = req.body;
     
     try {
@@ -43,6 +43,6 @@ const createLesson = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     createLesson 
 };
