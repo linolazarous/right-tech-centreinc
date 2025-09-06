@@ -1,6 +1,6 @@
-const { TranslationServiceClient } = require('@google-cloud/translate').v3;
-const logger = require('../utils/logger');
-const { validateTranslation } = require('../validators/languageValidator');
+import { TranslationServiceClient } from '@google-cloud/translate';
+import logger from '../utils/logger.js';
+import { validateTranslation } from '../validators/languageValidator.js';
 
 const translationClient = new TranslationServiceClient({
   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
@@ -13,7 +13,7 @@ const translationClient = new TranslationServiceClient({
  * @param {string} [sourceLanguage] - Source language code (optional)
  * @returns {Promise<string>} Translated text
  */
-const translateText = async (text, targetLanguage, sourceLanguage = 'en') => {
+export const translateText = async (text, targetLanguage, sourceLanguage = 'en') => {
   try {
     const validation = validateTranslation({ text, targetLanguage });
     if (!validation.valid) {
@@ -49,5 +49,3 @@ const translateText = async (text, targetLanguage, sourceLanguage = 'en') => {
     throw new Error('Failed to translate text');
   }
 };
-
-module.exports = { translateText };
