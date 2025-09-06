@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const recommendationController = require('../controllers/recommendationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateRecommendationQuery } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import recommendationController from '../controllers/recommendationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateRecommendationQuery } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/recommendations',
@@ -13,4 +13,4 @@ router.get(
   recommendationController.getRecommendations
 );
 
-module.exports = router;
+export default router;
