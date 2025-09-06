@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { createCourseContent } = require('../controllers/contentCreationController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateContentCreation } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { createCourseContent } from '../controllers/contentCreationController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateContentCreation } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/create',
@@ -15,4 +15,4 @@ router.post(
   createCourseContent
 );
 
-module.exports = router;
+export default router;
