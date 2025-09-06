@@ -1,7 +1,7 @@
-const proctoringService = require('../services/proctoringService');
-const logger = require('../utils/logger');
+import proctoringService from '../services/proctoringService.js';
+import logger from '../utils/logger.js';
 
-exports.monitorExam = async (req, res) => {
+export const monitorExam = async (req, res) => {
     try {
         const { examId, userId, videoStream } = req.body;
         
@@ -41,4 +41,8 @@ exports.monitorExam = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    monitorExam
 };
