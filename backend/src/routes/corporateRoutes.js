@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const corporateTrainingController = require('../controllers/corporateTrainingController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateCorporateTraining } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import corporateTrainingController from '../controllers/corporateTrainingController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateCorporateTraining } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/corporate-training',
@@ -15,4 +15,4 @@ router.post(
   corporateTrainingController.createTraining
 );
 
-module.exports = router;
+export default router;
