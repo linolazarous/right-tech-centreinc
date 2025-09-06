@@ -1,13 +1,13 @@
-const User = require('../models/User');
-const CareerPath = require('../models/CareerPath');
-const logger = require('../utils/logger');
+import User from '../models/User.js';
+import CareerPath from '../models/CareerPath.js';
+import logger from '../utils/logger.js';
 
 /**
  * Recommend career paths based on user profile
  * @param {string} userId - User ID
  * @returns {Promise<Array>} Recommended career paths
  */
-exports.recommendCareerPath = async (userId) => {
+export const recommendCareerPath = async (userId) => {
   try {
     logger.info(`Generating career path recommendations for user ${userId}`);
     
@@ -27,7 +27,7 @@ exports.recommendCareerPath = async (userId) => {
     // Score paths based on user profile
     const scoredPaths = allPaths.map(path => ({
       ...path.toObject(),
-      score: this.calculatePathScore(path, user)
+      score: calculatePathScore(path, user)
     }));
 
     // Sort by score and return top 5
@@ -54,7 +54,7 @@ exports.recommendCareerPath = async (userId) => {
  * @param {Object} user - User profile
  * @returns {number} Match score (0-100)
  */
-exports.calculatePathScore = (path, user) => {
+export const calculatePathScore = (path, user) => {
   const userSkills = new Set(user.skills.map(skill => skill.name));
   const requiredSkills = new Set(path.requiredSkills);
 
