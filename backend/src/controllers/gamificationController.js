@@ -1,8 +1,8 @@
-const gamificationService = require('../services/gamificationService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import gamificationService from '../services/gamificationService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.awardBadge = async (req, res) => {
+export const awardBadge = async (req, res) => {
     try {
         const { userId, badgeId, reason } = req.body;
         
@@ -39,4 +39,8 @@ exports.awardBadge = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    awardBadge
 };
