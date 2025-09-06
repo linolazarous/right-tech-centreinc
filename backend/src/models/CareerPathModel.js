@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const careerPathSchema = new mongoose.Schema({
   title: { 
@@ -207,4 +207,6 @@ careerPathSchema.methods.markStepCompleted = function(stepIndex, userId) {
   return this.save();
 };
 
-module.exports = mongoose.model('CareerPath', careerPathSchema);
+const CareerPath = mongoose.model('CareerPath', careerPathSchema);
+
+export default CareerPath;
