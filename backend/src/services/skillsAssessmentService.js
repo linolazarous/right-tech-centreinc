@@ -1,5 +1,5 @@
-const AssessmentResult = require('../models/AssessmentResult');
-const logger = require('../utils/logger');
+import AssessmentResult from '../models/AssessmentResult.js';
+import logger from '../utils/logger.js';
 
 class SkillsAssessmentService {
   static async assessSkill(userId, skill, answers) {
@@ -49,4 +49,4 @@ class SkillsAssessmentService {
   }
 }
 
-module.exports = SkillsAssessmentService;
+export default SkillsAssessmentService;
