@@ -1,8 +1,8 @@
-const CertificateService = require('../services/certificateService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import CertificateService from '../services/certificateService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.issueCertificate = async (req, res) => {
+export const issueCertificate = async (req, res) => {
     try {
         const { userId, courseId, completionDate } = req.body;
         
@@ -43,4 +43,8 @@ exports.issueCertificate = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    issueCertificate
 };
