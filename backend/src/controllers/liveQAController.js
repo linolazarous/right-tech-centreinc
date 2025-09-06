@@ -1,7 +1,7 @@
-const liveQAService = require('../services/liveQAService');
-const logger = require('../utils/logger');
+import liveQAService from '../services/liveQAService.js';
+import logger from '../utils/logger.js';
 
-exports.scheduleLiveQA = async (req, res) => {
+export const scheduleLiveQA = async (req, res) => {
     try {
         const { title, hostId, scheduledTime, duration } = req.body;
         
@@ -51,4 +51,8 @@ exports.scheduleLiveQA = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    scheduleLiveQA
 };
