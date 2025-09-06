@@ -1,6 +1,6 @@
-const OpenAI = require("openai");
-const logger = require('../utils/logger');
-const { validateInterviewRequest } = require('../validators/interviewValidator');
+import OpenAI from "openai";
+import logger from '../utils/logger.js';
+import { validateInterviewRequest } from '../validators/interviewValidator.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -11,7 +11,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * @param {number} count - Number of questions
  * @returns {Promise<Array>} Generated questions
  */
-const generateInterviewQuestions = async (jobRole, difficulty = 'medium', count = 5) => {
+export const generateInterviewQuestions = async (jobRole, difficulty = 'medium', count = 5) => {
   try {
     const validation = validateInterviewRequest({ jobRole, difficulty, count });
     if (!validation.valid) {
@@ -52,7 +52,7 @@ const generateInterviewQuestions = async (jobRole, difficulty = 'medium', count 
  * @param {Array} userResponses - User responses
  * @returns {Promise<Object>} Interview feedback
  */
-const simulateInterview = async (jobRole, userResponses) => {
+export const simulateInterview = async (jobRole, userResponses) => {
   try {
     if (!Array.isArray(userResponses) || userResponses.length === 0) {
       throw new Error('Invalid user responses');
@@ -84,5 +84,3 @@ const simulateInterview = async (jobRole, userResponses) => {
     throw error;
   }
 };
-
-module.exports = { generateInterviewQuestions, simulateInterview };
