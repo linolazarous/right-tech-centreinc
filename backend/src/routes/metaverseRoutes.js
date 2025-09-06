@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { createCampus } = require('../controllers/metaverseController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateMetaverseCampus } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { createCampus } from '../controllers/metaverseController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateMetaverseCampus } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/create',
@@ -15,4 +15,4 @@ router.post(
   createCampus
 );
 
-module.exports = router;
+export default router;
