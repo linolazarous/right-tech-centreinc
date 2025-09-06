@@ -1,6 +1,6 @@
-const Scholarship = require('../models/Scholarship');
-const Student = require('../models/Student');
-const logger = require('../utils/logger');
+import Scholarship from '../models/Scholarship.js';
+import Student from '../models/Student.js';
+import logger from '../utils/logger.js';
 
 class ScholarshipService {
   static async allocateScholarship(studentId, criteria) {
@@ -50,4 +50,4 @@ class ScholarshipService {
   }
 }
 
-module.exports = ScholarshipService;
+export default ScholarshipService;
