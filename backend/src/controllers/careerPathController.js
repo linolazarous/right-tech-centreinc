@@ -1,6 +1,6 @@
-const CareerPathService = require('../services/careerPathService');
-const logger = require('../utils/logger');
-const { validateCareerPath } = require('../validators/careerPathValidator');
+import CareerPathService from '../services/careerPathService.js';
+import logger from '../utils/logger.js';
+import { validateCareerPath } from '../validators/careerPathValidator.js';
 
 class CareerPathController {
     static async getCareerPaths(req, res) {
@@ -67,4 +67,4 @@ class CareerPathController {
     }
 }
 
-module.exports = CareerPathController;
+export default CareerPathController;
