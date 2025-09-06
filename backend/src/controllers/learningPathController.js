@@ -1,8 +1,8 @@
-const learningPathService = require('../services/learningPathService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import learningPathService from '../services/learningPathService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.getLearningPath = async (req, res) => {
+export const getLearningPath = async (req, res) => {
     try {
         const { userId } = req.params;
         const { refresh = false } = req.query;
@@ -40,4 +40,8 @@ exports.getLearningPath = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    getLearningPath
 };
