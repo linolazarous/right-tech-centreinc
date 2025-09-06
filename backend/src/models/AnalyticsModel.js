@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const geoip = require('geoip-lite'); // For IP-based geolocation
+import mongoose from 'mongoose';
+import geoip from 'geoip-lite'; // For IP-based geolocation
 
 const analyticsSchema = new mongoose.Schema({
   userId: {
@@ -139,7 +139,7 @@ analyticsSchema.virtual('isAuthenticated').get(function() {
 analyticsSchema.pre('save', function(next) {
   // Set anonymousId if no userId
   if (!this.userId && !this.anonymousId) {
-    this.anonymousId = require('crypto').randomBytes(16).toString('hex');
+    this.anonymousId = crypto.randomBytes(16).toString('hex');
   }
 
   // Extract location info from IP
@@ -304,4 +304,4 @@ function getDateFromRange(range) {
 
 const Analytics = mongoose.model('Analytics', analyticsSchema);
 
-module.exports = Analytics;
+export default Analytics;
