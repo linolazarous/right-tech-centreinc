@@ -1,13 +1,13 @@
-const Certificate = require('../models/Certificate');
-const logger = require('../utils/logger');
-const { generateCertificateHash } = require('../utils/certificateUtils');
+import Certificate from '../models/Certificate.js';
+import logger from '../utils/logger.js';
+import { generateCertificateHash } from '../utils/certificateUtils.js';
 
 /**
  * Issue a certificate
  * @param {Object} data - Certificate data
  * @returns {Promise<Object>} Issued certificate
  */
-exports.issueCertificate = async (data) => {
+export const issueCertificate = async (data) => {
   try {
     const { userId, courseId, completionDate } = data;
 
