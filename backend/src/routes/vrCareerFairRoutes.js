@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { createEvent } = require('../controllers/vrCareerFairController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateVREvent } = require('../middleware/validationMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { createEvent } from '../controllers/vrCareerFairController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateVREvent } from '../middleware/validationMiddleware.js';
+import roleMiddleware from '../middleware/roleMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/create-event',
@@ -15,4 +15,4 @@ router.post(
   createEvent
 );
 
-module.exports = router;
+export default router;
