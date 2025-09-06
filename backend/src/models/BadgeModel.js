@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const badgeSchema = new mongoose.Schema({
   name: { 
@@ -154,4 +154,6 @@ badgeSchema.statics.search = function(query) {
   });
 };
 
-module.exports = mongoose.model('Badge', badgeSchema);
+const Badge = mongoose.model('Badge', badgeSchema);
+
+export default Badge;
