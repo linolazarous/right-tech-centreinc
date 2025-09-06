@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const codingChallengeController = require('../controllers/codingChallengeController');
-const { validateChallengeQuery } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import codingChallengeController from '../controllers/codingChallengeController.js';
+import { validateChallengeQuery } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/challenges',
@@ -11,4 +11,4 @@ router.get(
   codingChallengeController.getCodingChallenges
 );
 
-module.exports = router;
+export default router;
