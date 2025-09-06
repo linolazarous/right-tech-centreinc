@@ -1,8 +1,8 @@
-const scholarshipService = require('../services/scholarshipService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import scholarshipService from '../services/scholarshipService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.allocateScholarship = async (req, res) => {
+export const allocateScholarship = async (req, res) => {
     try {
         const { studentId, criteria } = req.body;
         
@@ -38,4 +38,8 @@ exports.allocateScholarship = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    allocateScholarship
 };
