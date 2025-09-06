@@ -1,8 +1,8 @@
-const Ad = require('../models/AdModel');
-const { generateAdContent } = require("../services/adService");
-const { postToSocialMedia } = require("../services/socialMediaService");
-const logger = require('../utils/logger');
-const { getUserPreferences } = require('../services/userService');
+import Ad from '../models/AdModel.js';
+import { generateAdContent } from "../services/adService.js";
+import { postToSocialMedia } from "../services/socialMediaService.js";
+import logger from '../utils/logger.js';
+import { getUserPreferences } from '../services/userService.js';
 
 const socialMediaPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
 
@@ -11,7 +11,7 @@ const socialMediaPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'y
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-const generateAndPostAd = async (req, res) => {
+export const generateAndPostAd = async (req, res) => {
   const { userId } = req.body;
   
   try {
@@ -63,6 +63,6 @@ const generateAndPostAd = async (req, res) => {
   }
 };
 
-module.exports = { 
+export default { 
   generateAndPostAd 
 };
