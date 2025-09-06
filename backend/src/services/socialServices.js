@@ -1,5 +1,5 @@
-const StudyGroup = require('../models/StudyGroup');
-const logger = require('../utils/logger');
+import StudyGroup from '../models/StudyGroup.js';
+import logger from '../utils/logger.js';
 
 class SocialService {
   static async createStudyGroup(groupData) {
@@ -44,4 +44,4 @@ class SocialService {
   }
 }
 
-module.exports = SocialService;
+export default SocialService;
