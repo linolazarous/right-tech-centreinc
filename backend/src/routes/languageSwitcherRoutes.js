@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { translate } = require('../controllers/languageSwitcherController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateTranslation } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import { translate } from '../controllers/languageSwitcherController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateTranslation } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.post(
   '/translate',
@@ -20,4 +20,4 @@ router.get(
   (req, res) => res.json({ supportedLanguages: ['en', 'es', 'fr', 'de'] })
 );
 
-module.exports = router;
+export default router;
