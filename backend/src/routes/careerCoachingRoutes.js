@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const careerCoachingController = require('../controllers/careerCoachingController');
-const authMiddleware = require('../middleware/authMiddleware');
-const { validateUserIdParam } = require('../middleware/validationMiddleware');
-const rateLimit = require('../middleware/rateLimitMiddleware');
+import careerCoachingController from '../controllers/careerCoachingController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+import { validateUserIdParam } from '../middleware/validationMiddleware.js';
+import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 router.get(
   '/advice/:userId',
@@ -13,4 +13,4 @@ router.get(
   careerCoachingController.getCareerAdvice
 );
 
-module.exports = router;
+export default router;
