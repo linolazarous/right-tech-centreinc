@@ -1,5 +1,5 @@
-const axios = require('axios');
-const logger = require('../utils/logger');
+import axios from 'axios';
+import logger from '../utils/logger.js';
 
 class SocialMediaService {
   static async postToSocialMedia(platform, content) {
@@ -41,4 +41,4 @@ class SocialMediaService {
   }
 }
 
-module.exports = SocialMediaService;
+export default SocialMediaService;
