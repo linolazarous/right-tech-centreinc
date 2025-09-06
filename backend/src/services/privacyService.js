@@ -1,5 +1,5 @@
-const PrivacyModel = require('../models/privacyModel');
-const logger = require('../utils/logger');
+import PrivacyModel from '../models/privacyModel.js';
+import logger from '../utils/logger.js';
 
 class PrivacyService {
   static async updatePrivacySettings(userId, privacyData) {
@@ -47,4 +47,4 @@ class PrivacyService {
   }
 }
 
-module.exports = PrivacyService;
+export default PrivacyService;
