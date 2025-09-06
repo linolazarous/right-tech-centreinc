@@ -1,8 +1,8 @@
-const resumeBuilderService = require('../services/resumeBuilderService');
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import resumeBuilderService from '../services/resumeBuilderService.js';
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-exports.generateResume = async (req, res) => {
+export const generateResume = async (req, res) => {
     try {
         const { userId } = req.params;
         const { template = 'professional', format = 'pdf' } = req.query;
@@ -41,4 +41,8 @@ exports.generateResume = async (req, res) => {
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
+};
+
+export default {
+    generateResume
 };
