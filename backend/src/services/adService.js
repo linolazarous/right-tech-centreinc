@@ -1,6 +1,6 @@
-const OpenAI = require("openai");
-const logger = require('../utils/logger');
-const { validateAdPreferences } = require('../validators/adValidator');
+import OpenAI from "openai";
+import logger from '../utils/logger.js';
+import { validateAdPreferences } from '../validators/adValidator.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -35,4 +35,4 @@ const generateAdContent = async (userPreferences) => {
   }
 };
 
-module.exports = { generateAdContent };
+export { generateAdContent };
