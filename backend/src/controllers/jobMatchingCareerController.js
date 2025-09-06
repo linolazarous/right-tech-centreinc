@@ -1,10 +1,13 @@
-const { matchJobs } = require("../services/jobMatchingService");
-const { generateResume } = require("../services/resumeService");
-const { generateInterviewQuestions, simulateInterview } = require("../services/interviewService");
-const logger = require('../utils/logger');
-const { isValidObjectId } = require('../utils/helpers');
+import { matchJobs } from "../services/jobMatchingService.js";
+import { generateResume } from "../services/resumeService.js";
+import { generateInterviewQuestions, simulateInterview } from "../services/interviewService.js";
+import logger from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-const getJobMatches = async (req, res) => {
+// These functions need to be implemented or imported
+import { getUserSkills, getUserPreferences, getUserExperience } from '../services/userService.js';
+
+export const getJobMatches = async (req, res) => {
     const { userId } = req.body;
     
     try {
@@ -36,7 +39,7 @@ const getJobMatches = async (req, res) => {
     }
 };
 
-const createResume = async (req, res) => {
+export const createResume = async (req, res) => {
     const { userId, template = 'modern' } = req.body;
     
     try {
@@ -73,9 +76,7 @@ const createResume = async (req, res) => {
     }
 };
 
-module.exports = { 
+export default { 
     getJobMatches, 
-    createResume,
-    getInterviewQuestions: require('./interviewController').getInterviewQuestions,
-    conductMockInterview: require('./interviewController').conductMockInterview
+    createResume
 };
