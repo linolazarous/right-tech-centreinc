@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const virtualLabSchema = new mongoose.Schema({
   title: { 
@@ -52,7 +52,6 @@ const virtualLabSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-// Indexes
 virtualLabSchema.index({ title: 'text', description: 'text' });
 virtualLabSchema.index({ status: 1 });
 virtualLabSchema.index({ accessLevel: 1 });
@@ -60,7 +59,6 @@ virtualLabSchema.index({ courseId: 1 });
 virtualLabSchema.index({ tags: 1 });
 virtualLabSchema.index({ createdBy: 1 });
 
-// Pre-save hooks
 virtualLabSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   
@@ -71,7 +69,6 @@ virtualLabSchema.pre('save', function(next) {
   next();
 });
 
-// Optional: Add static methods for common queries
 virtualLabSchema.statics.findByCourse = function(courseId) {
   return this.find({ courseId }).sort({ createdAt: -1 });
 };
@@ -80,4 +77,4 @@ virtualLabSchema.statics.findPublicLabs = function() {
   return this.find({ accessLevel: 'public', status: 'active' });
 };
 
-module.exports = mongoose.model('VirtualLab', virtualLabSchema);
+export default mongoose.model('VirtualLab', virtualLabSchema);
