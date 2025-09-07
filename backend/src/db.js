@@ -26,7 +26,7 @@ const mongoOptions = {
   connectTimeoutMS: 10000,
   family: 4,
   heartbeatFrequencyMS: 10000,
-  appName: 'right-tech-centre'
+  appName: 'righttechcentre'
 };
 
 // Production-optimized configuration
@@ -163,3 +163,4 @@ export default {
   mongoURI: MONGO_URI,
   connectionOptions: mongoOptions
 };
+
