@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const languageSwitcherSchema = new mongoose.Schema({
   userId: {
@@ -146,4 +146,6 @@ languageSwitcherSchema.query.byLanguage = function(language) {
   return this.where('preferredLanguage', language.toUpperCase());
 };
 
-module.exports = mongoose.model('LanguageSwitcher', languageSwitcherSchema);
+const LanguageSwitcher = mongoose.model('LanguageSwitcher', languageSwitcherSchema);
+
+export default LanguageSwitcher;
