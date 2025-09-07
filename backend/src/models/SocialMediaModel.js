@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const socialMediaSchema = new mongoose.Schema(
   {
@@ -7,7 +7,7 @@ const socialMediaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required'],
-      index: true // Critical for DigitalOcean query performance
+      index: true
     },
     platform: {
       type: String,
@@ -16,7 +16,7 @@ const socialMediaSchema = new mongoose.Schema(
         values: ['facebook', 'twitter', 'linkedin', 'instagram', 'youtube', 'github', 'tiktok', 'pinterest'],
         message: 'Invalid social media platform'
       },
-      lowercase: true, // Ensure consistent casing
+      lowercase: true,
       trim: true
     },
     profileUrl: {
@@ -24,10 +24,9 @@ const socialMediaSchema = new mongoose.Schema(
       required: [true, 'Profile URL is required'],
       validate: {
         validator: function(v) {
-          // Platform-specific URL validation
           const urlPatterns = {
             facebook: /(?:https?:\/\/)?(?:www\.)?(?:facebook|fb)\.com\/([a-zA-Z0-9._-]+)\/?/,
-            twitter: /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/([a-zA-Z0-9_]{1,15})\/?/,
+            twitter: /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/([a-zA-Z0-9_]{1,15)\/?/,
             linkedin: /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]+\/?/,
             instagram: /(?:https?:\/\/)?(?:www\.)?instagram\.com\/([a-zA-Z0-9._-]+)\/?/,
             youtube: /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(@|[a-zA-Z0-9._-]+)\/?/,
@@ -71,16 +70,14 @@ const socialMediaSchema = new mongoose.Schema(
     }
   },
   {
-    // DigitalOcean Optimized Settings
-    timestamps: true, // createdAt and updatedAt
-    strict: true, // Reject undefined fields
+    timestamps: true,
+    strict: true,
     toJSON: {
       virtuals: true,
       transform: function(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
-        // Hide sensitive verification data
         if (!ret.isVerified) {
           delete ret.verificationData;
         }
@@ -91,17 +88,14 @@ const socialMediaSchema = new mongoose.Schema(
   }
 );
 
-// DigitalOcean Performance Indexes
-socialMediaSchema.index({ userId: 1, platform: 1 }, { unique: true }); // Prevent duplicates
-socialMediaSchema.index({ platform: 1, 'metrics.followers': -1 }); // For leaderboards
-socialMediaSchema.index({ 'metrics.lastUpdated': -1 }); // For stale data checks
+socialMediaSchema.index({ userId: 1, platform: 1 }, { unique: true });
+socialMediaSchema.index({ platform: 1, 'metrics.followers': -1 });
+socialMediaSchema.index({ 'metrics.lastUpdated': -1 });
 
-// Virtual for platform icon URL (DigitalOcean Spaces)
 socialMediaSchema.virtual('platformIcon').get(function() {
   return `${process.env.DO_SPACE_URL}/social-icons/${this.platform}.svg`;
 });
 
-// Query Helpers for DigitalOcean Efficiency
 socialMediaSchema.query.byPlatform = function(platform) {
   return this.where({ platform: platform.toLowerCase() });
 };
@@ -110,12 +104,10 @@ socialMediaSchema.query.verifiedOnly = function() {
   return this.where({ isVerified: true });
 };
 
-// DigitalOcean Monitoring Hooks
 socialMediaSchema.post('save', function(doc) {
   console.log(`[DO Monitoring] Social media added - User: ${doc.userId}, Platform: ${doc.platform}`);
 });
 
-// Auto-update lastUpdated when followers change
 socialMediaSchema.pre('save', function(next) {
   if (this.isModified('metrics.followers')) {
     this.metrics.lastUpdated = new Date();
@@ -123,7 +115,6 @@ socialMediaSchema.pre('save', function(next) {
   next();
 });
 
-// Validation for maximum social accounts per user
 socialMediaSchema.pre('save', async function(next) {
   const MAX_ACCOUNTS = 5;
   const count = await this.constructor.countDocuments({ userId: this.userId });
@@ -133,4 +124,4 @@ socialMediaSchema.pre('save', async function(next) {
   next();
 });
 
-module.exports = mongoose.model('SocialMedia', socialMediaSchema);
+export default mongoose.model('SocialMedia', socialMediaSchema);
