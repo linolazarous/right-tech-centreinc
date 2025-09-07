@@ -1,5 +1,5 @@
-import authRoutes from './authRoutes.js';
-import userRoutes from './userRoutes.js';
+import authRoutes from '../routes/authRoutes.js';
+import userRoutes from '../routes/userRoutes.js';
 
 export default {
   authRoutes,
