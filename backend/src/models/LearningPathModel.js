@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const learningPathSchema = new mongoose.Schema({
   title: {
@@ -7,7 +7,7 @@ const learningPathSchema = new mongoose.Schema({
     required: [true, 'Title is required'],
     trim: true,
     maxlength: [120, 'Title cannot exceed 120 characters'],
-    text: true // Enable text search
+    text: true
   },
   slug: {
     type: String,
@@ -43,13 +43,13 @@ const learningPathSchema = new mongoose.Schema({
     ref: 'Course',
     validate: {
       validator: function(courses) {
-        return courses.length <= 50; // Limit number of courses
+        return courses.length <= 50;
       },
       message: 'Cannot have more than 50 courses in a learning path'
     }
   }],
   duration: {
-    estimated: { type: Number, min: 0 }, // in hours
+    estimated: { type: Number, min: 0 },
     averageCompletion: { type: Number, min: 0 }
   },
   difficulty: {
@@ -106,10 +106,9 @@ const learningPathSchema = new mongoose.Schema({
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
-  timestamps: false // We're managing timestamps manually
+  timestamps: false
 });
 
-// Indexes for optimized queries
 learningPathSchema.index({ title: 'text', description: 'text', tags: 'text' });
 learningPathSchema.index({ category: 1, difficulty: 1 });
 learningPathSchema.index({ 'stats.averageRating': -1 });
@@ -117,7 +116,6 @@ learningPathSchema.index({ 'stats.enrollments': -1 });
 learningPathSchema.index({ createdBy: 1, status: 1 });
 learningPathSchema.index({ slug: 1 }, { unique: true });
 
-// Text search weights
 learningPathSchema.index({
   title: 'text',
   description: 'text',
@@ -133,7 +131,6 @@ learningPathSchema.index({
   name: 'learning_path_text_search'
 });
 
-// Virtuals
 learningPathSchema.virtual('completionRate').get(function() {
   return this.stats.enrollments > 0 
     ? (this.stats.completions / this.stats.enrollments * 100).toFixed(1)
@@ -141,19 +138,16 @@ learningPathSchema.virtual('completionRate').get(function() {
 });
 
 learningPathSchema.virtual('isNew').get(function() {
-  return new Date() - this.publishedAt < 30 * 24 * 60 * 60 * 1000; // < 30 days
+  return new Date() - this.publishedAt < 30 * 24 * 60 * 60 * 1000;
 });
 
-// Hooks
 learningPathSchema.pre('save', function(next) {
   this.updatedAt = new Date();
 
-  // Generate short description if empty
   if (!this.shortDescription && this.description) {
     this.shortDescription = this.description.substring(0, 200).replace(/\n/g, ' ').trim();
   }
 
-  // Set publishedAt when status changes to published
   if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
     this.publishedAt = new Date();
   }
@@ -161,7 +155,6 @@ learningPathSchema.pre('save', function(next) {
   next();
 });
 
-// Methods
 learningPathSchema.methods.incrementEnrollments = async function() {
   this.stats.enrollments += 1;
   await this.save();
@@ -179,7 +172,6 @@ learningPathSchema.methods.updateRating = async function(newRating) {
   await this.save();
 };
 
-// Static methods
 learningPathSchema.statics.getFeaturedPaths = function(limit = 5) {
   return this.find({ isFeatured: true, status: 'published' })
     .sort({ 'stats.enrollments': -1 })
@@ -205,4 +197,4 @@ learningPathSchema.statics.recalculateDurations = async function() {
   return paths.length;
 };
 
-module.exports = mongoose.model('LearningPath', learningPathSchema);
+export default mongoose.model('LearningPath', learningPathSchema);
