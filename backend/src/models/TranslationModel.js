@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { DO_SPACE_URL } = process.env;
+import mongoose from 'mongoose';
 
 const translationSchema = new mongoose.Schema(
   {
@@ -78,7 +77,7 @@ const translationSchema = new mongoose.Schema(
         type: String,
         validate: {
           validator: function(v) {
-            return !v || v.startsWith(DO_SPACE_URL);
+            return !v || v.startsWith(process.env.DO_SPACE_URL);
           },
           message: 'Attachment must be hosted on DigitalOcean Spaces'
         }
@@ -96,7 +95,6 @@ const translationSchema = new mongoose.Schema(
     }
   },
   {
-    // DigitalOcean Optimized Settings
     timestamps: true,
     strict: 'throw',
     toJSON: {
@@ -112,24 +110,21 @@ const translationSchema = new mongoose.Schema(
   }
 );
 
-// DigitalOcean Performance Indexes
-translationSchema.index({ userId: 1, status: 1 }); // User translations lookup
+translationSchema.index({ userId: 1, status: 1 });
 translationSchema.index({ 
   sourceLanguage: 1, 
   targetLanguage: 1 
-}); // For language pair analytics
-translationSchema.index({ createdAt: -1 }); // Recent translations
+});
+translationSchema.index({ createdAt: -1 });
 translationSchema.index({ 
   sourceText: 'text', 
   translatedText: 'text' 
-}); // Full-text search
+});
 
-// Virtuals
 translationSchema.virtual('languagePair').get(function() {
   return `${this.sourceLanguage}-${this.targetLanguage}`;
 });
 
-// Query Helpers
 translationSchema.query.byLanguagePair = function(source, target) {
   return this.where({ 
     sourceLanguage: source, 
@@ -141,12 +136,10 @@ translationSchema.query.byStatus = function(status) {
   return this.where({ status });
 };
 
-// DigitalOcean Monitoring Hooks
 translationSchema.post('save', function(doc) {
   console.log(`[DO Monitoring] Translation ${doc.status} - ID: ${doc._id}, Pair: ${doc.languagePair}`);
 });
 
-// Auto-calculate character count
 translationSchema.pre('save', function(next) {
   if (this.isModified('sourceText')) {
     this.metadata.characterCount = this.sourceText.length;
@@ -154,7 +147,6 @@ translationSchema.pre('save', function(next) {
   next();
 });
 
-// Validate attachment count
 translationSchema.pre('save', function(next) {
   if (this.attachments && this.attachments.length > 5) {
     throw new Error('Maximum 5 attachments allowed per translation');
@@ -162,4 +154,4 @@ translationSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Translation', translationSchema);
+export default mongoose.model('Translation', translationSchema);
