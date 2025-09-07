@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const vrLabSchema = new mongoose.Schema({
-  // Core Information
   title: {
     type: String,
     required: true,
@@ -33,8 +32,6 @@ const vrLabSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid URL!`
     }
   },
-
-  // Technical Specifications
   vrEnvironment: {
     type: String,
     enum: ['webxr', 'unity', 'unreal', 'custom'],
@@ -47,12 +44,10 @@ const vrLabSchema = new mongoose.Schema({
     required: true
   }],
   requiredBandwidth: {
-    type: Number, // in Mbps
+    type: Number,
     min: 1,
     default: 10
   },
-
-  // Educational Metadata
   learningObjectives: [{
     type: String,
     trim: true,
@@ -64,7 +59,7 @@ const vrLabSchema = new mongoose.Schema({
     default: 'intermediate'
   },
   estimatedDuration: {
-    type: Number, // in minutes
+    type: Number,
     min: 1,
     default: 30
   },
@@ -73,8 +68,6 @@ const vrLabSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   }],
-
-  // Access Control
   accessType: {
     type: String,
     enum: ['public', 'restricted', 'licensed'],
@@ -88,8 +81,6 @@ const vrLabSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-
-  // Usage Tracking
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -102,8 +93,6 @@ const vrLabSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-
-  // Related Content
   relatedCourses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
@@ -112,8 +101,6 @@ const vrLabSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'VRLab'
   }],
-
-  // Timestamps
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, {
@@ -121,7 +108,6 @@ const vrLabSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for performance
 vrLabSchema.index({ subjects: 1 });
 vrLabSchema.index({ difficultyLevel: 1 });
 vrLabSchema.index({ vrEnvironment: 1 });
@@ -129,11 +115,9 @@ vrLabSchema.index({ accessType: 1 });
 vrLabSchema.index({ title: 'text', description: 'text' });
 vrLabSchema.index({ 'learningObjectives': 'text' });
 
-// Pre-save hooks
 vrLabSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   
-  // Ensure URLs have proper protocol
   if (this.isModified('labUrl') && !this.labUrl.startsWith('http')) {
     this.labUrl = `https://${this.labUrl}`;
   }
@@ -141,7 +125,6 @@ vrLabSchema.pre('save', function(next) {
     this.thumbnailUrl = `https://${this.thumbnailUrl}`;
   }
   
-  // Normalize subjects
   if (this.isModified('subjects')) {
     this.subjects = this.subjects.map(subj => subj.trim().toLowerCase());
   }
@@ -149,14 +132,12 @@ vrLabSchema.pre('save', function(next) {
   next();
 });
 
-// Virtual properties
 vrLabSchema.virtual('formattedDuration').get(function() {
   const hours = Math.floor(this.estimatedDuration / 60);
   const minutes = this.estimatedDuration % 60;
   return `${hours > 0 ? `${hours}h ` : ''}${minutes}m`;
 });
 
-// Static methods
 vrLabSchema.statics.findByDevice = function(device) {
   return this.find({ supportedDevices: device, isActive: true });
 };
@@ -168,7 +149,6 @@ vrLabSchema.statics.findBySubject = function(subject) {
   });
 };
 
-// Instance methods
 vrLabSchema.methods.recordAccess = function() {
   this.accessCount += 1;
   this.lastAccessed = new Date();
@@ -179,4 +159,4 @@ vrLabSchema.methods.checkCompatibility = function(userDevice) {
   return this.supportedDevices.includes(userDevice);
 };
 
-module.exports = mongoose.model('VRLab', vrLabSchema);
+export default mongoose.model('VRLab', vrLabSchema);
