@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const liveQASchema = new mongoose.Schema({
   question: {
@@ -97,17 +97,15 @@ const liveQASchema = new mongoose.Schema({
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
-  timestamps: false // Managing timestamps manually
+  timestamps: false
 });
 
-// Indexes for optimized queries
 liveQASchema.index({ question: 'text', answer: 'text', tags: 'text' });
 liveQASchema.index({ status: 1, createdAt: -1 });
 liveQASchema.index({ answeredBy: 1, status: 1 });
 liveQASchema.index({ tags: 1, status: 1 });
 liveQASchema.index({ 'upvotes': -1 });
 
-// Text search weights
 liveQASchema.index({
   question: 'text',
   answer: 'text',
@@ -123,7 +121,6 @@ liveQASchema.index({
   name: 'qa_text_search'
 });
 
-// Virtuals
 liveQASchema.virtual('voteScore').get(function() {
   return this.upvotes - this.downvotes;
 });
@@ -136,11 +133,9 @@ liveQASchema.virtual('isAnswered').get(function() {
   return this.status === 'answered' || this.status === 'approved' || this.status === 'featured';
 });
 
-// Hooks
 liveQASchema.pre('save', function(next) {
   this.updatedAt = new Date();
 
-  // Generate slug if empty
   if (!this.slug) {
     const baseSlug = this.question.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -149,12 +144,10 @@ liveQASchema.pre('save', function(next) {
     this.slug = `${baseSlug}-${Date.now().toString(36)}`;
   }
 
-  // Update lastActivityAt on certain changes
   if (this.isModified('answer') || this.isModified('status')) {
     this.lastActivityAt = new Date();
   }
 
-  // Set answeredAt when first answered
   if (this.isModified('status') && this.status === 'answered' && !this.answeredAt) {
     this.answeredAt = new Date();
   }
@@ -162,7 +155,6 @@ liveQASchema.pre('save', function(next) {
   next();
 });
 
-// Methods
 liveQASchema.methods.upvote = async function() {
   this.upvotes += 1;
   await this.save();
@@ -184,7 +176,6 @@ liveQASchema.methods.approveAnswer = async function(moderatorId) {
   await this.save();
 };
 
-// Static methods
 liveQASchema.statics.getPopularQuestions = function(limit = 10) {
   return this.find({ status: 'answered' })
     .sort({ upvotes: -1, views: -1 })
@@ -213,4 +204,4 @@ liveQASchema.statics.searchQuestions = function(query, limit = 20) {
   .lean();
 };
 
-module.exports = mongoose.model('LiveQA', liveQASchema);
+export default mongoose.model('LiveQA', liveQASchema);
