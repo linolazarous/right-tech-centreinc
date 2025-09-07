@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
-const validator = require('validator');
-const slugify = require('slugify');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import slugify from 'slugify';
 
 const offlineSchema = new mongoose.Schema({
   title: {
@@ -236,7 +235,6 @@ const offlineSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for optimized queries
 offlineSchema.index({ title: 'text', description: 'text', tags: 'text' });
 offlineSchema.index({ slug: 1 }, { unique: true });
 offlineSchema.index({ 'location.coordinates': '2dsphere' });
@@ -246,9 +244,7 @@ offlineSchema.index({ status: 1, isFeatured: 1 });
 offlineSchema.index({ categories: 1 });
 offlineSchema.index({ 'location.city': 1, 'location.country': 1 });
 
-// Pre-save hooks
 offlineSchema.pre('save', function(next) {
-  // Generate slug from title
   if (this.isModified('title')) {
     this.slug = slugify(this.title, {
       lower: true,
@@ -257,7 +253,6 @@ offlineSchema.pre('save', function(next) {
     });
   }
 
-  // Update status based on dates
   if (this.isModified('startDate') || this.isModified('endDate')) {
     const now = new Date();
     if (this.status !== 'cancelled' && this.status !== 'postponed') {
@@ -271,7 +266,6 @@ offlineSchema.pre('save', function(next) {
   next();
 });
 
-// Static methods
 offlineSchema.statics.findUpcoming = async function(limit = 10) {
   try {
     return await this.find({ 
@@ -282,7 +276,7 @@ offlineSchema.statics.findUpcoming = async function(limit = 10) {
     .limit(limit)
     .populate('organizer', 'name avatar');
   } catch (error) {
-    logger.error('Error finding upcoming events:', error);
+    console.error('Error finding upcoming events:', error);
     throw error;
   }
 };
@@ -297,7 +291,7 @@ offlineSchema.statics.findByLocation = async function(city, country, radiusKm = 
     })
     .sort({ startDate: 1 });
   } catch (error) {
-    logger.error(`Error finding events in ${city}, ${country}:`, error);
+    console.error(`Error finding events in ${city}, ${country}:`, error);
     throw error;
   }
 };
@@ -319,12 +313,11 @@ offlineSchema.statics.findNearby = async function(lat, lng, radiusKm = 50) {
     })
     .sort({ startDate: 1 });
   } catch (error) {
-    logger.error(`Error finding nearby events to ${lat},${lng}:`, error);
+    console.error(`Error finding nearby events to ${lat},${lng}:`, error);
     throw error;
   }
 };
 
-// Instance methods
 offlineSchema.methods.registerAttendee = async function(userId) {
   try {
     if (this.attendees.includes(userId)) {
@@ -340,7 +333,7 @@ offlineSchema.methods.registerAttendee = async function(userId) {
     await this.save();
     return this;
   } catch (error) {
-    logger.error(`Error registering attendee for event ${this._id}:`, error);
+    console.error(`Error registering attendee for event ${this._id}:`, error);
     throw error;
   }
 };
@@ -353,12 +346,11 @@ offlineSchema.methods.publish = async function() {
     }
     return this;
   } catch (error) {
-    logger.error(`Error publishing event ${this._id}:`, error);
+    console.error(`Error publishing event ${this._id}:`, error);
     throw error;
   }
 };
 
-// Virtuals
 offlineSchema.virtual('isFree').get(function() {
   return !this.ticketInfo.required || this.ticketInfo.price === 0;
 });
@@ -380,6 +372,4 @@ offlineSchema.virtual('formattedDate').get(function() {
   };
 });
 
-const OfflineEvent = mongoose.model('OfflineEvent', offlineSchema);
-
-module.exports = OfflineEvent;
+export default mongoose.model('OfflineEvent', offlineSchema);
