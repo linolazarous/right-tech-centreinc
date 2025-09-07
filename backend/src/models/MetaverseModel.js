@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
-const validator = require('validator');
-const slugify = require('slugify');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import slugify from 'slugify';
 
 const metaverseSchema = new mongoose.Schema({
   title: {
@@ -91,7 +90,7 @@ const metaverseSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false // Set to true if ownership is required
+    required: false
   },
   isFeatured: {
     type: Boolean,
@@ -130,7 +129,6 @@ const metaverseSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for better query performance
 metaverseSchema.index({ title: 'text', description: 'text', tags: 'text' });
 metaverseSchema.index({ slug: 1 }, { unique: true });
 metaverseSchema.index({ category: 1, isFeatured: 1 });
@@ -138,7 +136,6 @@ metaverseSchema.index({ owner: 1 });
 metaverseSchema.index({ rating: -1 });
 metaverseSchema.index({ visitCount: -1 });
 
-// Pre-save hook to generate slug
 metaverseSchema.pre('save', function(next) {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, {
@@ -150,32 +147,27 @@ metaverseSchema.pre('save', function(next) {
   next();
 });
 
-// Static method to find by slug
 metaverseSchema.statics.findBySlug = async function(slug) {
   try {
     return await this.findOne({ slug });
   } catch (error) {
-    logger.error(`Error finding metaverse by slug ${slug}:`, error);
+    console.error(`Error finding metaverse by slug ${slug}:`, error);
     throw error;
   }
 };
 
-// Instance method to increment visit count
 metaverseSchema.methods.incrementVisitCount = async function() {
   try {
     this.visitCount += 1;
     await this.save();
   } catch (error) {
-    logger.error(`Error incrementing visit count for ${this.slug}:`, error);
+    console.error(`Error incrementing visit count for ${this.slug}:`, error);
     throw error;
   }
 };
 
-// Virtual for formatted URL
 metaverseSchema.virtual('formattedUrl').get(function() {
   return this.virtualWorldUrl.replace(/^https?:\/\//, '');
 });
 
-const Metaverse = mongoose.model('Metaverse', metaverseSchema);
-
-module.exports = Metaverse;
+export default mongoose.model('Metaverse', metaverseSchema);
