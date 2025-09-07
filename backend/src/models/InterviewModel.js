@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const interviewSchema = new mongoose.Schema({
   userId: {
@@ -214,4 +214,6 @@ interviewSchema.statics.getInterviewerSchedule = function(interviewerId, startDa
   .lean();
 };
 
-module.exports = mongoose.model('Interview', interviewSchema);
+const Interview = mongoose.model('Interview', interviewSchema);
+
+export default Interview;
