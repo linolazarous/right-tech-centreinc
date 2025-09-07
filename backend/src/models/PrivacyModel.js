@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
+import mongoose from 'mongoose';
 
 const privacySchema = new mongoose.Schema({
   userId: {
@@ -9,14 +8,12 @@ const privacySchema = new mongoose.Schema({
     unique: true,
     index: true
   },
-  // Profile Visibility Settings
   profileVisibility: {
     type: String,
     enum: ['public', 'connections', 'private'],
     default: 'public',
     required: true
   },
-  // Contact Information Visibility
   contactVisibility: {
     email: {
       type: String,
@@ -34,7 +31,6 @@ const privacySchema = new mongoose.Schema({
       default: 'private'
     }
   },
-  // Content Sharing Preferences
   contentSharing: {
     posts: {
       type: String,
@@ -52,7 +48,6 @@ const privacySchema = new mongoose.Schema({
       default: 'public'
     }
   },
-  // Data Collection Preferences
   dataCollection: {
     analytics: {
       type: Boolean,
@@ -71,12 +66,10 @@ const privacySchema = new mongoose.Schema({
       default: false
     }
   },
-  // Search Engine Visibility
   searchIndexing: {
     type: Boolean,
     default: true
   },
-  // Connection Management
   connectionPreferences: {
     whoCanSendRequests: {
       type: String,
@@ -93,7 +86,6 @@ const privacySchema = new mongoose.Schema({
       default: true
     }
   },
-  // Notification Preferences
   notificationPreferences: {
     email: {
       type: Boolean,
@@ -108,7 +100,6 @@ const privacySchema = new mongoose.Schema({
       default: false
     }
   },
-  // GDPR Compliance
   gdprCompliance: {
     dataPortability: {
       type: Boolean,
@@ -121,7 +112,6 @@ const privacySchema = new mongoose.Schema({
     lastDataExport: Date,
     lastDataDeletion: Date
   },
-  // Activity Status
   showOnlineStatus: {
     type: Boolean,
     default: true
@@ -131,7 +121,6 @@ const privacySchema = new mongoose.Schema({
     enum: ['everyone', 'connections', 'nobody'],
     default: 'connections'
   },
-  // Metadata and Timestamps
   metadata: {
     type: Object,
     default: {}
@@ -155,13 +144,11 @@ const privacySchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes
 privacySchema.index({ userId: 1 });
 privacySchema.index({ 'profileVisibility': 1 });
 privacySchema.index({ 'dataCollection.personalizedAds': 1 });
 privacySchema.index({ 'gdprCompliance.rightToBeForgotten': 1 });
 
-// Middleware to update version and timestamps
 privacySchema.pre('save', function(next) {
   if (this.isModified()) {
     this.updatedAt = new Date();
@@ -170,13 +157,12 @@ privacySchema.pre('save', function(next) {
   next();
 });
 
-// Static Methods
 privacySchema.statics.findByUserId = async function(userId) {
   try {
     return await this.findOne({ userId })
       .populate('userId', 'username email');
   } catch (error) {
-    logger.error(`Error finding privacy settings for user ${userId}:`, error);
+    console.error(`Error finding privacy settings for user ${userId}:`, error);
     throw error;
   }
 };
@@ -189,12 +175,11 @@ privacySchema.statics.resetToDefault = async function(userId) {
       { new: true, upsert: true }
     );
   } catch (error) {
-    logger.error(`Error resetting privacy settings for user ${userId}:`, error);
+    console.error(`Error resetting privacy settings for user ${userId}:`, error);
     throw error;
   }
 };
 
-// Instance Methods
 privacySchema.methods.isProfileVisibleTo = function(viewerId, connectionStatus) {
   switch (this.profileVisibility) {
     case 'public':
@@ -215,7 +200,6 @@ privacySchema.methods.exportData = function() {
   };
 };
 
-// Virtuals
 privacySchema.virtual('isStrictPrivacy').get(function() {
   return this.profileVisibility === 'private' && 
          this.contactVisibility.email === 'private' &&
@@ -228,6 +212,4 @@ privacySchema.virtual('isShareEverything').get(function() {
          this.searchIndexing === true;
 });
 
-const Privacy = mongoose.model('Privacy', privacySchema);
-
-module.exports = Privacy;
+export default mongoose.model('Privacy', privacySchema);
