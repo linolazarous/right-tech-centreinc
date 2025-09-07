@@ -1,6 +1,9 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const logger = require('./logger');
+// =================================================================
+//                      Imports & Configuration
+// =================================================================
+import 'dotenv/config';
+import mongoose from 'mongoose';
+import logger from './logger.js'; // Note: .js extension required in ES modules
 
 // Enhanced MongoDB URI configuration for DigitalOcean
 const MONGO_URI = process.env.MONGO_URI || 
@@ -24,6 +27,32 @@ const mongoOptions = {
   family: 4,
   heartbeatFrequencyMS: 10000,
   appName: 'right-tech-centre'
+};
+
+// Production-optimized configuration
+const configureDB = () => {
+  // Debugging in development
+  if (process.env.NODE_ENV === 'development') {
+    mongoose.set('debug', (collectionName, method, query, doc) => {
+      logger.debug(`MongoDB: ${collectionName}.${method}`, {
+        query: JSON.stringify(query),
+        doc: JSON.stringify(doc),
+        executionTime: new Date()
+      });
+    });
+  }
+
+  // Schema options
+  mongoose.set('returnOriginal', false);
+  mongoose.set('runValidators', true);
+  mongoose.set('strictQuery', true);
+  mongoose.set('bufferCommands', false); // Disable command buffering
+  mongoose.set('autoIndex', process.env.NODE_ENV !== 'production'); // Auto-index in dev only
+  
+  // Connection events for monitoring
+  mongoose.connection.on('fullsetup', () => logger.info('MongoDB replica set connected'));
+  mongoose.connection.on('all', () => logger.info('MongoDB all servers connected'));
+  mongoose.connection.on('reconnect', () => logger.warn('MongoDB reconnected'));
 };
 
 const connectDB = async () => {
@@ -94,32 +123,6 @@ const connectDB = async () => {
   }
 };
 
-// Production-optimized configuration
-const configureDB = () => {
-  // Debugging in development
-  if (process.env.NODE_ENV === 'development') {
-    mongoose.set('debug', (collectionName, method, query, doc) => {
-      logger.debug(`MongoDB: ${collectionName}.${method}`, {
-        query: JSON.stringify(query),
-        doc: JSON.stringify(doc),
-        executionTime: new Date()
-      });
-    });
-  }
-
-  // Schema options
-  mongoose.set('returnOriginal', false);
-  mongoose.set('runValidators', true);
-  mongoose.set('strictQuery', true);
-  mongoose.set('bufferCommands', false); // Disable command buffering
-  mongoose.set('autoIndex', process.env.NODE_ENV !== 'production'); // Auto-index in dev only
-  
-  // Connection events for monitoring
-  mongoose.connection.on('fullsetup', () => logger.info('MongoDB replica set connected'));
-  mongoose.connection.on('all', () => logger.info('MongoDB all servers connected'));
-  mongoose.connection.on('reconnect', () => logger.warn('MongoDB reconnected'));
-};
-
 // Health check function
 const checkDBHealth = async () => {
   try {
@@ -141,7 +144,18 @@ const checkDBHealth = async () => {
   }
 };
 
-module.exports = {
+// Export as ES Module
+export {
+  connectDB,
+  configureDB,
+  checkDBHealth,
+  mongoose,
+  MONGO_URI as mongoURI,
+  mongoOptions as connectionOptions
+};
+
+// Default export for convenience
+export default {
   connectDB,
   configureDB,
   checkDBHealth,
