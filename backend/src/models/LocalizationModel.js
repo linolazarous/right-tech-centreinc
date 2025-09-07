@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger'); // Assuming you have a logger utility
+import mongoose from 'mongoose';
 
-const supportedLanguages = ['en', 'fr', 'es', 'de', 'pt']; // Extend with more languages as needed
+const supportedLanguages = ['en', 'fr', 'es', 'de', 'pt'];
 
 const localizationSchema = new mongoose.Schema({
   key: {
@@ -14,7 +13,7 @@ const localizationSchema = new mongoose.Schema({
       validator: function(v) {
         return /^[a-zA-Z0-9_.-]+$/.test(v);
       },
-      message: props => `${props.value} is not a valid translation key! Only alphanumeric, underscore, dot and hyphen characters are allowed.`
+      message: props => `${props.value} is not a valid translation key!`
     }
   },
   translations: {
@@ -44,7 +43,7 @@ const localizationSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false // Set to true if you have user authentication
+    required: false
   },
   lastUpdatedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -60,41 +59,34 @@ const localizationSchema = new mongoose.Schema({
     default: {}
   }
 }, {
-  timestamps: true, // Mongoose will handle createdAt and updatedAt automatically
+  timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Indexes for better query performance
 localizationSchema.index({ key: 1, namespace: 1 }, { unique: true });
 localizationSchema.index({ namespace: 1 });
 
-// Middleware to update the updatedAt field
 localizationSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// Static method to find by key and namespace
 localizationSchema.statics.findByKey = async function(key, namespace = 'common') {
   try {
     return await this.findOne({ key, namespace });
   } catch (error) {
-    logger.error(`Error finding localization for key ${key}:`, error);
+    console.error(`Error finding localization for key ${key}:`, error);
     throw error;
   }
 };
 
-// Instance method to get translation for a specific language
 localizationSchema.methods.getTranslation = function(lang = 'en') {
   return this.translations[lang] || this.translations.en || '';
 };
 
-// Virtual for all available translations
 localizationSchema.virtual('availableLanguages').get(function() {
   return Object.keys(this.translations).filter(lang => this.translations[lang]);
 });
 
-const Localization = mongoose.model('Localization', localizationSchema);
-
-module.exports = Localization;
+export default mongoose.model('Localization', localizationSchema);
