@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const subscriptionSchema = new mongoose.Schema(
   {
@@ -88,7 +88,6 @@ const subscriptionSchema = new mongoose.Schema(
     }
   },
   {
-    // DigitalOcean Optimized Settings
     timestamps: true,
     strict: 'throw',
     toJSON: {
@@ -97,7 +96,7 @@ const subscriptionSchema = new mongoose.Schema(
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
-        delete ret.metadata; // Sensitive data
+        delete ret.metadata;
         return ret;
       }
     },
@@ -105,13 +104,11 @@ const subscriptionSchema = new mongoose.Schema(
   }
 );
 
-// DigitalOcean Performance Indexes
-subscriptionSchema.index({ userId: 1, status: 1 }); // User subscriptions lookup
-subscriptionSchema.index({ endDate: 1 }); // For expiring subscriptions
-subscriptionSchema.index({ status: 1, nextBillingDate: 1 }); // For billing jobs
-subscriptionSchema.index({ 'metadata.digitalOceanInvoiceId': 1 }); // For payment reconciliation
+subscriptionSchema.index({ userId: 1, status: 1 });
+subscriptionSchema.index({ endDate: 1 });
+subscriptionSchema.index({ status: 1, nextBillingDate: 1 });
+subscriptionSchema.index({ 'metadata.digitalOceanInvoiceId': 1 });
 
-// Virtuals
 subscriptionSchema.virtual('isActive').get(function() {
   return this.status === 'active' && (!this.endDate || this.endDate > new Date());
 });
@@ -121,7 +118,6 @@ subscriptionSchema.virtual('daysRemaining').get(function() {
   return Math.ceil((this.endDate - Date.now()) / (1000 * 60 * 60 * 24));
 });
 
-// Query Helpers
 subscriptionSchema.query.active = function() {
   return this.where({ 
     status: 'active',
@@ -141,22 +137,19 @@ subscriptionSchema.query.expiringSoon = function(days = 7) {
   });
 };
 
-// DigitalOcean Monitoring Hooks
 subscriptionSchema.post('save', function(doc) {
   console.log(`[DO Monitoring] Subscription updated - User: ${doc.userId}, Status: ${doc.status}`);
 });
 
-// Auto-set endDate for non-recurring plans
 subscriptionSchema.pre('save', function(next) {
   if (this.plan === 'trial' && !this.endDate) {
     const trialEnd = new Date(this.startDate);
-    trialEnd.setDate(trialEnd.getDate() + 14); // 14-day trial
+    trialEnd.setDate(trialEnd.getDate() + 14);
     this.endDate = trialEnd;
   }
   next();
 });
 
-// Status validation
 subscriptionSchema.pre('save', function(next) {
   if (this.status === 'cancelled' && !this.cancellation.requestedAt) {
     this.cancellation.requestedAt = new Date();
@@ -168,7 +161,6 @@ subscriptionSchema.pre('save', function(next) {
   next();
 });
 
-// Prevent duplicate active subscriptions
 subscriptionSchema.pre('save', async function(next) {
   if (this.status === 'active') {
     const existing = await this.constructor.findOne({
@@ -184,4 +176,4 @@ subscriptionSchema.pre('save', async function(next) {
   next();
 });
 
-module.exports = mongoose.model('Subscription', subscriptionSchema);
+export default mongoose.model('Subscription', subscriptionSchema);
