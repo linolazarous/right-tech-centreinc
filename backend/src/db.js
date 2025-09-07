@@ -3,7 +3,7 @@
 // =================================================================
 import 'dotenv/config';
 import mongoose from 'mongoose';
-import logger from './logger.js'; // Note: .js extension required in ES modules
+import logger from './utils/logger.js'; // Note: .js extension required in ES modules
 
 // Enhanced MongoDB URI configuration for DigitalOcean
 const MONGO_URI = process.env.MONGO_URI || 
@@ -163,4 +163,5 @@ export default {
   mongoURI: MONGO_URI,
   connectionOptions: mongoOptions
 };
+
 
