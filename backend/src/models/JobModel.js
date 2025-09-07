@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const jobSchema = new mongoose.Schema({
   title: {
@@ -207,4 +207,6 @@ jobSchema.methods.incrementApplications = async function() {
   return this.save();
 };
 
-module.exports = mongoose.model('Job', jobSchema);
+const Job = mongoose.model('Job', jobSchema);
+
+export default Job;
