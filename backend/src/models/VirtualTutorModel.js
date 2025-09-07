@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const virtualTutorSchema = new mongoose.Schema({
-  // Core Information
   title: { 
     type: String, 
     required: true,
@@ -24,8 +23,6 @@ const virtualTutorSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid URL!`
     }
   },
-
-  // Tutor Metadata
   tutorType: {
     type: String,
     enum: ['ai', 'video', 'interactive', 'hybrid'],
@@ -35,7 +32,7 @@ const virtualTutorSchema = new mongoose.Schema({
   language: {
     type: String,
     default: 'en',
-    enum: ['en', 'es', 'fr', 'de', 'zh'] // Extend as needed
+    enum: ['en', 'es', 'fr', 'de', 'zh']
   },
   subjects: [{
     type: String,
@@ -47,8 +44,6 @@ const virtualTutorSchema = new mongoose.Schema({
     enum: ['beginner', 'intermediate', 'advanced'],
     default: 'beginner'
   },
-
-  // Access Control
   accessLevel: {
     type: String,
     enum: ['free', 'premium', 'enterprise'],
@@ -58,8 +53,6 @@ const virtualTutorSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-
-  // Usage Analytics
   averageRating: {
     type: Number,
     min: 1,
@@ -70,8 +63,6 @@ const virtualTutorSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-
-  // Relationships
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -81,8 +72,6 @@ const virtualTutorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
   }],
-
-  // Timestamps
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   lastAccessed: { type: Date }
@@ -91,7 +80,6 @@ const virtualTutorSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for performance
 virtualTutorSchema.index({ subjects: 1 });
 virtualTutorSchema.index({ skillLevel: 1 });
 virtualTutorSchema.index({ tutorType: 1 });
@@ -99,16 +87,13 @@ virtualTutorSchema.index({ accessLevel: 1 });
 virtualTutorSchema.index({ averageRating: -1 });
 virtualTutorSchema.index({ title: 'text', description: 'text' });
 
-// Pre-save hooks
 virtualTutorSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   
-  // Ensure URL has proper protocol
   if (this.isModified('tutorUrl') && !this.tutorUrl.startsWith('http')) {
     this.tutorUrl = `https://${this.tutorUrl}`;
   }
   
-  // Normalize subjects
   if (this.isModified('subjects')) {
     this.subjects = this.subjects.map(subj => subj.trim().toLowerCase());
   }
@@ -116,13 +101,10 @@ virtualTutorSchema.pre('save', function(next) {
   next();
 });
 
-// Virtual for tutor duration (example)
 virtualTutorSchema.virtual('durationInMinutes').get(function() {
-  // Add your duration calculation logic here
-  return 30; // Default value
+  return 30;
 });
 
-// Static methods
 virtualTutorSchema.statics.findBySubject = function(subject) {
   return this.find({ subjects: subject.toLowerCase() });
 };
@@ -132,11 +114,10 @@ virtualTutorSchema.statics.findPremiumTutors = function() {
              .sort({ averageRating: -1 });
 };
 
-// Instance method
 virtualTutorSchema.methods.incrementUsage = function() {
   this.usageCount += 1;
   this.lastAccessed = new Date();
   return this.save();
 };
 
-module.exports = mongoose.model('VirtualTutor', virtualTutorSchema);
+export default mongoose.model('VirtualTutor', virtualTutorSchema);
