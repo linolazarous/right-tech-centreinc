@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const jobMatchingSchema = new mongoose.Schema({
   userId: { 
@@ -122,4 +122,6 @@ jobMatchingSchema.query.byQuality = function(quality) {
   return this.where('matchScore', ranges[quality] || { $gte: 0 });
 };
 
-module.exports = mongoose.model('JobMatching', jobMatchingSchema);
+const JobMatching = mongoose.model('JobMatching', jobMatchingSchema);
+
+export default JobMatching;
