@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import crypto from 'crypto';
+import validator from 'validator';
 
 const integrationSchema = new mongoose.Schema({
   name: {
@@ -135,4 +135,6 @@ integrationSchema.statics.getValidServiceTypes = function() {
   return this.schema.path('serviceType').enumValues;
 };
 
-module.exports = mongoose.model('Integration', integrationSchema);
+const Integration = mongoose.model('Integration', integrationSchema);
+
+export default Integration;
