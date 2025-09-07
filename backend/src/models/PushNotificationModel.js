@@ -1,8 +1,6 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
+import mongoose from 'mongoose';
 
 const pushNotificationSchema = new mongoose.Schema({
-  // Recipient Information
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -24,8 +22,6 @@ const pushNotificationSchema = new mongoose.Schema({
     index: true,
     sparse: true
   },
-
-  // Notification Content
   title: {
     type: String,
     required: [true, 'Title is required'],
@@ -62,8 +58,6 @@ const pushNotificationSchema = new mongoose.Schema({
     type: Object,
     default: {}
   },
-
-  // Notification Metadata
   notificationType: {
     type: String,
     enum: [
@@ -92,8 +86,6 @@ const pushNotificationSchema = new mongoose.Schema({
     min: 0,
     default: 0
   },
-
-  // Delivery Status
   status: {
     type: String,
     enum: [
@@ -138,8 +130,6 @@ const pushNotificationSchema = new mongoose.Schema({
     index: true,
     sparse: true
   },
-
-  // Timing Information
   scheduledAt: {
     type: Date,
     index: true,
@@ -167,8 +157,6 @@ const pushNotificationSchema = new mongoose.Schema({
       message: 'Expiration must be after scheduled time'
     }
   },
-
-  // Analytics
   openCount: {
     type: Number,
     default: 0,
@@ -182,8 +170,6 @@ const pushNotificationSchema = new mongoose.Schema({
   interactionTimestamp: {
     type: Date
   },
-
-  // Metadata
   campaignId: {
     type: String,
     index: true
@@ -207,16 +193,13 @@ const pushNotificationSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for optimized queries
 pushNotificationSchema.index({ userId: 1, status: 1 });
 pushNotificationSchema.index({ status: 1, scheduledAt: 1 });
 pushNotificationSchema.index({ notificationType: 1, createdAt: -1 });
 pushNotificationSchema.index({ createdAt: -1 });
 pushNotificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-// Pre-save hooks
 pushNotificationSchema.pre('save', function(next) {
-  // Update timestamps based on status changes
   if (this.isModified('status')) {
     switch (this.status) {
       case 'sent':
@@ -231,7 +214,6 @@ pushNotificationSchema.pre('save', function(next) {
     }
   }
 
-  // Update interaction timestamp
   if (this.isModified('interaction') && this.interaction !== 'none') {
     this.interactionTimestamp = new Date();
   }
@@ -239,7 +221,6 @@ pushNotificationSchema.pre('save', function(next) {
   next();
 });
 
-// Static Methods
 pushNotificationSchema.statics.findPendingNotifications = async function(limit = 100) {
   try {
     return await this.find({ 
@@ -253,7 +234,7 @@ pushNotificationSchema.statics.findPendingNotifications = async function(limit =
     .sort({ priority: -1, scheduledAt: 1 })
     .limit(limit);
   } catch (error) {
-    logger.error('Error finding pending notifications:', error);
+    console.error('Error finding pending notifications:', error);
     throw error;
   }
 };
@@ -271,12 +252,11 @@ pushNotificationSchema.statics.markAsFailed = async function(notificationId, rea
       { new: true }
     );
   } catch (error) {
-    logger.error(`Error marking notification ${notificationId} as failed:`, error);
+    console.error(`Error marking notification ${notificationId} as failed:`, error);
     throw error;
   }
 };
 
-// Instance Methods
 pushNotificationSchema.methods.markAsDelivered = async function(providerMessageId) {
   try {
     this.status = 'delivered';
@@ -284,7 +264,7 @@ pushNotificationSchema.methods.markAsDelivered = async function(providerMessageI
     this.deliveredAt = new Date();
     return await this.save();
   } catch (error) {
-    logger.error(`Error marking notification ${this._id} as delivered:`, error);
+    console.error(`Error marking notification ${this._id} as delivered:`, error);
     throw error;
   }
 };
@@ -299,12 +279,11 @@ pushNotificationSchema.methods.recordInteraction = async function(interactionTyp
     }
     return await this.save();
   } catch (error) {
-    logger.error(`Error recording interaction for notification ${this._id}:`, error);
+    console.error(`Error recording interaction for notification ${this._id}:`, error);
     throw error;
   }
 };
 
-// Virtuals
 pushNotificationSchema.virtual('isExpired').get(function() {
   return this.expiresAt && this.expiresAt < new Date();
 });
@@ -314,6 +293,4 @@ pushNotificationSchema.virtual('deliveryTimeMs').get(function() {
   return this.deliveredAt - this.sentAt;
 });
 
-const PushNotification = mongoose.model('PushNotification', pushNotificationSchema);
-
-module.exports = PushNotification;
+export default mongoose.model('PushNotification', pushNotificationSchema);
