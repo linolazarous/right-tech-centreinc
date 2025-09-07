@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const leaderboardSchema = new mongoose.Schema({
   userId: {
@@ -192,4 +192,6 @@ leaderboardSchema.statics.calculatePercentiles = async function(category = 'glob
   return count;
 };
 
-module.exports = mongoose.model('Leaderboard', leaderboardSchema);
+const Leaderboard = mongoose.model('Leaderboard', leaderboardSchema);
+
+export default Leaderboard;
