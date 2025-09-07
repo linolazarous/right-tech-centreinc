@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const vrLearningSchema = new mongoose.Schema({
-  // **Core Metadata**
   title: {
     type: String,
     required: [true, 'Title is required'],
@@ -29,8 +28,6 @@ const vrLearningSchema = new mongoose.Schema({
       message: 'Thumbnail must be a valid HTTPS URL'
     }
   },
-
-  // **Technical Specifications**
   contentType: {
     type: String,
     enum: ['3d-model', '360-video', 'interactive-simulation', 'ar-experience'],
@@ -51,8 +48,6 @@ const vrLearningSchema = new mongoose.Schema({
     type: Number,
     min: 0.1
   },
-
-  // **Educational Context**
   learningObjectives: [{
     type: String,
     trim: true,
@@ -73,8 +68,6 @@ const vrLearningSchema = new mongoose.Schema({
     enum: ['introductory', 'intermediate', 'advanced', 'expert'],
     default: 'intermediate'
   },
-
-  // **Access Control & Monetization**
   accessType: {
     type: String,
     enum: ['free', 'licensed', 'subscription'],
@@ -82,14 +75,12 @@ const vrLearningSchema = new mongoose.Schema({
   },
   licenseKey: {
     type: String,
-    select: false // Security: Never returned in queries
+    select: false
   },
   isPublished: {
     type: Boolean,
     default: false
   },
-
-  // **Analytics & Engagement**
   views: {
     type: Number,
     default: 0
@@ -101,8 +92,6 @@ const vrLearningSchema = new mongoose.Schema({
     default: 4.5
   },
   lastAccessed: Date,
-
-  // **Relationships**
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -112,8 +101,6 @@ const vrLearningSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
   }],
-
-  // **Timestamps**
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, {
@@ -121,23 +108,19 @@ const vrLearningSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// **Indexes for Performance**
-vrLearningSchema.index({ title: 'text', description: 'text' }); // Full-text search
+vrLearningSchema.index({ title: 'text', description: 'text' });
 vrLearningSchema.index({ contentType: 1 });
 vrLearningSchema.index({ difficulty: 1, targetAudience: 1 });
-vrLearningSchema.index({ views: -1 }); // Popular content
-vrLearningSchema.index({ createdAt: -1 }); // Newest first
+vrLearningSchema.index({ views: -1 });
+vrLearningSchema.index({ createdAt: -1 });
 
-// **Pre-Save Hooks**
 vrLearningSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   
-  // Force HTTPS for all URLs
   if (this.isModified('vrContentUrl') && !this.vrContentUrl.match(/^https?:\/\//i)) {
     this.vrContentUrl = `https://${this.vrContentUrl}`;
   }
   
-  // Normalize learning objectives
   if (this.isModified('learningObjectives')) {
     this.learningObjectives = this.learningObjectives.map(obj => obj.trim());
   }
@@ -145,12 +128,10 @@ vrLearningSchema.pre('save', function(next) {
   next();
 });
 
-// **Virtual Properties**
 vrLearningSchema.virtual('accessibility').get(function() {
   return this.supportedPlatforms.includes('webxr') ? 'web-accessible' : 'headset-required';
 });
 
-// **Static Methods**
 vrLearningSchema.statics.findByPlatform = function(platform) {
   return this.find({ 
     supportedPlatforms: platform,
@@ -164,7 +145,6 @@ vrLearningSchema.statics.getTrending = function() {
              .limit(10);
 };
 
-// **Instance Methods**
 vrLearningSchema.methods.recordView = async function() {
   this.views += 1;
   this.lastAccessed = new Date();
@@ -175,4 +155,4 @@ vrLearningSchema.methods.checkPlatformSupport = function(platform) {
   return this.supportedPlatforms.includes(platform);
 };
 
-module.exports = mongoose.model('VRLearning', vrLearningSchema);
+export default mongoose.model('VRLearning', vrLearningSchema);
