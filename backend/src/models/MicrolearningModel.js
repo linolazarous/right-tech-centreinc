@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
-const validator = require('validator');
-const slugify = require('slugify');
+import mongoose from 'mongoose';
+import validator from 'validator';
+import slugify from 'slugify';
 
 const microlearningSchema = new mongoose.Schema({
   title: {
@@ -44,7 +43,7 @@ const microlearningSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
-        if (!v) return true; // Optional field
+        if (!v) return true;
         return validator.isURL(v, {
           protocols: ['http', 'https'],
           require_protocol: true
@@ -149,7 +148,6 @@ const microlearningSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for optimized queries
 microlearningSchema.index({ title: 'text', description: 'text', tags: 'text' });
 microlearningSchema.index({ slug: 1 }, { unique: true });
 microlearningSchema.index({ contentType: 1, difficultyLevel: 1 });
@@ -159,7 +157,6 @@ microlearningSchema.index({ viewCount: -1 });
 microlearningSchema.index({ rating: -1 });
 microlearningSchema.index({ publishedAt: -1 });
 
-// Pre-save hooks
 microlearningSchema.pre('save', function(next) {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, {
@@ -176,12 +173,11 @@ microlearningSchema.pre('save', function(next) {
   next();
 });
 
-// Static methods
 microlearningSchema.statics.findBySlug = async function(slug) {
   try {
     return await this.findOne({ slug }).populate('author category');
   } catch (error) {
-    logger.error(`Error finding microlearning by slug ${slug}:`, error);
+    console.error(`Error finding microlearning by slug ${slug}:`, error);
     throw error;
   }
 };
@@ -192,19 +188,18 @@ microlearningSchema.statics.findPublished = async function() {
       .sort({ publishedAt: -1 })
       .populate('author category');
   } catch (error) {
-    logger.error('Error fetching published microlearnings:', error);
+    console.error('Error fetching published microlearnings:', error);
     throw error;
   }
 };
 
-// Instance methods
 microlearningSchema.methods.incrementViewCount = async function() {
   try {
     this.viewCount += 1;
     await this.save();
     return this;
   } catch (error) {
-    logger.error(`Error incrementing view count for ${this.slug}:`, error);
+    console.error(`Error incrementing view count for ${this.slug}:`, error);
     throw error;
   }
 };
@@ -217,16 +212,13 @@ microlearningSchema.methods.updateCompletionRate = async function(newRate) {
     }
     return this;
   } catch (error) {
-    logger.error(`Error updating completion rate for ${this.slug}:`, error);
+    console.error(`Error updating completion rate for ${this.slug}:`, error);
     throw error;
   }
 };
 
-// Virtuals
 microlearningSchema.virtual('formattedDuration').get(function() {
   return `${this.duration} min`;
 });
 
-const Microlearning = mongoose.model('Microlearning', microlearningSchema);
-
-module.exports = Microlearning;
+export default mongoose.model('Microlearning', microlearningSchema);
