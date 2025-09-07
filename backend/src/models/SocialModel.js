@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const socialSchema = new mongoose.Schema(
   {
@@ -7,7 +7,7 @@ const socialSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required'],
-      index: true // Critical for DigitalOcean query performance
+      index: true
     },
     platform: {
       type: String,
@@ -24,7 +24,6 @@ const socialSchema = new mongoose.Schema(
       required: [true, 'Profile URL is required'],
       validate: {
         validator: function(v) {
-          // Platform-specific URL validation
           const urlPatterns = {
             facebook: /(?:https?:\/\/)?(?:www\.)?(?:facebook|fb)\.com\/([a-zA-Z0-9._-]+)\/?/,
             twitter: /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/([a-zA-Z0-9_]{1,15})\/?/,
@@ -75,9 +74,8 @@ const socialSchema = new mongoose.Schema(
     }
   },
   {
-    // DigitalOcean Optimized Settings
-    timestamps: true, // createdAt and updatedAt
-    strict: 'throw', // Throw errors for unknown fields
+    timestamps: true,
+    strict: 'throw',
     toJSON: { 
       virtuals: true,
       transform: function(doc, ret) {
@@ -94,17 +92,14 @@ const socialSchema = new mongoose.Schema(
   }
 );
 
-// DigitalOcean Performance Indexes
-socialSchema.index({ userId: 1, platform: 1 }, { unique: true }); // One platform per user
-socialSchema.index({ platform: 1, 'metrics.followers': -1 }); // For leaderboards
-socialSchema.index({ 'metrics.lastUpdated': -1 }); // For data freshness checks
+socialSchema.index({ userId: 1, platform: 1 }, { unique: true });
+socialSchema.index({ platform: 1, 'metrics.followers': -1 });
+socialSchema.index({ 'metrics.lastUpdated': -1 });
 
-// Virtual for platform icon (DigitalOcean Spaces)
 socialSchema.virtual('iconUrl').get(function() {
   return `${process.env.DO_SPACES_CDN_URL}/social-icons/${this.platform}.svg`;
 });
 
-// Query Helpers for DigitalOcean Efficiency
 socialSchema.query.byUser = function(userId) {
   return this.where({ userId }).lean();
 };
@@ -117,12 +112,10 @@ socialSchema.query.verifiedOnly = function() {
   return this.where({ isVerified: true });
 };
 
-// DigitalOcean Monitoring Hooks
 socialSchema.post('save', function(doc) {
   console.log(`[DO Monitoring] Social profile updated - User: ${doc.userId}, Platform: ${doc.platform}`);
 });
 
-// Auto-update metrics timestamp when followers change
 socialSchema.pre('save', function(next) {
   if (this.isModified('metrics.followers')) {
     this.metrics.lastUpdated = new Date();
@@ -130,7 +123,6 @@ socialSchema.pre('save', function(next) {
   next();
 });
 
-// Validate maximum social accounts per user
 socialSchema.pre('save', async function(next) {
   const maxAccounts = process.env.SOCIAL_MAX_ACCOUNTS || 5;
   const count = await this.constructor.countDocuments({ userId: this.userId });
@@ -141,4 +133,4 @@ socialSchema.pre('save', async function(next) {
   next();
 });
 
-module.exports = mongoose.model('Social', socialSchema);
+export default mongoose.model('Social', socialSchema);
