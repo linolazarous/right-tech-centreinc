@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const paymentSchema = new mongoose.Schema({
   userId: {
@@ -23,7 +22,7 @@ const paymentSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Amount is required'],
     min: [0.01, 'Amount must be at least 0.01'],
-    set: v => parseFloat(v.toFixed(2)) // Ensure 2 decimal places
+    set: v => parseFloat(v.toFixed(2))
   },
   currency: {
     type: String,
@@ -97,10 +96,10 @@ const paymentSchema = new mongoose.Schema({
   gatewayTransactionId: {
     type: String,
     index: true,
-    sparse: true // Not all payments may have this immediately
+    sparse: true
   },
   gatewayResponse: {
-    type: mongoose.Schema.Types.Mixed // Raw response from payment processor
+    type: mongoose.Schema.Types.Mixed
   },
   failureReason: {
     type: String,
@@ -206,7 +205,6 @@ const paymentSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for optimized queries
 paymentSchema.index({ userId: 1, status: 1 });
 paymentSchema.index({ createdAt: -1 });
 paymentSchema.index({ amount: 1 });
@@ -214,12 +212,9 @@ paymentSchema.index({ gateway: 1, status: 1 });
 paymentSchema.index({ 'paymentMethodDetails.last4': 1 }, { sparse: true });
 paymentSchema.index({ 'paymentMethodDetails.cryptoTransactionId': 1 }, { sparse: true });
 
-// Pre-save hooks
 paymentSchema.pre('save', function(next) {
-  // Calculate total amount before saving
   this.totalAmount = this.amount + this.taxAmount + this.shippingAmount - this.discountAmount;
   
-  // Set completedAt timestamp if status changes to completed
   if (this.isModified('status') && this.status === 'completed' && !this.completedAt) {
     this.completedAt = new Date();
   }
@@ -227,7 +222,6 @@ paymentSchema.pre('save', function(next) {
   next();
 });
 
-// Static methods
 paymentSchema.statics.findByUser = async function(userId, limit = 10) {
   try {
     return await this.find({ userId })
@@ -235,7 +229,7 @@ paymentSchema.statics.findByUser = async function(userId, limit = 10) {
       .limit(limit)
       .populate('orderId', 'items total');
   } catch (error) {
-    logger.error(`Error finding payments for user ${userId}:`, error);
+    console.error(`Error finding payments for user ${userId}:`, error);
     throw error;
   }
 };
@@ -247,7 +241,7 @@ paymentSchema.statics.findByGatewayId = async function(gateway, transactionId) {
       gatewayTransactionId: transactionId 
     });
   } catch (error) {
-    logger.error(`Error finding payment by gateway ID ${transactionId}:`, error);
+    console.error(`Error finding payment by gateway ID ${transactionId}:`, error);
     throw error;
   }
 };
@@ -266,12 +260,11 @@ paymentSchema.statics.createRefund = async function(paymentId, refundData) {
       { new: true }
     );
   } catch (error) {
-    logger.error(`Error creating refund for payment ${paymentId}:`, error);
+    console.error(`Error creating refund for payment ${paymentId}:`, error);
     throw error;
   }
 };
 
-// Instance methods
 paymentSchema.methods.markAsCompleted = async function(gatewayResponse) {
   try {
     this.status = 'completed';
@@ -279,7 +272,7 @@ paymentSchema.methods.markAsCompleted = async function(gatewayResponse) {
     this.completedAt = new Date();
     return await this.save();
   } catch (error) {
-    logger.error(`Error completing payment ${this._id}:`, error);
+    console.error(`Error completing payment ${this._id}:`, error);
     throw error;
   }
 };
@@ -290,12 +283,11 @@ paymentSchema.methods.addDispute = async function(reason) {
     this.failureReason = reason;
     return await this.save();
   } catch (error) {
-    logger.error(`Error adding dispute to payment ${this._id}:`, error);
+    console.error(`Error adding dispute to payment ${this._id}:`, error);
     throw error;
   }
 };
 
-// Virtuals
 paymentSchema.virtual('isRefundable').get(function() {
   return this.status === 'completed' && 
          !['refunded', 'partially_refunded', 'disputed', 'chargeback'].includes(this.status);
@@ -313,6 +305,4 @@ paymentSchema.virtual('formattedAmount').get(function() {
   return formatter.format(this.amount);
 });
 
-const Payment = mongoose.model('Payment', paymentSchema);
-
-module.exports = Payment;
+export default mongoose.model('Payment', paymentSchema);
