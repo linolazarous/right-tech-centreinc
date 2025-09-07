@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { logger } = require('../utils/logger');
+import mongoose from 'mongoose';
 
 const moderationSchema = new mongoose.Schema({
   contentId: {
@@ -52,7 +51,7 @@ const moderationSchema = new mongoose.Schema({
     ref: 'User'
   },
   originalContent: {
-    type: mongoose.Schema.Types.Mixed // For storing content snapshot
+    type: mongoose.Schema.Types.Mixed
   },
   moderationNotes: {
     type: String,
@@ -85,7 +84,7 @@ const moderationSchema = new mongoose.Schema({
     default: 'none'
   },
   suspensionDuration: {
-    type: Number // In hours, 0 for permanent
+    type: Number
   },
   automated: {
     type: Boolean,
@@ -118,13 +117,11 @@ const moderationSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Compound indexes for common query patterns
 moderationSchema.index({ contentType: 1, status: 1 });
 moderationSchema.index({ status: 1, createdAt: 1 });
 moderationSchema.index({ reportedBy: 1, createdAt: 1 });
 moderationSchema.index({ moderatedBy: 1, resolvedAt: 1 });
 
-// Pre-save hook to update timestamps
 moderationSchema.pre('save', function(next) {
   if (this.isModified('status') && this.status !== 'pending' && !this.resolvedAt) {
     this.resolvedAt = new Date();
@@ -132,7 +129,6 @@ moderationSchema.pre('save', function(next) {
   next();
 });
 
-// Static methods
 moderationSchema.statics.findPendingByType = async function(contentType, limit = 50) {
   try {
     return await this.find({ 
@@ -143,7 +139,7 @@ moderationSchema.statics.findPendingByType = async function(contentType, limit =
     .limit(limit)
     .populate('reportedBy', 'username email');
   } catch (error) {
-    logger.error(`Error finding pending ${contentType} items:`, error);
+    console.error(`Error finding pending ${contentType} items:`, error);
     throw error;
   }
 };
@@ -161,7 +157,7 @@ moderationSchema.statics.approveContent = async function(contentId, moderatorId,
       { new: true }
     );
   } catch (error) {
-    logger.error(`Error approving content ${contentId}:`, error);
+    console.error(`Error approving content ${contentId}:`, error);
     throw error;
   }
 };
@@ -180,12 +176,11 @@ moderationSchema.statics.rejectContent = async function(contentId, moderatorId, 
       { new: true }
     );
   } catch (error) {
-    logger.error(`Error rejecting content ${contentId}:`, error);
+    console.error(`Error rejecting content ${contentId}:`, error);
     throw error;
   }
 };
 
-// Instance methods
 moderationSchema.methods.escalate = async function(moderatorId, notes) {
   try {
     this.status = 'escalated';
@@ -193,7 +188,7 @@ moderationSchema.methods.escalate = async function(moderatorId, notes) {
     this.moderationNotes = notes;
     return await this.save();
   } catch (error) {
-    logger.error(`Error escalating moderation ${this._id}:`, error);
+    console.error(`Error escalating moderation ${this._id}:`, error);
     throw error;
   }
 };
@@ -205,12 +200,11 @@ moderationSchema.methods.createAppeal = async function(notes) {
     this.appealNotes = notes;
     return await this.save();
   } catch (error) {
-    logger.error(`Error creating appeal for ${this._id}:`, error);
+    console.error(`Error creating appeal for ${this._id}:`, error);
     throw error;
   }
 };
 
-// Virtuals
 moderationSchema.virtual('isResolved').get(function() {
   return this.status !== 'pending';
 });
@@ -229,6 +223,4 @@ moderationSchema.virtual('contentTypeLabel').get(function() {
   return labels[this.contentType] || this.contentType;
 });
 
-const Moderation = mongoose.model('Moderation', moderationSchema);
-
-module.exports = Moderation;
+export default mongoose.model('Moderation', moderationSchema);
