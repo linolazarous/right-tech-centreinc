@@ -1,41 +1,61 @@
+
 import axios from 'axios';
-import { getAuthHeader } from '../utils/auth';
+import API_BASE_URL, { API_ENDPOINTS } from './apiConfig';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.righttechcentre.com';
-
+// Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
 });
 
-// Add request interceptor for auth headers
-api.interceptors.request.use((config) => {
-  const authHeader = getAuthHeader();
-  if (authHeader) {
-    config.headers.Authorization = authHeader.Authorization;
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Add auth token if available
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-export const fetchCourses = async () => {
-  try {
-    const response = await api.get('/courses');
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch courses:', error);
-    throw new Error(error.response?.data?.message || 'Failed to load courses');
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
-};
+);
 
-export const fetchUserProfile = async (userId) => {
-  try {
-    const response = await api.get(`/users/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch user profile:', error);
-    throw new Error(error.response?.data?.message || 'Failed to load user profile');
-  }
-};
+// API methods
+export const checkAPIHealth = () => api.get(API_ENDPOINTS.HEALTH);
+
+export const getCourses = () => api.get(API_ENDPOINTS.COURSES);
+
+export const getPrograms = () => api.get(API_ENDPOINTS.PROGRAMS);
+
+export const loginUser = (credentials) => 
+  api.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
+
+export const registerUser = (userData) => 
+  api.post(API_ENDPOINTS.AUTH.REGISTER, userData);
+
+export const getUserProfile = () => 
+  api.get(API_ENDPOINTS.AUTH.PROFILE);
+
+export const submitContactForm = (formData) => 
+  api.post(API_ENDPOINTS.CONTACT, formData);
+
+export default api;
