@@ -12,11 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==============================================
-// Security Middleware
+// Middleware
 // ==============================================
 app.use(helmet());
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || true,
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
 }));
 app.use(compression());
@@ -26,92 +26,66 @@ app.use(express.urlencoded({ extended: true }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later.'
-  },
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use(limiter);
 
 // ==============================================
-// Database Connection
+// Database Connection (MongoDB)
 // ==============================================
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/righttechcentre';
-const mongoOptions = {
+
+mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-};
-
-mongoose.connect(MONGO_URI, mongoOptions).then(() => {
-  console.log('✅ MongoDB Connected successfully');
-}).catch((err) => {
-  console.error('❌ MongoDB Connection Error:', err.message);
-});
+}).then(() => console.log('✅ MongoDB Connected'))
+  .catch((err) => console.error('❌ MongoDB Error:', err));
 
 // ==============================================
-// Health Check Endpoint
+// Health Check
 // ==============================================
 app.get('/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
   res.status(200).json({
     status: 'UP',
-    timestamp: new Date().toISOString(),
     dbStatus,
-    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    port: PORT
   });
 });
 
 // ==============================================
-// API Routes (example)
+// API Routes (sample)
 // ==============================================
 app.get('/api/test', (req, res) => {
-  res.json({
-    success: true,
-    message: 'API test endpoint is working',
-    data: { timestamp: new Date().toISOString() }
-  });
+  res.json({ success: true, message: 'API test working', timestamp: new Date().toISOString() });
 });
 
 // ==============================================
-// Serve React Frontend (PRODUCTION)
+// Serve React Frontend (Production)
 // ==============================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const frontendPath = path.join(__dirname, '../../frontend/build');
 
-// Serve static files from frontend build
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.use(express.static(frontendPath));
 
-// Catch-all route for React Router
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // ==============================================
-// Error Handling Middleware
+// Error Handling
 // ==============================================
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found',
-    path: req.originalUrl
-  });
+  res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-app.use((error, req, res, next) => {
-  console.error('Server Error:', error);
-  res.status(500).json({
-    success: false,
-    message: process.env.NODE_ENV === 'production'
-      ? 'Internal server error'
-      : error.message
-  });
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
 // ==============================================
@@ -119,17 +93,12 @@ app.use((error, req, res, next) => {
 // ==============================================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 API test: http://0.0.0.0:${PORT}/api/test`);
   console.log(`📍 Health check: http://0.0.0.0:${PORT}/health`);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    mongoose.connection.close();
-    console.log('Process terminated');
-  });
+  console.log('SIGTERM received, shutting down...');
+  server.close(() => mongoose.connection.close());
 });
 
 export default app;
