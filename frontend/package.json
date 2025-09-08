@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Right Tech Centre - React Frontend",
   "main": "src/index.js",
-  "proxy": "http://localhost:5000",
+  "proxy": "https://righttechcentre-iyysq.ondigitalocean.app",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
