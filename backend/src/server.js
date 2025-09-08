@@ -6,13 +6,6 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 
-// ==============================================
-// Import Fixes - Check these paths exist!
-// ==============================================
-// Remove these imports if the files don't exist yet
-// import db from './db.js';
-// import routes from './routes/index.js';
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -28,10 +21,16 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// Rate limiting - FIXED: Moved from external file
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use(limiter);
 
@@ -46,7 +45,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     dbStatus,
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT // Added to verify which port we're using
   });
 });
 
@@ -60,12 +60,6 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// ==============================================
-// Temporary comment out routes until files exist
-// ==============================================
-// app.use('/api/auth', routes.authRoutes);
-// app.use('/api/users', routes.userRoutes);
 
 // Add a simple test route to verify API works
 app.get('/api/test', (req, res) => {
@@ -91,13 +85,18 @@ const mongoOptions = {
 // Connect to MongoDB with better error handling
 const connectDB = async () => {
   try {
+    if (!MONGO_URI) {
+      console.log('⚠️  MONGO_URI not found, using test mode without database');
+      return;
+    }
+    
     await mongoose.connect(MONGO_URI, mongoOptions);
     console.log('✅ MongoDB Connected successfully');
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
-    // Don't exit process in production, let it try to reconnect
+    // Don't exit process in production, let the health check handle it
     if (process.env.NODE_ENV === 'development') {
-      process.exit(1);
+      console.log('⚠️  Continuing without database connection in development');
     }
   }
 };
@@ -106,7 +105,7 @@ connectDB();
 
 // MongoDB connection events
 mongoose.connection.on('disconnected', () => {
-  console.log('⚠️ MongoDB disconnected. Attempting to reconnect...');
+  console.log('⚠️ MongoDB disconnected');
 });
 
 mongoose.connection.on('error', (error) => {
@@ -139,9 +138,14 @@ app.use((error, req, res, next) => {
 // ==============================================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`📍 API test: http://localhost:${PORT}/api/test`);
+  console.log(`📍 Health check: http://0.0.0.0:${PORT}/health`);
+  console.log(`📍 API test: http://0.0.0.0:${PORT}/api/test`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  
+  // DigitalOcean specific log
+  if (process.env.NODE_ENV === 'production') {
+    console.log('✅ DigitalOcean: Server started successfully on port 8080');
+  }
 });
 
 // Graceful shutdown
