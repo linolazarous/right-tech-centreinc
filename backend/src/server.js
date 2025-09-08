@@ -14,7 +14,16 @@ const PORT = process.env.PORT || 8080;
 // ==============================================
 // Middleware
 // ==============================================
-app.use(helmet());
+// Enhanced helmet with a basic Content Security Policy
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'"], 
+      "img-src": ["'self'", "data:"],
+    },
+  },
+}));
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
@@ -57,34 +66,44 @@ app.get('/health', (req, res) => {
 });
 
 // ==============================================
-// API Routes (sample)
+// API Routes (must be defined before the frontend catch-all)
 // ==============================================
 app.get('/api/test', (req, res) => {
   res.json({ success: true, message: 'API test working', timestamp: new Date().toISOString() });
 });
+// Your other API routes should go here
 
 // ==============================================
 // Serve React Frontend (Production)
 // ==============================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const frontendPath = path.join(__dirname, '../../frontend/build');
+// Create a reliable path to the 'public' folder within the backend directory
+const publicPath = path.join(__dirname, '..', 'public');
 
-app.use(express.static(frontendPath));
+app.use(express.static(publicPath));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
+// This catch-all route handles all non-API requests and serves the React app
+app.get('*', (req, res, next) => {
+  // If the request path starts with /api/, it's a 404 for an API route
+  if (req.originalUrl.startsWith('/api/')) {
+    return res.status(404).json({ success: false, message: 'API route not found' });
+  }
+  
+  const indexPath = path.join(publicPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // Pass errors to the central error handler
+      next(err);
+    }
+  });
 });
 
 // ==============================================
 // Error Handling
 // ==============================================
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
-});
-
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
+  console.error('Server Error Stack:', err.stack); // Log the full error stack for better debugging
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
