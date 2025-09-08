@@ -4,7 +4,7 @@ import HomePage from './pages/HomePage';
 import CoursePage from './pages/CoursePage';
 import ProfilePage from './pages/ProfilePage';
 import LiveClass from './pages/LiveClass';
-import Forum from './pages/Forum';
+import ForumPage from './pages/ForumPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import ContactPage from './pages/ContactPage';
@@ -38,7 +38,7 @@ function App() {
             <Route path="/courses" element={<CoursePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/live-class" element={<LiveClass />} />
-            <Route path="/forum" element={<Forum />} />
+            <Route path="/forum" element={<ForumPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -55,3 +55,4 @@ function App() {
 }
 
 export default App;
+
