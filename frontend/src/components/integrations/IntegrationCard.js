@@ -29,4 +29,20 @@ const IntegrationCard = ({ integration, onConnect, onDisconnect }) => {
       {integration.connected ? (
         <button
           onClick={() => onDisconnect(integration.id)}
-          className="w-full bg-red-600 text-white py-2 px-4 rounded hover
+          className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+        >
+          Disconnect
+        </button>
+      ) : (
+        <button
+          onClick={() => onConnect(integration.id)}
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+        >
+          Connect
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default IntegrationCard;
