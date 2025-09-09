@@ -1,0 +1,41 @@
+{
+  "header": {
+    "title": "Right Tech Centre",
+    "home": "Home",
+    "programs": "Programs",
+    "courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Future-Ready Tech Education",
+    "subtitle": "Master in-demand skills with our self-paced programs in AI, Web3, Cybersecurity, and more.",
+    "cta1": "Explore Courses",
+    "cta2": "Get Started"
+  },
+  "programs": {
+    "title": "Our Programs",
+    "description": "Choose the path that matches your career goals and learning style.",
+    "certifications": "Certifications",
+    "diplomas": "Diploma Programs",
+    "degrees": "Bachelor Degrees"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Our admissions team is ready to guide you through enrollment.",
+    "formTitle": "Enrollment Form",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "program": "Program of Interest",
+    "message": "Message",
+    "submit": "Submit Application"
+  },
+  "footer": {
+    "copyright": "© {{year}} Right Tech Centre. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}
