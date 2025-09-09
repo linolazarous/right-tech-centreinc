@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 import { getAuthHeader } from '../utils/auth';
 
@@ -33,10 +32,41 @@ api.interceptors.request.use(
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        // Try to refresh token if refresh token endpoint exists
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          const refreshResponse = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
+            refreshToken
+          });
+          
+          const { token, refreshToken: newRefreshToken } = refreshResponse.data;
+          
+          if (token) {
+            localStorage.setItem('authToken', token);
+            if (newRefreshToken) {
+              localStorage.setItem('refreshToken', newRefreshToken);
+            }
+            
+            // Retry the original request with new token
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          }
+        }
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        // Continue with normal error handling
+      }
+      
       // Handle unauthorized access
       localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('userData');
       window.dispatchEvent(new Event('unauthorized'));
     }
@@ -50,7 +80,7 @@ api.interceptors.response.use(
   }
 );
 
-// API endpoints
+// API endpoints - Keep your existing endpoints
 export const fetchCourses = async () => {
   try {
     const response = await api.get('/api/courses');
@@ -77,6 +107,10 @@ export const loginUser = async (credentials) => {
     
     if (response.data.token) {
       localStorage.setItem('authToken', response.data.token);
+      // Store refresh token if provided
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
       if (response.data.user) {
         localStorage.setItem('userData', JSON.stringify(response.data.user));
       }
@@ -95,6 +129,10 @@ export const registerUser = async (userData) => {
     
     if (response.data.token) {
       localStorage.setItem('authToken', response.data.token);
+      // Store refresh token if provided
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
       if (response.data.user) {
         localStorage.setItem('userData', JSON.stringify(response.data.user));
       }
@@ -110,6 +148,13 @@ export const registerUser = async (userData) => {
 export const updateUserProfile = async (userId, updates) => {
   try {
     const response = await api.put(`/api/users/${userId}`, updates);
+    
+    // Update local user data if the current user's profile was updated
+    const currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (currentUser._id === userId) {
+      localStorage.setItem('userData', JSON.stringify({ ...currentUser, ...updates }));
+    }
+    
     return response.data;
   } catch (error) {
     console.error('Failed to update user profile:', error);
@@ -174,5 +219,41 @@ export const checkAPIHealth = async () => {
   }
 };
 
+// Add logout function
+export const logoutUser = async () => {
+  try {
+    // Call logout endpoint if it exists
+    await api.post('/api/auth/logout');
+  } catch (error) {
+    console.error('Logout API call failed:', error);
+    // Still clear local storage even if API call fails
+  } finally {
+    // Always clear local storage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userData');
+  }
+};
+
+// Add password reset functions
+export const requestPasswordReset = async (email) => {
+  try {
+    const response = await api.post('/api/auth/forgot-password', { email });
+    return response.data;
+  } catch (error) {
+    console.error('Password reset request failed:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (token, passwordData) => {
+  try {
+    const response = await api.post(`/api/auth/reset-password/${token}`, passwordData);
+    return response.data;
+  } catch (error) {
+    console.error('Password reset failed:', error);
+    throw error;
+  }
+};
+
 export default api;
-                
