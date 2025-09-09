@@ -1,3 +1,99 @@
+import React, { useState, useCallback } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
+const ContactPage = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    if (!executeRecaptcha) {
+      toast.error('reCAPTCHA not ready. Please try again.');
+      return;
+    }
+    if (!name || !email || !message) {
+      toast.error('Please fill in all fields.');
+      return;
+    }
+    setLoading(true);
+
+    try {
+      // Get the reCAPTCHA token
+      const token = await executeRecaptcha('contactForm');
+
+      // **IMPORTANT**: This is a sample API endpoint. 
+      // Replace '/api/contact' with your actual backend endpoint for handling form submissions.
+      const response = await axios.post('/api/contact', {
+        name,
+        email,
+        message,
+        recaptchaToken: token, // Send the token to your backend for verification
+      });
+
+      if (response.data.success) {
+        toast.success('Message sent successfully!');
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        throw new Error(response.data.message || 'An unknown error occurred.');
+      }
+    } catch (error) {
+      console.error('Submission Error:', error);
+      toast.error(error.message || 'Failed to send message.');
+    } finally {
+      setLoading(false);
+    }
+  }, [executeRecaptcha, name, email, message]);
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px' }}>
+      <h1>Contact Us</h1>
+      <p>We'd love to hear from you. Please fill out the form below.</p>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{ padding: '10px', fontSize: '16px' }}
+          disabled={loading}
+        />
+        <input
+          type="email"
+          placeholder="Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ padding: '10px', fontSize: '16px' }}
+          disabled={loading}
+        />
+        <textarea
+          placeholder="Your Message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows="6"
+          style={{ padding: '10px', fontSize: '16px' }}
+          disabled={loading}
+        ></textarea>
+        <button type="submit" disabled={loading} style={{ padding: '12px', fontSize: '16px', cursor: 'pointer' }}>
+          {loading ? 'Sending...' : 'Send Message'}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default ContactPage;
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../layouts/PageLayout';
