@@ -1,109 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-
-const ContactPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { executeRecaptcha } = useGoogleReCaptcha();
-
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    if (!executeRecaptcha) {
-      toast.error('reCAPTCHA not ready. Please try again.');
-      return;
-    }
-    if (!name || !email || !message) {
-      toast.error('Please fill in all fields.');
-      return;
-    }
-    setLoading(true);
-
-    try {
-      // Get the reCAPTCHA token
-      const token = await executeRecaptcha('contactForm');
-
-      // **IMPORTANT**: This is a sample API endpoint. 
-      // Replace '/api/contact' with your actual backend endpoint for handling form submissions.
-      const response = await axios.post('/api/contact', {
-        name,
-        email,
-        message,
-        recaptchaToken: token, // Send the token to your backend for verification
-      });
-
-      if (response.data.success) {
-        toast.success('Message sent successfully!');
-        setName('');
-        setEmail('');
-        setMessage('');
-      } else {
-        throw new Error(response.data.message || 'An unknown error occurred.');
-      }
-    } catch (error) {
-      console.error('Submission Error:', error);
-      toast.error(error.message || 'Failed to send message.');
-    } finally {
-      setLoading(false);
-    }
-  }, [executeRecaptcha, name, email, message]);
-
-  return (
-    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px' }}>
-      <h1>Contact Us</h1>
-      <p>We'd love to hear from you. Please fill out the form below.</p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <input
-          type="text"
-          placeholder="Your Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px' }}
-          disabled={loading}
-        />
-        <input
-          type="email"
-          placeholder="Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px' }}
-          disabled={loading}
-        />
-        <textarea
-          placeholder="Your Message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows="6"
-          style={{ padding: '10px', fontSize: '16px' }}
-          disabled={loading}
-        ></textarea>
-        <button type="submit" disabled={loading} style={{ padding: '12px', fontSize: '16px', cursor: 'pointer' }}>
-          {loading ? 'Sending...' : 'Send Message'}
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default ContactPage;
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PageLayout from '../layouts/PageLayout';
-import { submitContactForm } from '../services/contactService';
 import useFormValidation from '../hooks/useFormValidation';
-import { loadReCaptcha } from 'react-recaptcha-v3';
 import { logger } from '../utils/logger';
 import { usePageTracking } from '../hooks/usePageTracking';
 import ErrorBoundary from '../components/ErrorBoundary';
-import { RECAPTCHA_SITE_KEY } from '../utils/constants';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -116,25 +20,22 @@ const ContactPage = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const navigate = useNavigate();
+  const { executeRecaptcha } = useGoogleReCaptcha();
   usePageTracking();
 
   const { validateForm } = useFormValidation();
 
-  // Initialize reCAPTCHA
-  useEffect(() => {
-    if (RECAPTCHA_SITE_KEY) {
-      loadReCaptcha(RECAPTCHA_SITE_KEY);
-    }
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     // Form validation
@@ -144,62 +45,61 @@ const ContactPage = () => {
       return;
     }
 
-    // Verify reCAPTCHA
-    if (!recaptchaToken && RECAPTCHA_SITE_KEY) {
-      logger.warn('reCAPTCHA verification missing');
-      setErrors(prev => ({ ...prev, form: 'Please verify you are not a robot' }));
+    if (!executeRecaptcha) {
+      toast.error('reCAPTCHA not ready. Please try again.');
       return;
     }
 
     setSubmitting(true);
+
     try {
-      await submitContactForm({
+      // Get reCAPTCHA token
+      const recaptchaToken = await executeRecaptcha('contactForm');
+
+      // Submit form with reCAPTCHA token
+      const response = await axios.post('/api/contact', {
         ...formData,
         recaptchaToken
       });
-      
-      logger.info('Contact form submitted successfully', {
-        formData: { ...formData, phone: 'REDACTED' } // Don't log full phone numbers
-      });
-      
-      navigate('/contact/success', { 
-        state: { 
-          message: 'Thank you for your inquiry! We will contact you shortly.' 
-        },
-        replace: true
-      });
+
+      if (response.data.success) {
+        toast.success('Thank you for your inquiry! We will contact you shortly.');
+        logger.info('Contact form submitted successfully', {
+          formData: { ...formData, phone: 'REDACTED' }
+        });
+        
+        // Reset form
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          program: '',
+          message: ''
+        });
+        
+        // Optionally navigate to success page
+        // navigate('/contact/success', { 
+        //   state: { message: 'Thank you for your inquiry! We will contact you shortly.' },
+        //   replace: true
+        // });
+      } else {
+        throw new Error(response.data.message || 'An unknown error occurred.');
+      }
     } catch (error) {
       logger.error('Contact form submission failed', error);
-      navigate('/contact/error', {
-        state: { 
-          message: error.response?.data?.message || 'Submission failed. Please try again later.' 
-        },
-        replace: true
-      });
+      const errorMessage = error.response?.data?.message || 'Submission failed. Please try again later.';
+      toast.error(errorMessage);
+      
+      // Optionally navigate to error page
+      // navigate('/contact/error', {
+      //   state: { message: errorMessage },
+      //   replace: true
+      // });
     } finally {
       setSubmitting(false);
     }
-  };
-
-  // Function to execute reCAPTCHA and get token
-  const executeRecaptcha = async () => {
-    if (typeof window.grecaptcha !== 'undefined' && RECAPTCHA_SITE_KEY) {
-      try {
-        const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'contact' });
-        setRecaptchaToken(token);
-        // Clear any previous reCAPTCHA errors
-        if (errors.form) {
-          setErrors(prev => {
-            const newErrors = { ...prev };
-            delete newErrors.form;
-            return newErrors;
-          });
-        }
-      } catch (error) {
-        logger.error('reCAPTCHA execution failed', error);
-      }
-    }
-  };
+  }, [executeRecaptcha, formData, validateForm, navigate]);
 
   return (
     <PageLayout 
@@ -261,12 +161,6 @@ const ContactPage = () => {
               <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
                 <h3 className="text-2xl font-bold text-gray-900">Enrollment Form</h3>
                 
-                {errors.form && (
-                  <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-md">
-                    {errors.form}
-                  </div>
-                )}
-                
                 <form 
                   onSubmit={handleSubmit}
                   className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8"
@@ -285,6 +179,7 @@ const ContactPage = () => {
                         errors.firstName ? 'border-red-500' : 'border-gray-300'
                       } rounded-md`}
                       required
+                      disabled={submitting}
                     />
                     {errors.firstName && (
                       <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
@@ -305,6 +200,7 @@ const ContactPage = () => {
                         errors.lastName ? 'border-red-500' : 'border-gray-300'
                       } rounded-md`}
                       required
+                      disabled={submitting}
                     />
                     {errors.lastName && (
                       <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
@@ -325,6 +221,7 @@ const ContactPage = () => {
                         errors.email ? 'border-red-500' : 'border-gray-300'
                       } rounded-md`}
                       required
+                      disabled={submitting}
                     />
                     {errors.email && (
                       <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -345,6 +242,7 @@ const ContactPage = () => {
                         errors.phone ? 'border-red-500' : 'border-gray-300'
                       } rounded-md`}
                       required
+                      disabled={submitting}
                     />
                     {errors.phone && (
                       <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
@@ -364,6 +262,7 @@ const ContactPage = () => {
                         errors.program ? 'border-red-500' : 'border-gray-300'
                       } rounded-md`}
                       required
+                      disabled={submitting}
                     >
                       <option value="">-- Select a program --</option>
                       <optgroup label="Certifications">
@@ -395,6 +294,7 @@ const ContactPage = () => {
                       value={formData.message}
                       onChange={handleChange}
                       className="py-3 px-4 block w-full shadow-sm border-gray-300 rounded-md"
+                      disabled={submitting}
                     />
                   </div>
                   
@@ -402,10 +302,9 @@ const ContactPage = () => {
                     <button
                       type="submit"
                       disabled={submitting}
-                      onClick={executeRecaptcha}
                       className={`w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
                         submitting 
-                          ? 'bg-indigo-400' 
+                          ? 'bg-indigo-400 cursor-not-allowed' 
                           : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
                       } transition-all`}
                     >
