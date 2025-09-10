@@ -2,8 +2,9 @@
  * Enhanced application logger with multiple log levels and production safeguards
  */
 
+// Import from the same directory using relative paths
 import { isProduction } from './constants';
-import * as monitoring from './monitoring';
+import { logWarning, logError } from './monitoring';
 
 const LogLevel = {
   DEBUG: 'debug',
@@ -43,7 +44,7 @@ const logger = {
   warn: (message, context = {}) => {
     if (shouldLog(LogLevel.WARN)) {
       console.warn(`[WARN] ${new Date().toISOString()} - ${message}`, stringifyContext(context));
-      monitoring.logWarning(message, context);
+      logWarning(message, context);
     }
   },
 
@@ -56,7 +57,7 @@ const logger = {
       stackTrace: stackTrace || 'No stack trace available'
     });
 
-    monitoring.logError(error, context);
+    logError(error, context);
   },
 
   logApiError: (error) => {
