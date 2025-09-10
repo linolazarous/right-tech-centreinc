@@ -1,0 +1,17 @@
+{
+  "header": {
+    "title": "Right Tech Centre",
+    "home": "Início",
+    "programs": "Programas",
+    "courses": "Cursos",
+    "about": "Sobre",
+    "contact": "Contato",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Educação Tecnológica Preparada para o Futuro",
+    "subtitle": "Domine habilidades em demanda com nossos programas de ritmo próprio em IA, Web3, segurança cibernética e muito mais.",
+    "cta1": "Explorar Cursos",
+    "cta2": "Começar"
+  }
+}
