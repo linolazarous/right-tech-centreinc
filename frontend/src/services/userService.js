@@ -37,13 +37,16 @@ const userService = {
   },
 };
 
-// Named exports for all API functions
-export const login = loginUser;
-export const register = registerUser;
-export const logout = logoutUser;
-export const fetchUserProfile = fetchUserProfile; // This is what you need
-export const updateProfile = updateUserProfile;
-export { requestPasswordReset, resetPassword };
+// Re-export the API functions directly as named exports
+export { 
+  loginUser as login, 
+  registerUser as register, 
+  logoutUser as logout, 
+  fetchUserProfile, 
+  updateUserProfile as updateProfile,
+  requestPasswordReset, 
+  resetPassword 
+};
 
 // Utility methods as named exports
 export const getCurrentUser = userService.getCurrentUser;
