@@ -20,15 +20,27 @@ const LanguageSwitcher = ({ className }) => {
     i18n.changeLanguage(selectedLanguage);
     setLanguage(selectedLanguage);
     localStorage.setItem('preferredLanguage', selectedLanguage);
+    
+    // Update HTML lang attribute for accessibility
+    document.documentElement.lang = selectedLanguage;
   };
 
+  // Top 10 most spoken languages in the world (by number of native speakers)
   const LANGUAGES = [
-    { code: 'en', name: 'English', flag: 'ðŸ‡¬ðŸ‡§' },
-    { code: 'es', name: 'EspaÃ±ol', flag: 'ðŸ‡ªðŸ‡¸' },
-    { code: 'fr', name: 'FranÃ§ais', flag: 'ðŸ‡«ðŸ‡·' },
-    { code: 'zh', name: 'ä¸­æ–‡', flag: 'ðŸ‡¨ðŸ‡³' },
-    { code: 'de', name: 'Deutsch', flag: 'ðŸ‡©ðŸ‡ª' }
+    { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', speakers: '1.45B' },
+    { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳', speakers: '1.12B' },
+    { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', speakers: '602M' },
+    { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', speakers: '548M' },
+    { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', speakers: '274M' },
+    { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', speakers: '274M' },
+    { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩', speakers: '272M' },
+    { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', speakers: '257M' },
+    { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', speakers: '255M' },
+    { code: 'ur', name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰', speakers: '231M' }
   ];
+
+  // Sort languages alphabetically by English name for better UX
+  const sortedLanguages = [...LANGUAGES].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <div className={`language-switcher ${className}`}>
@@ -39,9 +51,9 @@ const LanguageSwitcher = ({ className }) => {
         aria-label="Select language"
         className="language-select"
       >
-        {LANGUAGES.map((lang) => (
+        {sortedLanguages.map((lang) => (
           <option key={lang.code} value={lang.code}>
-            {lang.flag} {lang.name}
+            {lang.flag} {lang.name} ({lang.nativeName})
           </option>
         ))}
       </select>
@@ -51,6 +63,10 @@ const LanguageSwitcher = ({ className }) => {
 
 LanguageSwitcher.propTypes = {
   className: PropTypes.string
+};
+
+LanguageSwitcher.defaultProps = {
+  className: ''
 };
 
 export default LanguageSwitcher;
