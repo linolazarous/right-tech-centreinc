@@ -35,12 +35,13 @@ class LiveClassCache {
 
 const cache = new LiveClassCache();
 
-export default function useLiveClasses({
+// CHANGE: Use named export instead of default export
+export const useLiveClasses = ({
   enableCache = true,
   autoRefreshInterval = 0,
   maxRetries = 3,
   retryDelay = 1000
-} = {}) {
+} = {}) => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -136,7 +137,7 @@ export default function useLiveClasses({
     lastUpdated,
     retryCount
   };
-}
+};
 
 useLiveClasses.propTypes = {
   enableCache: PropTypes.bool,
