@@ -3,8 +3,8 @@
  */
 
 // Import from the same directory using relative paths
-import { isProduction } from './constants';
-import { logWarning, logError } from './monitoring';
+import { isProduction } from './constants.js';
+import { logWarning, logError } from './monitoring.js';
 
 const LogLevel = {
   DEBUG: 'debug',
