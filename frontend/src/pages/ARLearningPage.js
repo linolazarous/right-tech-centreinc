@@ -3,8 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { createARLesson } from '../services/arService';
 import PageLayout from '../layouts/PageLayout';
 import ARLessonForm from '../components/ARLessonForm';
-import useNavigate from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import { logger } from '../utils/logger';
 import ErrorBoundary from '../components/ErrorBoundary';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -56,6 +56,7 @@ const ARLearningPage = () => {
 };
 
 export default React.memo(ARLearningPage);
+
 
 
 
