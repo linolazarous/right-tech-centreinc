@@ -6,12 +6,125 @@
     "courses": "Cursos",
     "about": "Sobre",
     "contact": "Contato",
-    "login": "Login"
+    "login": "Entrar",
+    "signup": "Cadastrar",
+    "profile": "Perfil",
+    "logout": "Sair"
   },
   "hero": {
     "title": "Educação Tecnológica Preparada para o Futuro",
     "subtitle": "Domine habilidades em demanda com nossos programas de ritmo próprio em IA, Web3, segurança cibernética e muito mais.",
     "cta1": "Explorar Cursos",
-    "cta2": "Começar"
+    "cta2": "Começar",
+    "students": "estudantes avançando em suas carreiras",
+    "reviews": "4.9/5 (mais de 1200 avaliações)"
+  },
+  "programs": {
+    "title": "Nossos Programas",
+    "description": "Escolha o caminho que corresponda aos seus objetivos de carreira e estilo de aprendizagem.",
+    "certifications": "Certificações",
+    "diplomas": "Programas de Diploma",
+    "degrees": "Bacharelados",
+    "credit": "Créditos",
+    "duration": "Duração",
+    "price": "Preço",
+    "monthly": "ou {{price}}/mês"
+  },
+  "courses": {
+    "title": "Catálogo de Cursos de Ponta",
+    "description": "Programas alinhados com a indústria projetados para os líderes tecnológicos de amanhã",
+    "categories": "Categorias de Cursos",
+    "all": "Todos os Cursos",
+    "enrolled": "inscritos",
+    "rating": "classificação",
+    "view": "Ver Curso",
+    "level": "Nível",
+    "beginner": "Iniciante",
+    "intermediate": "Intermediário",
+    "advanced": "Avançado"
+  },
+  "contact": {
+    "title": "Entre em Contato",
+    "description": "Nossa equipe de admissões está pronta para orientá-lo durante a inscrição.",
+    "formTitle": "Formulário de Inscrição",
+    "firstName": "Primeiro Nome",
+    "lastName": "Sobrenome",
+    "email": "Email",
+    "phone": "Número de Telefone",
+    "program": "Programa de Interesse",
+    "message": "Mensagem",
+    "submit": "Enviar Inscrição",
+    "location": "Nossa Localização",
+    "call": "Ligue para Nós",
+    "emailUs": "Envie-nos um Email",
+    "required": "obrigatório"
+  },
+  "features": {
+    "title": "Experiência de Aprendizagem Dinâmica",
+    "videos": "Vídeos Interativos",
+    "audio": "Lições de Áudio",
+    "quizzes": "Questionários e Avaliações",
+    "projects": "Projetos Práticos",
+    "internships": "Estágios em Empresas de IA",
+    "capstone": "Projeto Final Capstone"
+  },
+  "testimonials": {
+    "title": "O que Nossos Alunos Dizem",
+    "subtitle": "Milhares de aprendizes transformaram suas carreiras. Aqui está o que eles dizem."
+  },
+  "footer": {
+    "copyright": "© {{year}} Right Tech Centre. Todos os direitos reservados.",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "affiliate": "Torne-se um Afiliado",
+    "programs": "Programas",
+    "support": "Suporte",
+    "social": "Siga-nos"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "email": "Endereço de Email",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "remember": "Lembrar-me",
+    "forgot": "Esqueceu a Senha?",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "name": "Nome Completo",
+    "agree": "Eu concordo com os",
+    "terms": "Termos de Serviço"
+  },
+  "dashboard": {
+    "title": "Painel",
+    "myCourses": "Meus Cursos",
+    "progress": "Progresso",
+    "certificates": "Certificados",
+    "settings": "Configurações",
+    "help": "Ajuda"
+  },
+  "errors": {
+    "required": "Este campo é obrigatório",
+    "email": "Endereço de email inválido",
+    "passwordLength": "A senha deve ter pelo menos 8 caracteres",
+    "passwordMatch": "As senhas não coincidem",
+    "generic": "Ocorreu um erro. Por favor, tente novamente."
+  },
+  "success": {
+    "profileUpdated": "Perfil atualizado com sucesso",
+    "courseEnrolled": "Inscrito no curso com sucesso",
+    "messageSent": "Mensagem enviada com sucesso"
+  },
+  "buttons": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Visualizar",
+    "download": "Baixar",
+    "share": "Compartilhar",
+    "learnMore": "Saiba Mais"
   }
 }
