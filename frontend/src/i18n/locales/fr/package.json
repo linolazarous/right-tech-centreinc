@@ -1,0 +1,130 @@
+{
+  "header": {
+    "title": "Right Tech Centre",
+    "home": "Accueil",
+    "programs": "Programmes",
+    "courses": "Cours",
+    "about": "À propos",
+    "contact": "Contact",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "hero": {
+    "title": "Éducation Technologique Prête pour l'Avenir",
+    "subtitle": "Maîtrisez les compétences recherchées avec nos programmes à votre rythme en IA, Web3, Cybersécurité et plus encore.",
+    "cta1": "Explorer les Cours",
+    "cta2": "Commencer",
+    "students": "étudiants avançant leur carrière",
+    "reviews": "4.9/5 (1,200+ avis)"
+  },
+  "programs": {
+    "title": "Nos Programmes",
+    "description": "Choisissez le chemin qui correspond à vos objectifs de carrière et à votre style d'apprentissage.",
+    "certifications": "Certifications",
+    "diplomas": "Programmes de Diplôme",
+    "degrees": "Licences",
+    "credit": "Crédits",
+    "duration": "Durée",
+    "price": "Prix",
+    "monthly": "ou {{price}}/mois"
+  },
+  "courses": {
+    "title": "Catalogue de Cours à la Pointe",
+    "description": "Programmes alignés sur l'industrie conçus pour les leaders technologiques de demain",
+    "categories": "Catégories de Cours",
+    "all": "Tous les Cours",
+    "enrolled": "inscrits",
+    "rating": "évaluation",
+    "view": "Voir le Cours",
+    "level": "Niveau",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé"
+  },
+  "contact": {
+    "title": "Contactez-Nous",
+    "description": "Notre équipe des admissions est prête à vous guider tout au long de l'inscription.",
+    "formTitle": "Formulaire d'Inscription",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Numéro de Téléphone",
+    "program": "Programme d'Intérêt",
+    "message": "Message",
+    "submit": "Soumettre la Demande",
+    "location": "Notre Localisation",
+    "call": "Appelez-Nous",
+    "emailUs": "Envoyez-Nous un Email",
+    "required": "obligatoire"
+  },
+  "features": {
+    "title": "Expérience d'Apprentissage Dynamique",
+    "videos": "Vidéos Interactives",
+    "audio": "Leçons Audio",
+    "quizzes": "Quiz et Évaluations",
+    "projects": "Projets Pratiques",
+    "internships": "Stages en Entreprise d'IA",
+    "capstone": "Projet Final Capstone"
+  },
+  "testimonials": {
+    "title": "Ce que Disent Nos Étudiants",
+    "subtitle": "Des milliers d'apprenants ont transformé leur carrière. Voici ce qu'ils disent."
+  },
+  "footer": {
+    "copyright": "© {{year}} Right Tech Centre. Tous droits réservés.",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "affiliate": "Devenez Affilié",
+    "programs": "Programmes",
+    "support": "Support",
+    "social": "Suivez-Nous"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "email": "Adresse Email",
+    "password": "Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "remember": "Se Souvenir de Moi",
+    "forgot": "Mot de Passe Oublié?",
+    "noAccount": "Pas de Compte?",
+    "hasAccount": "Déjà un Compte?",
+    "signIn": "Se Connecter",
+    "signUp": "S'Inscrire",
+    "name": "Nom Complet",
+    "agree": "J'accepte les",
+    "terms": "Conditions d'Utilisation"
+  },
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "myCourses": "Mes Cours",
+    "progress": "Progrès",
+    "certificates": "Certificats",
+    "settings": "Paramètres",
+    "help": "Aide"
+  },
+  "errors": {
+    "required": "Ce champ est obligatoire",
+    "email": "Email invalide",
+    "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordMatch": "Les mots de passe ne correspondent pas",
+    "generic": "Une erreur s'est produite. Veuillez réessayer."
+  },
+  "success": {
+    "profileUpdated": "Profil mis à jour avec succès",
+    "courseEnrolled": "Cours suivi avec succès",
+    "messageSent": "Message envoyé avec succès"
+  },
+  "buttons": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "download": "Télécharger",
+    "share": "Partager",
+    "learnMore": "En Savoir Plus"
+  }
+}
