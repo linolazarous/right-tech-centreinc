@@ -8,8 +8,8 @@ import {
   resetPassword
 } from './api';
 
+// Your existing service object
 const userService = {
-  // Use the imported API functions
   login: loginUser,
   register: registerUser,
   logout: logoutUser,
@@ -18,7 +18,6 @@ const userService = {
   requestPasswordReset,
   resetPassword,
 
-  // Keep your utility methods
   getCurrentUser() {
     try {
       const userData = localStorage.getItem('userData');
@@ -37,8 +36,20 @@ const userService = {
     const token = this.getToken();
     return !!token;
   },
-
-  // ... rest of your utility methods
 };
 
+// Add named exports for individual functions
+export const login = loginUser;
+export const register = registerUser;
+export const logout = logoutUser;
+export const getProfile = fetchUserProfile;
+export const updateProfile = updateUserProfile;
+export { requestPasswordReset, resetPassword };
+
+// Utility methods as named exports
+export const getCurrentUser = userService.getCurrentUser;
+export const getToken = userService.getToken;
+export const isAuthenticated = userService.isAuthenticated;
+
+// Keep default export
 export default userService;
