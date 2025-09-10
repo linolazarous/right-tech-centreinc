@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import PageLayout from '../layouts/PageLayout';
 import LiveClassList from '../components/learning/LiveClassList';
-import useLiveClasses from '../hooks/useLiveClasses';
-import logger from '../utils/logger';
-import usePageTracking from '../hooks/usePageTracking';
+import { useLiveClasses } from '../hooks/useLiveClasses';
+import { logger } from '../utils/logger';
+import { usePageTracking } from '../hooks/usePageTracking';
 import ErrorBoundary from '../components/ErrorBoundary';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorAlert from '../components/ui/ErrorAlert';
@@ -52,4 +52,5 @@ const LiveClassPage = () => {
 };
 
 export default React.memo(LiveClassPage);
+
 
