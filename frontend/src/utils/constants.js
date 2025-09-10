@@ -15,6 +15,9 @@ export const PAYPAL_CLIENT_ID = process.env.REACT_APP_PAYPAL_CLIENT_ID;
 // Analytics and Monitoring
 export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
 export const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
+export const HOTJAR_ID = process.env.REACT_APP_HOTJAR_ID;
+export const SEGMENT_KEY = process.env.REACT_APP_SEGMENT_KEY;
+export const SENTRY_ENABLED = process.env.REACT_APP_SENTRY_DSN !== undefined;
 
 // Feature Flags
 export const ENABLE_OFFLINE_MODE = process.env.REACT_APP_ENABLE_OFFLINE_MODE === 'true';
