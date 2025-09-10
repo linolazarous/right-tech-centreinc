@@ -6,36 +6,209 @@
     "courses": "Courses",
     "about": "About",
     "contact": "Contact",
-    "login": "Login"
+    "login": "Login",
+    "signup": "Sign Up",
+    "profile": "Profile",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "forum": "Forum",
+    "liveClass": "Live Classes",
+    "certificates": "Certificates"
   },
   "hero": {
     "title": "Future-Ready Tech Education",
-    "subtitle": "Master in-demand skills with our self-paced programs in AI, Web3, Cybersecurity, and more.",
+    "subtitle": "Master in-demand skills with our self-paced programs in AI, Web3, Cybersecurity, and more. Earn diplomas, degrees, or industry certifications with flexible 4-credit modules.",
     "cta1": "Explore Courses",
-    "cta2": "Get Started"
+    "cta2": "Get Started",
+    "students": "students advancing their careers",
+    "reviews": "4.9/5 (1,200+ reviews)",
+    "techBadges": {
+      "ai": "🤖 AI & ML",
+      "blockchain": "🔗 Blockchain",
+      "cybersecurity": "🛡️ Cybersecurity",
+      "cloud": "☁️ Cloud Computing"
+    },
+    "pricing": "Start for $29/month with flexible payments."
   },
   "programs": {
     "title": "Our Programs",
     "description": "Choose the path that matches your career goals and learning style.",
-    "certifications": "Certifications",
-    "diplomas": "Diploma Programs",
-    "degrees": "Bachelor Degrees"
+    "certifications": {
+      "title": "Certifications",
+      "description": "Industry-recognized credentials in AI, Cybersecurity, and Cloud Computing. Complete in 3–6 months.",
+      "price": "$300–$1,500"
+    },
+    "diplomas": {
+      "title": "Diploma Programs",
+      "description": "60 credit hours (15 modules) in Web Dev, AI, or Cybersecurity. Complete in 12–18 months.",
+      "price": "$2,000–$7,000"
+    },
+    "degrees": {
+      "title": "Bachelor Degrees",
+      "description": "120 credit hours (30 modules) in Computer Science or AI. Complete in 24 months.",
+      "price": "$10,000–$25,000"
+    },
+    "credit": "Credits",
+    "duration": "Duration",
+    "price": "Price",
+    "monthly": "or {{price}}/month"
+  },
+  "courses": {
+    "title": "Cutting-Edge Course Catalog",
+    "description": "Industry-aligned programs designed for tomorrow's tech leaders",
+    "categories": "Course Categories",
+    "all": "All Courses",
+    "enrolled": "enrolled",
+    "rating": "rating",
+    "view": "View Course",
+    "level": "Level",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "tabs": {
+      "certification": "Certifications",
+      "diploma": "Diploma Programs",
+      "degree": "Bachelor Degrees"
+    }
   },
   "contact": {
-    "title": "Contact Us",
-    "description": "Our admissions team is ready to guide you through enrollment.",
-    "formTitle": "Enrollment Form",
+    "title": "Get In Touch",
+    "description": "Our admissions team is ready to guide you through enrollment and answer all your questions.",
+    "formTitle": "Admissions Inquiry Form",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
     "phone": "Phone Number",
     "program": "Program of Interest",
     "message": "Message",
-    "submit": "Submit Application"
+    "submit": "Submit Inquiry",
+    "location": "Our Location",
+    "call": "Call Us",
+    "emailUs": "Email Us",
+    "required": "required",
+    "success": "Thank you for your inquiry! We will contact you shortly.",
+    "error": "Submission failed. Please try again later."
+  },
+  "features": {
+    "title": "Dynamic Learning Experience",
+    "videos": "Interactive Videos",
+    "audio": "Audio Lessons",
+    "quizzes": "Quizzes & Assessments",
+    "projects": "Hands-on Projects",
+    "internships": "AI Company Internships",
+    "capstone": "Final Capstone Project"
+  },
+  "testimonials": {
+    "title": "What Our Students Say",
+    "subtitle": "Thousands of learners have transformed their careers. Here's what they say."
   },
   "footer": {
     "copyright": "© {{year}} Right Tech Centre. All rights reserved.",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
+    "terms": "Terms of Service",
+    "affiliate": "Become an Affiliate",
+    "programs": "Programs",
+    "support": "Support",
+    "social": "Follow Us",
+    "commissions": "Earn 30% Commissions",
+    "perCertification": "Per Certification",
+    "perDegree": "Per Degree"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "remember": "Remember me",
+    "forgot": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "name": "Full name",
+    "agree": "I agree to the",
+    "terms": "Terms of Service",
+    "socialLogin": "Or continue with"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "myCourses": "My Courses",
+    "progress": "Progress",
+    "certificates": "Certificates",
+    "settings": "Settings",
+    "help": "Help",
+    "welcome": "Welcome back, {{name}}!",
+    "recentActivity": "Recent Activity",
+    "upcomingClasses": "Upcoming Live Classes"
+  },
+  "errors": {
+    "required": "This field is required",
+    "email": "Invalid email address",
+    "passwordLength": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "generic": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "server": "Server error. Please try again later."
+  },
+  "success": {
+    "profileUpdated": "Profile updated successfully",
+    "courseEnrolled": "Course enrolled successfully",
+    "messageSent": "Message sent successfully",
+    "login": "Login successful",
+    "register": "Registration successful"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "share": "Share",
+    "learnMore": "Learn More",
+    "applyNow": "Apply Now",
+    "enrollNow": "Enroll Now",
+    "startLearning": "Start Learning",
+    "continueLearning": "Continue Learning"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No new notifications",
+    "types": {
+      "courseUpdate": "Course Update",
+      "liveClass": "Live Class",
+      "assignment": "Assignment",
+      "forum": "Forum Activity"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "education": "Education",
+    "workExperience": "Work Experience",
+    "skills": "Skills",
+    "preferences": "Preferences",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account"
+  },
+  "search": {
+    "placeholder": "Search courses, programs...",
+    "noResults": "No results found",
+    "categories": "Categories",
+    "filters": "Filters"
+  },
+  "loading": {
+    "message": "Loading...",
+    "pleaseWait": "Please wait",
+    "processing": "Processing..."
+  },
+  "time": {
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months"
   }
-}
+  }
