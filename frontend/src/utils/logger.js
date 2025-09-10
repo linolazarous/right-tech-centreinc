@@ -28,7 +28,8 @@ const stringifyContext = (context) => {
   }
 };
 
-export const logger = {
+// Create the logger object
+const logger = {
   debug: (message, context = {}) => {
     if (shouldLog(LogLevel.DEBUG)) {
       console.debug(`[DEBUG] ${new Date().toISOString()} - ${message}`, stringifyContext(context));
@@ -76,3 +77,7 @@ export const logger = {
 
 // Freeze logger to prevent modifications
 Object.freeze(logger);
+
+// Export as both named and default export
+export { logger };
+export default logger;
