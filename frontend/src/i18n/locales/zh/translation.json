@@ -1,0 +1,17 @@
+{
+  "header": {
+    "title": "Right Tech Centre",
+    "home": "首页",
+    "programs": "项目",
+    "courses": "课程",
+    "about": "关于",
+    "contact": "联系",
+    "login": "登录"
+  },
+  "hero": {
+    "title": "面向未来的技术教育",
+    "subtitle": "通过我们在AI、Web3、网络安全等领域的自定进度课程，掌握热门技能。",
+    "cta1": "探索课程",
+    "cta2": "开始学习"
+  }
+}
