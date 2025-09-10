@@ -9,7 +9,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx"
+    "lint": "eslint src --ext .js,.jsx",
+    "audit:fix": "npm audit fix --force"
   },
   "keywords": [
     "react",
@@ -37,10 +38,12 @@
   },
   "devDependencies": {
     "react-scripts": "5.0.1",
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0"
   },
   "engines": {
-    "node": "20.17.0",
+    "node": ">=18.0.0 <=22.x",
     "npm": ">=8.0.0"
   },
   "browserslist": {
