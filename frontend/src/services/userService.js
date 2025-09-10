@@ -8,7 +8,6 @@ import {
   resetPassword
 } from './api';
 
-// Your existing service object
 const userService = {
   login: loginUser,
   register: registerUser,
@@ -38,11 +37,11 @@ const userService = {
   },
 };
 
-// Add named exports for individual functions
+// Named exports for all API functions
 export const login = loginUser;
 export const register = registerUser;
 export const logout = logoutUser;
-export const getProfile = fetchUserProfile;
+export const fetchUserProfile = fetchUserProfile; // This is what you need
 export const updateProfile = updateUserProfile;
 export { requestPasswordReset, resetPassword };
 
