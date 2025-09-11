@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing'; // Correct import
 
 const initSentry = () => {
   const dsn = process.env.REACT_APP_SENTRY_DSN;
@@ -9,7 +10,7 @@ const initSentry = () => {
       environment: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
       release: process.env.REACT_APP_VERSION || '1.0.0',
       integrations: [
-        new Sentry.BrowserTracing({
+        new BrowserTracing({
           // Tracing integration for performance monitoring
           tracePropagationTargets: [
             'localhost',
