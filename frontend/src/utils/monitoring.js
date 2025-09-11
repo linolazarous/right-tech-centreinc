@@ -3,9 +3,9 @@
  */
 
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import { BrowserTracing } from '@sentry/tracing'; // Correct import
 import { isProduction, SENTRY_DSN } from './constants';
-import logger from './logger';
+import { logger } from './logger'; // Use named import
 
 // Initialize monitoring tools
 export const initMonitoring = () => {
@@ -71,7 +71,7 @@ export const logWarning = (message, context = {}) => {
           scope.setContext(key, value);
         });
       }
-      Sentry.captureMessage(message, Sentry.Severity.Warning);
+      Sentry.captureMessage(message, 'warning'); // Updated severity level
     });
   } catch (error) {
     logger.error('Failed to log warning to monitoring', error);
