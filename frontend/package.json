@@ -21,8 +21,8 @@
   "author": "Right Tech Centre",
   "license": "MIT",
   "dependencies": {
-    "@sentry/react": "^6.19.7",
-    "@sentry/tracing": "^6.19.7",
+    "@sentry/react": "^7.91.0",
+    "@sentry/tracing": "^7.91.0",
     "aos": "^2.3.4",
     "axios": "^1.6.0",
     "i18next": "^23.7.6",
