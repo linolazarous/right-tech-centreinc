@@ -1,0 +1,23 @@
+name: righttechcentre
+services:
+- name: web
+  source_dir: /
+  github:
+    branch: master
+    repo: linolazarous/right-tech-centreinc
+  run_command: cd backend && npm start
+  build_command: |
+    cd frontend && npm install && npm run build
+    cd ../backend && npm install
+  http_port: 8080
+  instance_size_slug: basic-xxs
+  instance_count: 1
+  routes:
+  - path: /
+  - path: /api/*
+  - path: /admin/*
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: 8080
