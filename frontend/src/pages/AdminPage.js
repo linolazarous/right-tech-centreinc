@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import { 
   FiUsers, 
   FiBook, 
-  FiBarChart3, 
+  FiBarChart2, 
   FiSettings, 
   FiPlusCircle,
   FiShield,
@@ -120,7 +120,7 @@ const AdminPage = () => {
     {
       title: 'Analytics',
       description: 'Platform performance and insights',
-      icon: FiBarChart3,
+      icon: FiBarChart2,
       color: 'indigo',
       path: '/admin/analytics'
     },
