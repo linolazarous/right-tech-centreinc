@@ -1,4 +1,4 @@
-name: righttechcentre
+name: right-tech-centre
 services:
 - name: web
   source_dir: /
@@ -9,15 +9,18 @@ services:
   build_command: |
     cd frontend && npm install && npm run build
     cd ../backend && npm install
+    cp -r ../frontend/build ./public/
   http_port: 8080
   instance_size_slug: basic-xxs
   instance_count: 1
   routes:
   - path: /
-  - path: /api/*
-  - path: /admin/*
   envs:
   - key: NODE_ENV
     value: production
   - key: PORT
     value: 8080
+  - key: MONGO_URI
+    value: ${MONGO_URI}
+  - key: ALLOWED_ORIGINS
+    value: https://righttechcentre-iyysq.ondigitalocean.app
