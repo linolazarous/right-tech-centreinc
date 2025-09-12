@@ -14,16 +14,21 @@ const PORT = process.env.PORT || 8080;
 // ==============================================
 // Middleware
 // ==============================================
-// Enhanced helmet with a basic Content Security Policy
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'"], 
-      "img-src": ["'self'", "data:"],
+// Enhanced helmet with a Content Security Policy that works with Create React App
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        // IMPORTANT: 'unsafe-inline' is required for the default Create React App
+        // build to run, as it includes an inline Webpack runtime script.
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:"],
+      },
     },
-  },
-}));
+  })
+);
+
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
@@ -78,22 +83,17 @@ app.get('/api/test', (req, res) => {
 // ==============================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// Create a reliable path to the 'public' folder within the backend directory
 const publicPath = path.join(__dirname, '..', 'public');
 
 app.use(express.static(publicPath));
 
-// This catch-all route handles all non-API requests and serves the React app
 app.get('*', (req, res, next) => {
-  // If the request path starts with /api/, it's a 404 for an API route
   if (req.originalUrl.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API route not found' });
   }
-  
   const indexPath = path.join(publicPath, 'index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
-      // Pass errors to the central error handler
       next(err);
     }
   });
@@ -103,7 +103,7 @@ app.get('*', (req, res, next) => {
 // Error Handling
 // ==============================================
 app.use((err, req, res, next) => {
-  console.error('Server Error Stack:', err.stack); // Log the full error stack for better debugging
+  console.error('Server Error Stack:', err.stack);
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
