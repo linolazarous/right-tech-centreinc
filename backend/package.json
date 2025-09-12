@@ -10,7 +10,7 @@
     "check-imports": "node --check src/server.js",
     "audit:fix": "npm audit fix --force",
     "healthcheck": "node -e \"import('./src/server.js').then(() => process.exit(0)).catch(() => process.exit(1))\"",
-    "postinstall": "cd ../frontend && npm ci && npm run build && cd ../backend && rm -rf public && mkdir -p public && cp -r ../frontend/build/* ./public/"
+    "postinstall": "cd ../frontend && npm install && npm run build && cd ../backend && rm -rf public && mkdir -p public && cp -r ../frontend/build/* ./public/"
   },
   "keywords": [
     "api",
