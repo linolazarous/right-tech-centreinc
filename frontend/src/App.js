@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CoursePage from './pages/CoursePage';
 import ProfilePage from './pages/ProfilePage';
@@ -31,15 +31,16 @@ function AppContent() {
 
   // Set user context when user logs in
   React.useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('userData'));
-    if (user) {
-      setUserContext({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-      });
-    } else {
-      clearUserContext();
+    try {
+        const user = JSON.parse(localStorage.getItem('userData'));
+        if (user) {
+            setUserContext({ id: user.id, email: user.email, username: user.username });
+        } else {
+            clearUserContext();
+        }
+    } catch (error) {
+        console.error("Failed to parse user data from localStorage", error);
+        clearUserContext();
     }
   }, [location]);
 
@@ -58,7 +59,7 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/success" element={<FormSuccess />} />
           <Route path="/api-test" element={<APITest />} />
-          {/* Catch-all route for 404 Not Found pages */}
+          {/* CORRECTED: Catch-all route for 404 Not Found pages */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -69,13 +70,12 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <SentryErrorBoundary>
-        {/* Toaster provides notifications throughout the app */}
-        <Toaster position="top-center" reverseOrder={false} />
-        <AppContent />
-      </SentryErrorBoundary>
-    </Router>
+    <SentryErrorBoundary>
+      {/* Toaster provides notifications throughout the app */}
+      <Toaster position="top-center" reverseOrder={false} />
+      {/* The <BrowserRouter> is in index.js, so it's not needed here */}
+      <AppContent />
+    </SentryErrorBoundary>
   );
 }
 
