@@ -14,6 +14,12 @@ import { authRoutes, userRoutes, adminRoutes } from './routes/index.js';
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// ... server code ...
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
 // ==============================================
 // Middleware
 // ==============================================
@@ -188,3 +194,4 @@ process.on('SIGINT', () => {
 });
 
 export default app;
+
