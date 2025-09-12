@@ -8,20 +8,20 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Import routes
+import { authRoutes, userRoutes, adminRoutes } from './routes/index.js';
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==============================================
 // Middleware
 // ==============================================
-// Enhanced helmet with a Content Security Policy that works with Create React App
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        // IMPORTANT: 'unsafe-inline' is required for the default Create React App
-        // build to run, as it includes an inline Webpack runtime script.
         "script-src": ["'self'", "'unsafe-inline'"],
         "img-src": ["'self'", "data:"],
       },
@@ -73,10 +73,16 @@ app.get('/health', (req, res) => {
 // ==============================================
 // API Routes (must be defined before the frontend catch-all)
 // ==============================================
+
+// Test route
 app.get('/api/test', (req, res) => {
   res.json({ success: true, message: 'API test working', timestamp: new Date().toISOString() });
 });
-// Your other API routes should go here
+
+// Mount API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ==============================================
 // Serve React Frontend (Production)
@@ -85,12 +91,47 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, '..', 'public');
 
+// Serve static files
 app.use(express.static(publicPath));
 
+// Admin dashboard route (served by backend)
+app.get('/admin', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Admin Dashboard - Right Tech Centre</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </head>
+      <body class="bg-gray-100 min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+          <h1 class="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-4">User Management</h2>
+              <p class="text-gray-600">Manage platform users and permissions</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-4">Course Management</h2>
+              <p class="text-gray-600">Create and manage courses</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+              <h2 class="text-xl font-semibold mb-4">Analytics</h2>
+              <p class="text-gray-600">View platform statistics</p>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
+// Catch-all handler for React routing
 app.get('*', (req, res, next) => {
   if (req.originalUrl.startsWith('/api/')) {
     return res.status(404).json({ success: false, message: 'API route not found' });
   }
+  
   const indexPath = path.join(publicPath, 'index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
@@ -102,9 +143,20 @@ app.get('*', (req, res, next) => {
 // ==============================================
 // Error Handling
 // ==============================================
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ success: false, message: 'API endpoint not found' });
+});
+
+// General error handler
 app.use((err, req, res, next) => {
-  console.error('Server Error Stack:', err.stack);
-  res.status(500).json({ success: false, message: 'Internal server error' });
+  console.error('Server Error:', err.message);
+  res.status(500).json({ 
+    success: false, 
+    message: 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { error: err.message })
+  });
 });
 
 // ==============================================
@@ -112,12 +164,27 @@ app.use((err, req, res, next) => {
 // ==============================================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Health check: http://0.0.0.0:${PORT}/health`);
+  console.log(`📍 Health check: http://localhost:${PORT}/health`);
+  console.log(`📍 API Test: http://localhost:${PORT}/api/test`);
+  console.log(`📍 Admin Dashboard: http://localhost:${PORT}/admin`);
 });
 
+// Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down...');
-  server.close(() => mongoose.connection.close());
+  console.log('SIGTERM received, shutting down gracefully...');
+  server.close(() => {
+    mongoose.connection.close();
+    console.log('Server stopped');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully...');
+  server.close(() => {
+    mongoose.connection.close();
+    console.log('Server stopped');
+    process.exit(0);
+  });
 });
 
 export default app;
