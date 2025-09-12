@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 import { Toaster } from 'react-hot-toast';
 import { setUserContext, clearUserContext } from './utils/sentry';
 import SentryErrorBoundary from './components/SentryErrorBoundary';
+import AdminPage from './pages/AdminPage'; // <-- 1. IMPORT THE NEW ADMIN PAGE
 
 // A simple component for your 404 page
 function NotFound() {
@@ -29,7 +30,6 @@ function NotFound() {
 function AppContent() {
   const location = useLocation();
 
-  // Set user context when user logs in
   React.useEffect(() => {
     try {
         const user = JSON.parse(localStorage.getItem('userData'));
@@ -59,7 +59,10 @@ function AppContent() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/success" element={<FormSuccess />} />
           <Route path="/api-test" element={<APITest />} />
-          {/* CORRECTED: Catch-all route for 404 Not Found pages */}
+
+          {/* 2. ADD THE ADMIN ROUTE HERE */}
+          <Route path="/admin" element={<AdminPage />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -71,9 +74,7 @@ function AppContent() {
 function App() {
   return (
     <SentryErrorBoundary>
-      {/* Toaster provides notifications throughout the app */}
       <Toaster position="top-center" reverseOrder={false} />
-      {/* The <BrowserRouter> is in index.js, so it's not needed here */}
       <AppContent />
     </SentryErrorBoundary>
   );
