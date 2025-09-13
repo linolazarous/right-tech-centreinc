@@ -1,15 +1,15 @@
-name: right-tech-centre
 services:
 - name: web
   source_dir: /
   github:
-    branch: master
+    branch: master 
     repo: linolazarous/right-tech-centreinc
   run_command: cd backend && npm start
   build_command: |
     cd frontend && npm install && npm run build
     cd ../backend && npm install
-    cp -r ../frontend/build ./public/
+    mkdir -p backend/logs
+    cp -r ../frontend/build ./backend/public/
   http_port: 8080
   instance_size_slug: basic-xxs
   instance_count: 1
@@ -20,7 +20,3 @@ services:
     value: production
   - key: PORT
     value: 8080
-  - key: MONGO_URI
-    value: ${MONGO_URI}
-  - key: ALLOWED_ORIGINS
-    value: https://righttechcentre-iyysq.ondigitalocean.app
