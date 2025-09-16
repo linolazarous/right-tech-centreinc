@@ -1,4 +1,4 @@
-name: right-tech-centreinc
+name: right-tech-centreinc 
 services:
   - name: backend
     source_dir: /backend
@@ -12,6 +12,10 @@ services:
     instance_size_slug: basic-xxs
     routes:
       - path: /api/**
+    # Add this to force Node.js 20
+    environment_variables:
+      - key: NODE_VERSION
+        value: 20.17.0
     envs:
       - key: NODE_ENV
         value: production
@@ -19,9 +23,4 @@ services:
         value: 8080
       - key: CLIENT_URL
         value: https://righttechcentre.vercel.app
-      - key: MONGO_URI
-        value: your_mongodb_connection_string_here
-      - key: JWT_SECRET
-        value: your_jwt_secret_here
-      - key: JWT_REFRESH_SECRET
-        value: your_jwt_refresh_secret_here
+      # REMOVE SECRETS FROM HERE - set them in DigitalOcean dashboard instead
