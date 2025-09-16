@@ -1,0 +1,9 @@
+databases:
+- name: db
+  engine: PG
+  version: "14"
+  production: true
+  
+  ignore_files:
+  - /frontend/
+  - /mobile/
