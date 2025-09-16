@@ -1,7 +1,0 @@
-{
-  "scripts": {
-    "start": "node src/index.js",
-    "build": "npm run build",
-    "dev": "nodemon src/index.js"
-  }
-}
