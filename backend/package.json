@@ -31,11 +31,9 @@
     "nodemon": "^3.0.1"
   },
   "engines": {
-  "node": ">=22.0.0 <=22.x",
-  "npm": ">=10.0.0"
-  }
-}
-{
+    "node": ">=18.0.0 <=20.x",
+    "npm": ">=8.0.0"
+  },
   "imports": {
     "#models/*": "./src/models/*.js",
     "#utils/*": "./src/utils/*.js"
