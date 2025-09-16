@@ -35,3 +35,9 @@
   "npm": ">=10.0.0"
   }
 }
+{
+  "imports": {
+    "#models/*": "./src/models/*.js",
+    "#utils/*": "./src/utils/*.js"
+  }
+}
