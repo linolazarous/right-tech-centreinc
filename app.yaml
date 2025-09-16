@@ -1,27 +1,27 @@
 name: right-tech-centreinc
 services:
-- name: backend
-  source_dir: backend
-  github:
-    branch: master
-    deploy_on_push: true
-  run_command: npm start
-  build_command: npm install && npm run build
-  environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
-  routes:
-  - path: /api/**
-
-- name: frontend
-  source_dir: frontend
-  github:
-    branch: master
-    deploy_on_push: true
-  run_command: npm start
-  build_command: npm install && npm run build
-  environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
-  routes:
-  - path: /**
+  - name: backend
+    source_dir: /backend
+    github:
+      branch: master 
+      deploy_on_push: true
+    run_command: npm start
+    build_command: npm install
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /api/**
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: CLIENT_URL
+        value: https://righttechcentre.vercel.app
+      - key: MONGO_URI
+        value: your_mongodb_connection_string_here
+      - key: JWT_SECRET
+        value: your_jwt_secret_here
+      - key: JWT_REFRESH_SECRET
+        value: your_jwt_refresh_secret_here
