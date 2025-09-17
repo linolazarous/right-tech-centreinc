@@ -12,6 +12,9 @@ import {
   FiVideo
 } from 'react-icons/fi';
 
+// Define the backend URL from the environment variable
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 // API call to check admin status
 const checkAdminStatus = async () => {
   try {
@@ -20,7 +23,8 @@ const checkAdminStatus = async () => {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch('/api/auth/status', {
+    // Use the absolute URL for the API call
+    const response = await fetch(`${BACKEND_URL}/api/auth/status`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -43,7 +47,8 @@ const checkAdminStatus = async () => {
 const fetchAdminStats = async () => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await fetch('/api/admin/stats', {
+    // Use the absolute URL for the API call
+    const response = await fetch(`${BACKEND_URL}/api/admin/stats`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
