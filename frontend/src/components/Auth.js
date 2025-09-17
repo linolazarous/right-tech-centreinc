@@ -6,12 +6,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { logError } from '../utils/monitoring';
 import './Auth.css';
 
+// Get the backend URL from the environment variable
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const Auth = ({ onAuthentication }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    name: '' // Added for registration
+    name: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,7 +23,6 @@ const Auth = ({ onAuthentication }) => {
   const location = useLocation();
   const { setAuthState } = useAuth();
 
-  // Check for redirect from protected route
   useEffect(() => {
     if (location.state?.from) {
       setError(`Please login to access ${location.state.from}`);
@@ -77,13 +79,17 @@ const Auth = ({ onAuthentication }) => {
     setIsLoading(true);
 
     try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      // Use the full backend URL for the endpoint
+      const endpoint = isLogin 
+        ? `${BACKEND_URL}/api/auth/login` 
+        : `${BACKEND_URL}/api/auth/register`;
+      
       const payload = isLogin 
         ? { email: formData.email, password: formData.password }
         : formData;
 
       const response = await axios.post(endpoint, payload, {
-        timeout: 10000, // 10 second timeout
+        timeout: 10000,
         headers: {
           'Content-Type': 'application/json'
         }
@@ -92,26 +98,21 @@ const Auth = ({ onAuthentication }) => {
       if (response.data.success) {
         const { token, user } = response.data;
         
-        // Store token in secure cookie (preferred) or localStorage
         localStorage.setItem('authToken', token);
         
-        // Update auth context
         setAuthState({
           isAuthenticated: true,
           user,
           token
         });
 
-        // Optional callback
         onAuthentication?.();
 
-        // Show success message for registration
         if (!isLogin) {
           setSuccessMessage('Registration successful! Redirecting...');
           await new Promise(resolve => setTimeout(resolve, 1500));
         }
 
-        // Redirect to dashboard or previous location
         navigate(location.state?.from || '/dashboard', { replace: true });
       }
     } catch (err) {
