@@ -1,26 +1,28 @@
-name: right-tech-centreinc 
+name: righttechcentre-backend
+region: ams3
 services:
-  - name: backend
+  - name: api
     source_dir: /backend
     github:
-      branch: master 
+      repo: linolazarous/right-tech-centreinc
+      branch: master
       deploy_on_push: true
     run_command: npm start
-    build_command: npm install
+    build_command: npm install --legacy-peer-deps && npm run build
     environment_slug: node-js
     instance_count: 1
     instance_size_slug: basic-xxs
     routes:
-      - path: /api/**
-    # Add this to force Node.js 20
-    environment_variables:
-      - key: NODE_VERSION
-        value: 20.17.0
+      - path: /
+    http_port: 8080
     envs:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 8080
+        value: "8080"
       - key: CLIENT_URL
         value: https://righttechcentre.vercel.app
-      # REMOVE SECRETS FROM HERE - set them in DigitalOcean dashboard instead
+      - key: NPM_CONFIG_LEGACY_PEER_DEPS
+        value: "true"
+      - key: NODE_VERSION
+        value: "18.x"  # Changed to 18.x for better compatibility
