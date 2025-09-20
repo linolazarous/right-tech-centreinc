@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/images/logo.webp" alt="Right Tech Centre" width="200">
+  <img src="public/images/logo.webp" alt="Right Tech Centre" width="200">
 </p>
 
 <h1 align="center">Right Tech Centre - DigitalOcean Production Environment</h1>
