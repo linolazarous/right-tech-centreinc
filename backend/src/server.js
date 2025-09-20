@@ -10,6 +10,11 @@ import rateLimit from 'express-rate-limit';
 // Import routes
 import { authRoutes, userRoutes, adminRoutes } from './routes/index.js';
 
+import { connectDB } from './utils/database.js';
+
+// Replace mongoose.connect with:
+await connectDB();
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -188,3 +193,4 @@ process.on('SIGINT', () => {
 });
 
 export default app;
+
