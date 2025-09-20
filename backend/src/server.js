@@ -1,3 +1,4 @@
+// backend/src/server.js
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -13,6 +14,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // ==============================================
+// Environment Configuration
+// ==============================================
+const isProduction = process.env.NODE_ENV === 'production';
+
+// ==============================================
 // Middleware
 // ==============================================
 app.use(
@@ -21,16 +27,39 @@ app.use(
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         "script-src": ["'self'", "'unsafe-inline'"],
-        "img-src": ["'self'", "data:"],
+        "img-src": ["'self'", "data:", "https:"],
       },
     },
+    crossOriginEmbedderPolicy: false,
   })
 );
 
+// CORS Configuration - FIXED
+const allowedOrigins = [
+  'https://righttechcentre.vercel.app', // Your Vercel frontend
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+
+if (process.env.ALLOWED_ORIGINS) {
+  allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
+}
+
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
+
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -56,6 +85,20 @@ mongoose.connect(MONGO_URI, {
   .catch((err) => console.error('❌ MongoDB Error:', err));
 
 // ==============================================
+// Root Route - ADD THIS TO FIX "cannot GET /"
+// ==============================================
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Right Tech Centre API is running!',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    docs: '/api/test for test endpoint',
+    health: '/health for health check'
+  });
+});
+
+// ==============================================
 // Health Check
 // ==============================================
 app.get('/health', (req, res) => {
@@ -65,6 +108,7 @@ app.get('/health', (req, res) => {
     dbStatus,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0'
   });
 });
 
@@ -73,7 +117,12 @@ app.get('/health', (req, res) => {
 // ==============================================
 // Test route
 app.get('/api/test', (req, res) => {
-  res.json({ success: true, message: 'API test working', timestamp: new Date().toISOString() });
+  res.json({ 
+    success: true, 
+    message: 'API test working', 
+    timestamp: new Date().toISOString(),
+    allowedOrigins: allowedOrigins
+  });
 });
 
 // Mount API routes
@@ -92,6 +141,16 @@ app.use('/api/*', (req, res) => {
 // General error handler
 app.use((err, req, res, next) => {
   console.error('Server Error:', err.message);
+  
+  // CORS error handling
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ 
+      success: false, 
+      message: 'CORS error: Origin not allowed',
+      allowedOrigins: allowedOrigins
+    });
+  }
+  
   res.status(500).json({ 
     success: false, 
     message: 'Internal server error',
@@ -104,8 +163,10 @@ app.use((err, req, res, next) => {
 // ==============================================
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📍 API Root: http://localhost:${PORT}/`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📍 API Test: http://localhost:${PORT}/api/test`);
+  console.log(`📍 Allowed Origins: ${allowedOrigins.join(', ')}`);
 });
 
 // Graceful shutdown
