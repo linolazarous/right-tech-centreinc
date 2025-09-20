@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build": "npm install",
+    "build": "npm install --legacy-peer-deps",
+    "clean": "rm -rf node_modules package-lock.json",
     "audit:fix": "npm audit fix --force"
   },
   "keywords": ["api", "backend", "express", "mongodb"],
@@ -22,20 +23,14 @@
     "helmet": "^7.0.0",
     "mongoose": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
-    "speakeasy": "^2.0.0",
-    "qrcode": "^1.5.3",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "winston": "^3.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": ">=20.0.0 <=20.x",
+    "node": ">=18.0.0",
     "npm": ">=8.0.0"
-  },
-  "imports": {
-    "#models/*": "./src/models/*.js",
-    "#utils/*": "./src/utils/*.js"
   }
 }
