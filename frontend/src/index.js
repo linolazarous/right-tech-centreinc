@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
-import App from './App.js';
+import App from './App.jsx';
 import initSentry from './utils/sentry.js'; // Import Sentry initialization
 import './i18n/config.js'; // Import i18n configuration
 import './assets/styles/global.css';
@@ -34,4 +34,5 @@ root.render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
 
