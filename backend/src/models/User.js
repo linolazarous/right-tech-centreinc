@@ -1,14 +1,25 @@
+// backend/src/models/User.js
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs'; // Changed from 'bcrypt' to 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
   // Basic User Information
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  profilePicture: { type: String }, // URL to the user's profile picture
-  bio: { type: String }, // Short bio or description
+  firstName: { type: String, required: true, trim: true },
+  lastName: { type: String, required: true, trim: true },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  password: { 
+    type: String, 
+    required: true,
+    select: false // Hides password in queries by default
+  },
+  profilePicture: { type: String },
+  bio: { type: String, trim: true },
 
   // Authentication and Roles
   role: { 
@@ -16,14 +27,21 @@ const userSchema = new mongoose.Schema({
     enum: ['student', 'instructor', 'admin'], 
     default: 'student' 
   },
-  isVerified: { type: Boolean, default: false }, // Email verification status
-  verificationToken: { type: String }, // Token for email verification
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String, select: false },
+  passwordResetToken: { type: String, select: false },
+  passwordResetExpires: { type: Date, select: false },
+  status: { 
+    type: String, 
+    enum: ['active', 'suspended', 'deleted'], 
+    default: 'active' 
+  },
 
   // Social Media Links
   socialMedia: {
-    linkedin: { type: String },
-    twitter: { type: String },
-    github: { type: String },
+    linkedin: { type: String, trim: true },
+    twitter: { type: String, trim: true },
+    github: { type: String, trim: true },
   },
 
   // Learning Progress
@@ -41,34 +59,59 @@ const userSchema = new mongoose.Schema({
   }],
 
   // Career Information
-  jobTitle: { type: String },
-  company: { type: String },
-  skills: [{ type: String }], // List of skills
+  jobTitle: { type: String, trim: true },
+  company: { type: String, trim: true },
+  skills: [{ type: String, trim: true }],
 
   // Two-Factor Authentication
-  twoFAEnabled: {
-    type: Boolean,
-    default: false
-  },
-  twoFASecret: {
-    type: String,
-    select: false // Don't include in queries by default
-  }
+  twoFAEnabled: { type: Boolean, default: false },
+  twoFASecret: { type: String, select: false },
 
+  // Timestamps and Login Info
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  lastLogin: { type: Date },
+  loginCount: { type: Number, default: 0 },
 }, {
-  timestamps: true
+  timestamps: true // This option automatically adds createdAt and updatedAt
 });
 
-// Update the `updatedAt` field before saving
-userSchema.pre('save', function (next) {
-  this.updatedAt = new Date();
+// Create indexes for better query performance
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ 'socialMedia.github': 1 });
+userSchema.index({ status: 1 });
+
+// Hash the password before saving a new or updated user
+userSchema.pre('save', async function(next) {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) {
+    return next();
+  }
+  
+  // Hash the password with a salt round of 10
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-// Add method to compare password
+// Update the `updatedAt` field on save and sanitize data
+userSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  
+  // Data Sanitization
+  if (this.isModified('email')) {
+    this.email = this.email.toLowerCase().trim();
+  }
+  if (this.isModified('firstName')) this.firstName = this.firstName.trim();
+  if (this.isModified('lastName')) this.lastName = this.lastName.trim();
+  
+  next();
+});
+
+// Add method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Export as default - ES Modules syntax
 export default mongoose.model('User', userSchema);
