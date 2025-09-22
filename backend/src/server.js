@@ -12,7 +12,7 @@ import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
 // ✅ Correct imports - direct default imports
-import authRoutes from '../routes/auth.js';
+import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import adminRoutes from './routes/admin.js';
 
@@ -272,4 +272,5 @@ const startServer = async () => {
 startServer();
 
 export default app;
+
 
