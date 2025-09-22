@@ -4,12 +4,11 @@ import { generate2FASecret, verify2FAToken } from '../services/authService.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import logger from '../utils/logger.js';
 
-// ADD THIS MISSING REGISTER FUNCTION
+// ** NEW: Moved from adminController.js **
 export const register = async (req, res) => {
   try {
     const { email, password, firstName, lastName, role = 'student' } = req.body;
 
-    // Input validation
     if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({
         success: false,
@@ -17,7 +16,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
@@ -26,7 +24,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Create new user
     const user = new User({
       email,
       password,
@@ -37,7 +34,6 @@ export const register = async (req, res) => {
 
     await user.save();
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -61,7 +57,6 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     logger.error('Registration error:', error);
-    
     if (error.name === 'ValidationError') {
       return res.status(400).json({
         success: false,
@@ -69,7 +64,6 @@ export const register = async (req, res) => {
         errors: Object.values(error.errors).map(e => e.message)
       });
     }
-
     res.status(500).json({
       success: false,
       message: 'Registration failed'
@@ -77,11 +71,11 @@ export const register = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Input validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -89,7 +83,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
@@ -97,7 +91,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Check if 2FA is enabled
     if (user.twoFAEnabled) {
       return res.status(200).json({
         success: true,
@@ -107,7 +100,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -137,11 +129,11 @@ export const login = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const verify2FALogin = async (req, res) => {
   try {
     const { userId, token } = req.body;
 
-    // Validate inputs
     if (!isValidObjectId(userId)) {
       return res.status(400).json({
         success: false,
@@ -156,7 +148,7 @@ export const verify2FALogin = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+twoFASecret');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -171,7 +163,6 @@ export const verify2FALogin = async (req, res) => {
       });
     }
 
-    // Verify 2FA token
     const isValid = verify2FAToken(user.twoFASecret, token);
     if (!isValid) {
       return res.status(401).json({
@@ -180,7 +171,6 @@ export const verify2FALogin = async (req, res) => {
       });
     }
 
-    // Generate JWT token
     const authToken = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -209,6 +199,7 @@ export const verify2FALogin = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const getAuthStatus = async (req, res) => {
   try {
     res.json({
@@ -234,11 +225,11 @@ export const getAuthStatus = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const enable2FA = async (req, res) => {
   const { userId } = req.body;
   
   try {
-    // Validate user ID
     if (!isValidObjectId(userId)) {
       return res.status(400).json({ 
         success: false,
@@ -263,7 +254,6 @@ export const enable2FA = async (req, res) => {
 
     const secret = generate2FASecret(user.email);
     
-    // Return the secret but don't save it yet - user needs to verify first
     logger.info(`2FA setup initiated for user: ${userId}`);
     res.status(200).json({ 
       success: true,
@@ -281,11 +271,11 @@ export const enable2FA = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const verify2FA = async (req, res) => {
   const { userId, token, secret } = req.body;
   
   try {
-    // Validate inputs
     if (!isValidObjectId(userId)) {
       return res.status(400).json({ 
         success: false,
@@ -300,7 +290,7 @@ export const verify2FA = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+twoFASecret');
     if (!user) {
       return res.status(404).json({ 
         success: false,
@@ -312,7 +302,6 @@ export const verify2FA = async (req, res) => {
     
     if (isValid) {
       if (!user.twoFAEnabled) {
-        // First-time verification - enable 2FA
         user.twoFASecret = secret;
         user.twoFAEnabled = true;
         await user.save();
@@ -343,6 +332,7 @@ export const verify2FA = async (req, res) => {
   }
 };
 
+// ** NEW: Moved from adminController.js **
 export const disable2FA = async (req, res) => {
   try {
     const { userId, password } = req.body;
@@ -354,7 +344,7 @@ export const disable2FA = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('+password');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -362,7 +352,6 @@ export const disable2FA = async (req, res) => {
       });
     }
 
-    // Verify password before disabling 2FA
     if (!(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
