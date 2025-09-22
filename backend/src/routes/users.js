@@ -1,6 +1,6 @@
+// routes/users.js - Now this will work correctly
 import express from 'express';
-// FIX: Import individual functions instead of default import
-import { register, login } from '../controllers/userController.js';
+import { register, login } from '../controllers/userController.js'; // ✅ Now correct
 import { 
   validateUserRegistration, 
   validateUserLogin, 
@@ -17,7 +17,7 @@ router.post(
   validateUserRegistration,
   validateRequest,
   rateLimit('10req/hour'),
-  register  // ✅ Fixed: use imported function
+  register  // ✅ Now matches export
 );
 
 router.post(
@@ -25,7 +25,7 @@ router.post(
   validateUserLogin,
   validateRequest,
   rateLimit('20req/hour'),
-  login  // ✅ Fixed: use imported function
+  login  // ✅ Now matches export
 );
 
 // Protected routes (authentication required)
