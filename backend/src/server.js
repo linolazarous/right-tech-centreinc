@@ -1,7 +1,4 @@
-// =================================================================
-//                      Imports & Configuration
-// =================================================================
-import 'dotenv/config';
+// backend/src/server.js 
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -11,14 +8,13 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// FIXED: Import routes correctly - using default imports
+// ✅ Direct default imports
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const isProduction = process.env.NODE_ENV === 'production';
 
 // =================================================================
 //                  Database Connection
@@ -190,7 +186,7 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Mount API routes - CORRECT ORDER
+// Mount API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
@@ -258,3 +254,4 @@ const startServer = async () => {
 startServer();
 
 export default app;
+
