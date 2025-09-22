@@ -1,3 +1,4 @@
+// routes/mobile.js
 import express from 'express';
 import { login as webLogin } from '../controllers/authController.js';
 import { getCourse } from '../controllers/courseController.js';
@@ -23,7 +24,9 @@ router.post(
         }
       });
     } catch (error) {
-      res.status(500).json({ 
+      const statusCode = error.message.includes('invalid') ? 401 : 500;
+      res.status(statusCode).json({
+        success: false,
         error: 'Login failed',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
@@ -39,6 +42,13 @@ router.get(
   async (req, res) => {
     try {
       const course = await getCourse(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({
+          success: false,
+          error: 'Course not found'
+        });
+      }
+      
       res.json({
         status: 'success',
         data: {
@@ -50,7 +60,8 @@ router.get(
         }
       });
     } catch (error) {
-      res.status(500).json({ 
+      res.status(500).json({
+        success: false,
         error: 'Failed to fetch course',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
