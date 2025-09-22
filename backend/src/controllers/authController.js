@@ -4,6 +4,79 @@ import { generate2FASecret, verify2FAToken } from '../services/authService.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import logger from '../utils/logger.js';
 
+// ADD THIS MISSING REGISTER FUNCTION
+export const register = async (req, res) => {
+  try {
+    const { email, password, firstName, lastName, role = 'student' } = req.body;
+
+    // Input validation
+    if (!email || !password || !firstName || !lastName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email, password, first name, and last name are required'
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'User already exists with this email'
+      });
+    }
+
+    // Create new user
+    const user = new User({
+      email,
+      password,
+      firstName,
+      lastName,
+      role
+    });
+
+    await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    logger.info(`New user registered: ${email}`);
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        avatar: user.avatar,
+        twoFAEnabled: user.twoFAEnabled
+      }
+    });
+  } catch (error) {
+    logger.error('Registration error:', error);
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: Object.values(error.errors).map(e => e.message)
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed'
+    });
+  }
+};
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -16,7 +89,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Find user (replace with actual database call)
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
