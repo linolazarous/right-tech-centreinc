@@ -13,8 +13,8 @@ import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // Public routes - Registration & Login
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', register);        // → /api/auth/register
+router.post('/login', login);              // → /api/auth/login
 router.post('/login/verify-2fa', verify2FALogin);
 
 // 2FA routes
