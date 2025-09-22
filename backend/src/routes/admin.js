@@ -11,7 +11,7 @@ router.use(authenticateToken, requireAdmin);
 // Admin dashboard statistics
 router.get('/stats', getAdminStats);
 
-// Add more admin routes here:
+// Add more admin routes here
 router.get('/users', (req, res) => {
   res.json({ success: true, message: 'User management endpoint' });
 });
