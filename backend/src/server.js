@@ -1,4 +1,6 @@
-// backend/src/server.js
+// =================================================================
+//                      Imports & Configuration
+// =================================================================
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -6,42 +8,55 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import { connectDB, checkDBHealth } from './db.js'; // Updated import
+import logger from './utils/logger.js';
 
 // Import routes
 import { authRoutes, userRoutes, adminRoutes } from './routes/index.js';
 
-import { connectDB } from './utils/database.js';
-
-// Replace mongoose.connect with:
-await connectDB();
-
 const app = express();
 const PORT = process.env.PORT || 8080;
-
-// ==============================================
-// Environment Configuration
-// ==============================================
 const isProduction = process.env.NODE_ENV === 'production';
 
-// ==============================================
-// Middleware
-// ==============================================
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "img-src": ["'self'", "data:", "https:"],
-      },
-    },
-    crossOriginEmbedderPolicy: false,
-  })
-);
+// =================================================================
+//                  Database Connection
+// =================================================================
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+    logger.info('Database connection established successfully');
+  } catch (error) {
+    logger.error('Failed to initialize database connection:', error);
+    process.exit(1); // Exit if database connection fails
+  }
+};
 
-// CORS Configuration - FIXED
+// =================================================================
+//                  Security Middleware
+// =================================================================
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:"],
+      fontSrc: ["'self'", "https:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"]
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
+// =================================================================
+//                  CORS Configuration
+// =================================================================
 const allowedOrigins = [
-  'https://righttechcentre.vercel.app', // Your Vercel frontend
+  'https://righttechcentre.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173'
 ];
@@ -51,146 +66,277 @@ if (process.env.ALLOWED_ORIGINS) {
 }
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
-    if (!origin) return callback(null, true);
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, postman)
+    if (!origin && isProduction) {
+      return callback(new Error('Origin required in production'), false);
+    }
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      logger.warn(`CORS blocked request from origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  maxAge: 86400 // 24 hours
 }));
 
-app.use(compression());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// =================================================================
+//                  Performance & Body Parsing Middleware
+// =================================================================
+app.use(compression({
+  level: 6,
+  threshold: 1024
+}));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    try {
+      JSON.parse(buf);
+    } catch (e) {
+      throw new Error('Invalid JSON payload');
+    }
+  }
+}));
+
+app.use(express.urlencoded({ 
+  extended: true, 
+  limit: '10mb' 
+}));
+
+// =================================================================
+//                  Rate Limiting
+// =================================================================
+const createRateLimit = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message: { success: false, message },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.ip === '127.0.0.1' // Skip for localhost
 });
-app.use(limiter);
 
-// ==============================================
-// Database Connection (MongoDB)
-// ==============================================
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/righttechcentre';
+// General API rate limiting
+app.use(createRateLimit(15 * 60 * 1000, 200, 'Too many requests, please try again later.'));
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log('✅ MongoDB Connected'))
-  .catch((err) => console.error('❌ MongoDB Error:', err));
+// Stricter limits for auth routes
+const authLimiter = createRateLimit(15 * 60 * 1000, 10, 'Too many authentication attempts, please try again later.');
+app.use('/api/auth', authLimiter);
 
-// ==============================================
-// Root Route - ADD THIS TO FIX "cannot GET /"
-// ==============================================
+// =================================================================
+//                  Request Logging & Monitoring
+// =================================================================
+app.use((req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.http(`${req.method} ${req.originalUrl}`, {
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      duration: `${duration}ms`,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+  });
+  
+  next();
+});
+
+// =================================================================
+//                  Health Check & Status Endpoints
+// =================================================================
+app.get('/health', async (req, res) => {
+  try {
+    const dbHealth = await checkDBHealth();
+    const status = dbHealth.status === 'healthy' ? 200 : 503;
+    
+    res.status(status).json({
+      status: dbHealth.status,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      version: process.env.npm_package_version || '1.0.0',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      database: dbHealth
+    });
+  } catch (error) {
+    logger.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: 'Health check failed'
+    });
+  }
+});
+
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Right Tech Centre API is running!',
+    message: 'Right Tech Centre API Server',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    docs: '/api/test for test endpoint',
-    health: '/health for health check'
+    endpoints: {
+      docs: '/api/test',
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      admin: '/api/admin'
+    },
+    environment: process.env.NODE_ENV
   });
 });
 
-// ==============================================
-// Health Check
-// ==============================================
-app.get('/health', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'CONNECTED' : 'DISCONNECTED';
-  res.status(200).json({
-    status: 'UP',
-    dbStatus,
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
-  });
-});
-
-// ==============================================
-// API Routes
-// ==============================================
-// Test route
+// =================================================================
+//                  API Routes
+// =================================================================
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'API test working', 
+    message: 'API is functioning correctly', 
     timestamp: new Date().toISOString(),
-    allowedOrigins: allowedOrigins
+    environment: process.env.NODE_ENV,
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-// Mount API routes
+// Mount API routes with versioning
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 
-// ==============================================
-// Error Handling
-// ==============================================
-// 404 handler for API routes
+// =================================================================
+//                  Error Handling
+// =================================================================
+// 404 Handler for API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ success: false, message: 'API endpoint not found' });
+  res.status(404).json({ 
+    success: false, 
+    message: 'API endpoint not found',
+    path: req.originalUrl
+  });
 });
 
-// General error handler
-app.use((err, req, res, next) => {
-  console.error('Server Error:', err.message);
-  
-  // CORS error handling
-  if (err.message === 'Not allowed by CORS') {
+// Global error handler
+app.use((error, req, res, next) => {
+  logger.error('Unhandled error:', {
+    message: error.message,
+    stack: error.stack,
+    url: req.originalUrl,
+    method: req.method,
+    ip: req.ip
+  });
+
+  // CORS error
+  if (error.message === 'Not allowed by CORS') {
     return res.status(403).json({ 
       success: false, 
-      message: 'CORS error: Origin not allowed',
-      allowedOrigins: allowedOrigins
+      message: 'Origin not allowed',
+      allowedOrigins
     });
   }
-  
-  res.status(500).json({ 
-    success: false, 
-    message: 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { error: err.message })
+
+  // JSON parsing error
+  if (error.message === 'Invalid JSON payload') {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Invalid JSON in request body' 
+    });
+  }
+
+  // Mongoose validation error
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Validation error',
+      errors: Object.values(error.errors).map(e => e.message)
+    });
+  }
+
+  // MongoDB duplicate key error
+  if (error.code === 11000) {
+    return res.status(409).json({ 
+      success: false, 
+      message: 'Duplicate entry found' 
+    });
+  }
+
+  // Default error response
+  const statusCode = error.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    message: isProduction ? 'Internal server error' : error.message,
+    ...(!isProduction && { stack: error.stack })
   });
 });
 
-// ==============================================
-// Start Server
-// ==============================================
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 API Root: http://localhost:${PORT}/`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`📍 API Test: http://localhost:${PORT}/api/test`);
-  console.log(`📍 Allowed Origins: ${allowedOrigins.join(', ')}`);
-});
+// =================================================================
+//                  Server Initialization
+// =================================================================
+const startServer = async () => {
+  try {
+    // Initialize database connection
+    await initializeDatabase();
+    
+    // Start server
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      logger.info(`🚀 Server running on port ${PORT}`, {
+        port: PORT,
+        environment: process.env.NODE_ENV,
+        nodeVersion: process.version,
+        platform: process.platform
+      });
+      
+      console.log(`📍 Environment: ${process.env.NODE_ENV}`);
+      console.log(`📍 API Root: http://localhost:${PORT}/`);
+      console.log(`📍 Health Check: http://localhost:${PORT}/health`);
+      console.log(`📍 Allowed Origins: ${allowedOrigins.join(', ')}`);
+    });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  server.close(() => {
-    mongoose.connection.close();
-    console.log('Server stopped');
-  });
-});
+    // Graceful shutdown
+    const gracefulShutdown = async (signal) => {
+      logger.info(`Received ${signal}, starting graceful shutdown...`);
+      
+      server.close(async (err) => {
+        if (err) {
+          logger.error('Error during server close:', err);
+          process.exit(1);
+        }
+        
+        try {
+          await mongoose.connection.close();
+          logger.info('Database connection closed gracefully');
+          logger.info('Server shutdown completed');
+          process.exit(0);
+        } catch (dbError) {
+          logger.error('Error closing database connection:', dbError);
+          process.exit(1);
+        }
+      });
+      
+      // Force shutdown after 10 seconds
+      setTimeout(() => {
+        logger.error('Forcing shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+    };
 
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  server.close(() => {
-    mongoose.connection.close();
-    console.log('Server stopped');
-    process.exit(0);
-  });
-});
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
 
 export default app;
-
