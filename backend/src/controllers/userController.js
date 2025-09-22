@@ -4,12 +4,11 @@ import logger from '../utils/logger.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import { validateUserProfile } from '../validators/userValidator.js';
 
-// ✅ Convert to named exports like authController.js
+// ✅ Named exports to match route imports
 export const getUserProfile = async (req, res) => {
     try {
         const { userId } = req.params;
         
-        // Validate inputs
         if (!isValidObjectId(userId)) {
             return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -22,9 +21,7 @@ export const getUserProfile = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Omit sensitive data
         const { password, twoFASecret, ...userData } = user.toObject();
-
         res.status(200).json(userData);
     } catch (error) {
         logger.error(`User profile fetch error: ${error.message}`, { stack: error.stack });
@@ -40,7 +37,6 @@ export const updateUserProfile = async (req, res) => {
         const { userId } = req.params;
         const updatedData = req.body;
         
-        // Validate inputs
         if (!isValidObjectId(userId)) {
             return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -74,28 +70,5 @@ export const updateUserProfile = async (req, res) => {
             error: 'Failed to update user profile',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
-    }
-};
-
-// ✅ Add missing register and login functions for routes/users.js
-export const register = async (req, res) => {
-    try {
-        // Your registration logic here
-        // Similar to authController's register but for user routes
-        res.status(201).json({ success: true, message: 'User registered' });
-    } catch (error) {
-        logger.error('Registration error:', error);
-        res.status(500).json({ success: false, message: 'Registration failed' });
-    }
-};
-
-export const login = async (req, res) => {
-    try {
-        // Your login logic here  
-        // Similar to authController's login but for user routes
-        res.json({ success: true, message: 'User logged in' });
-    } catch (error) {
-        logger.error('Login error:', error);
-        res.status(500).json({ success: false, message: 'Login failed' });
     }
 };
