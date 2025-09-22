@@ -11,7 +11,6 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// ✅ Correct imports - direct default imports
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import adminRoutes from './routes/admin.js';
@@ -34,29 +33,14 @@ const initializeDatabase = async () => {
 };
 
 // =================================================================
-//                  Security Middleware
+//                  Security & Performance Middleware
 // =================================================================
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https:"],
-      fontSrc: ["'self'", "https:"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"]
-    },
-  },
+  contentSecurityPolicy: isProduction ? undefined : false,
   crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// =================================================================
-//                  CORS Configuration
-// =================================================================
 const allowedOrigins = [
   'https://righttechcentre.vercel.app',
   'http://localhost:3000',
@@ -69,11 +53,10 @@ if (process.env.ALLOWED_ORIGINS) {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin && isProduction) {
-      return callback(new Error('Origin required in production'), false);
-    }
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       logger.warn(`CORS blocked request from origin: ${origin}`);
@@ -86,27 +69,10 @@ app.use(cors({
   maxAge: 86400
 }));
 
-// =================================================================
-//                  Performance & Body Parsing Middleware
-// =================================================================
 app.use(compression({ level: 6, threshold: 1024 }));
-
-app.use(express.json({ 
-  limit: '10mb',
-  verify: (req, res, buf) => {
-    try {
-      JSON.parse(buf);
-    } catch (e) {
-      throw new Error('Invalid JSON payload');
-    }
-  }
-}));
-
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// =================================================================
-//                  Rate Limiting
-// =================================================================
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -117,12 +83,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-// =================================================================
-//                  Request Logging
-// =================================================================
 app.use((req, res, next) => {
   const start = Date.now();
-  
   res.on('finish', () => {
     const duration = Date.now() - start;
     logger.http(`${req.method} ${req.originalUrl}`, {
@@ -133,7 +95,6 @@ app.use((req, res, next) => {
       ip: req.ip
     });
   });
-  
   next();
 });
 
@@ -144,7 +105,6 @@ app.get('/health', async (req, res) => {
   try {
     const dbHealth = await checkDBHealth();
     const status = dbHealth.status === 'healthy' ? 200 : 503;
-    
     res.status(status).json({
       status: dbHealth.status,
       timestamp: new Date().toISOString(),
@@ -179,9 +139,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// =================================================================
-//                  API Routes - FIXED MOUNTING
-// =================================================================
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
@@ -191,20 +148,11 @@ app.get('/api/test', (req, res) => {
 });
 
 // =================================================================
-//                  API Routes - CORRECT MOUNTING
+//                  API Routes
 // =================================================================
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'API is functioning correctly', 
-    timestamp: new Date().toISOString()
-  });
-});
-
-// ✅ Mount API routes with clear separation
-app.use('/api/auth', authRoutes);    // Authentication: /api/auth/*
-app.use('/api/users', userRoutes);   // User profiles: /api/users/*  
-app.use('/api/admin', adminRoutes);  // Admin panel: /api/admin/*
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // =================================================================
 //                  Error Handling
@@ -219,14 +167,12 @@ app.use('/api/*', (req, res) => {
 
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error);
-
   if (error.message === 'Not allowed by CORS') {
     return res.status(403).json({ 
       success: false, 
       message: 'Origin not allowed' 
     });
   }
-
   res.status(500).json({
     success: false,
     message: isProduction ? 'Internal server error' : error.message
@@ -243,13 +189,8 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-      console.log(`📍 Health Check: http://localhost:${PORT}/health`);
-      console.log(`📍 Auth Endpoint: http://localhost:${PORT}/api/auth/register`);
-      console.log(`📍 Users Endpoint: http://localhost:${PORT}/api/users/profile`);
-      console.log(`📍 Admin Endpoint: http://localhost:${PORT}/api/admin/stats`);
     });
 
-    // Graceful shutdown
     const gracefulShutdown = async (signal) => {
       console.log(`Received ${signal}, shutting down...`);
       server.close(async () => {
@@ -268,9 +209,4 @@ const startServer = async () => {
   }
 };
 
-// Start the server
 startServer();
-
-export default app;
-
-
