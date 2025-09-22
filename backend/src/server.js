@@ -11,8 +11,10 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// Import routes - FIXED: Ensure these files exist
-import { authRoutes, userRoutes, adminRoutes } from './routes/index.js';
+// FIXED: Import routes correctly - use default imports
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import adminRoutes from './routes/admin.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -256,3 +258,4 @@ const startServer = async () => {
 startServer();
 
 export default app;
+
