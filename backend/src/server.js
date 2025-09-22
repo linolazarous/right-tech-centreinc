@@ -11,7 +11,7 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// FIXED: Import routes correctly - use default imports
+// FIXED: Import routes correctly - using default imports
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import adminRoutes from './routes/admin.js';
@@ -258,4 +258,3 @@ const startServer = async () => {
 startServer();
 
 export default app;
-
