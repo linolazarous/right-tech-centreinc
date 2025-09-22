@@ -1,53 +1,28 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import express from 'express';
+import { 
+  login, 
+  register, 
+  getAuthStatus, 
+  verify2FALogin,
+  enable2FA, 
+  verify2FA, 
+  disable2FA 
+} from '../controllers/authController.js';
+import { authenticateToken } from '../middleware/auth.js';
 
-export const authenticateToken = async (req, res, next) => {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+const router = express.Router();
 
-    if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Access token required' 
-      });
-    }
+// Public routes - Registration & Login
+router.post('/register', register);
+router.post('/login', login);
+router.post('/login/verify-2fa', verify2FALogin);
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('-password');
-    
-    if (!user) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
+// 2FA routes (protected)
+router.post('/enable-2fa', authenticateToken, enable2FA);
+router.post('/verify-2fa', authenticateToken, verify2FA);
+router.post('/disable-2fa', authenticateToken, disable2FA);
 
-    req.user = user;
-    next();
-  } catch (error) {
-    console.error('Auth middleware error:', error);
-    return res.status(403).json({ 
-      success: false, 
-      message: 'Invalid or expired token' 
-    });
-  }
-};
+// Status check (protected)
+router.get('/status', authenticateToken, getAuthStatus);
 
-export const optionalAuth = async (req, res, next) => {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.userId).select('-password');
-      req.user = user;
-    }
-
-    next();
-  } catch (error) {
-    // Continue without user for optional auth
-    next();
-  }
-};
+export default router;
