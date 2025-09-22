@@ -1,8 +1,8 @@
 name: righttechcentre-backend
-region: ams3
+region: nyc3 
 services:
   - name: api
-    source_dir: /backend
+    source_dir: backend 
     github:
       repo: linolazarous/right-tech-centreinc
       branch: master
@@ -25,3 +25,9 @@ services:
         value: "8080"
       - key: CLIENT_URL
         value: https://righttechcentre.vercel.app
+      # ADD THESE NEW ENVIRONMENT VARIABLES:
+      - key: DB_PASSWORD
+        value: your_actual_database_password_here  
+        scope: RUN_AND_BUILD_TIME
+      - key: MONGO_URI
+        value: "mongodb+srv://doadmin:${DB_PASSWORD}@private-righttechcentre-b1b60287.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=righttechcentre&tlsCAFile=./ca-certificate.crt"
