@@ -1,3 +1,4 @@
+// backend/src/controllers/contentCreationController.js
 import { generateCourseContent } from "../services/contentCreationService.js";
 import logger from '../utils/logger.js';
 
@@ -39,6 +40,5 @@ export const createCourseContent = async (req, res) => {
     }
 };
 
-export default { 
-    createCourseContent 
-};
+// ❌ Remove this redundant default export
+// export default { createCourseContent };
