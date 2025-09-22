@@ -1,4 +1,7 @@
-// backend/src/server.js 
+// =================================================================
+//                      Imports & Configuration
+// =================================================================
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -8,16 +11,17 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// ✅ Direct default imports
+// ✅ Correct imports - direct default imports
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // =================================================================
-//                  Database Connection
+//                  Database Connection & Middleware
 // =================================================================
 const initializeDatabase = async () => {
   try {
@@ -186,10 +190,21 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Mount API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/admin', adminRoutes);
+// =================================================================
+//                  API Routes - CORRECT MOUNTING
+// =================================================================
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'API is functioning correctly', 
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ✅ Mount API routes with clear separation
+app.use('/api/auth', authRoutes);    // Authentication: /api/auth/*
+app.use('/api/users', userRoutes);   // User profiles: /api/users/*  
+app.use('/api/admin', adminRoutes);  // Admin panel: /api/admin/*
 
 // =================================================================
 //                  Error Handling
@@ -229,6 +244,9 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
       console.log(`📍 Health Check: http://localhost:${PORT}/health`);
+      console.log(`📍 Auth Endpoint: http://localhost:${PORT}/api/auth/register`);
+      console.log(`📍 Users Endpoint: http://localhost:${PORT}/api/users/profile`);
+      console.log(`📍 Admin Endpoint: http://localhost:${PORT}/api/admin/stats`);
     });
 
     // Graceful shutdown
@@ -254,4 +272,3 @@ const startServer = async () => {
 startServer();
 
 export default app;
-
