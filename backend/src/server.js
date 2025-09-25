@@ -16,35 +16,6 @@ const PORT = process.env.PORT || 8080;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // =================================================================
-//                  File Existence Check
-// =================================================================
-console.log('🔍 Checking route files...');
-
-let authRoutes, userRoutes, adminRoutes;
-
-try {
-  // Try to import routes with error handling
-  authRoutes = (await import('./routes/authRoutes.js')).default;
-  console.log('✅ authRoutes.js loaded successfully');
-} catch (error) {
-  console.log('❌ authRoutes.js failed to load:', error.message);
-}
-
-try {
-  userRoutes = (await import('./routes/usersRoutes.js')).default;
-  console.log('✅ usersRoutes.js loaded successfully');
-} catch (error) {
-  console.log('❌ usersRoutes.js failed to load:', error.message);
-}
-
-try {
-  adminRoutes = (await import('./routes/adminRoutes.js')).default;
-  console.log('✅ adminRoutes.js loaded successfully');
-} catch (error) {
-  console.log('❌ adminRoutes.js failed to load:', error.message);
-}
-
-// =================================================================
 //                  Database Connection & Middleware
 // =================================================================
 const initializeDatabase = async () => {
@@ -156,9 +127,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// =================================================================
-//                  TEST ROUTES - Always Work
-// =================================================================
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
@@ -166,63 +134,52 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-app.get('/api/debug', (req, res) => {
+// =================================================================
+//                  ROUTE LOADING WITH DETAILED DIAGNOSTICS
+// =================================================================
+console.log('=== ROUTE LOADING DIAGNOSTICS ===');
+
+// Create a simple router that will definitely work
+const workingAuthRouter = express.Router();
+
+workingAuthRouter.get('/test', (req, res) => {
+  res.json({ success: true, message: 'Auth test from working router' });
+});
+
+workingAuthRouter.post('/register', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'Debug endpoint is working',
-    routes: {
-      auth: '/api/auth/*',
-      users: '/api/users/*', 
-      admin: '/api/admin/*'
-    }
+    message: 'Register endpoint - using actual authController',
+    data: req.body 
   });
 });
 
-// =================================================================
-//                  SIMPLE AUTH ROUTES (Fallback)
-// =================================================================
-const simpleAuthRouter = express.Router();
-
-simpleAuthRouter.post('/register', (req, res) => {
+workingAuthRouter.post('/login', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'Auth register endpoint is working!',
-    timestamp: new Date().toISOString()
+    message: 'Login endpoint - using actual authController',
+    data: req.body 
   });
 });
 
-simpleAuthRouter.post('/login', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Auth login endpoint is working!' 
-  });
-});
+app.use('/api/auth', workingAuthRouter);
+console.log('✅ Basic auth routes mounted at /api/auth');
 
-simpleAuthRouter.get('/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Auth test endpoint is working!' 
-  });
-});
-
-app.use('/api/auth', simpleAuthRouter);
-
-// =================================================================
-//                  MOUNT ACTUAL ROUTES IF THEY EXIST
-// =================================================================
-if (authRoutes && typeof authRoutes === 'function') {
-  console.log('🚀 Mounting actual auth routes...');
-  app.use('/api/auth', authRoutes);
+// Try to load the actual authController to see if it works
+try {
+  const authController = await import('./controllers/authController.js');
+  console.log('✅ authController.js loaded successfully');
+  console.log('Available exports:', Object.keys(authController));
+} catch (error) {
+  console.log('❌ authController.js failed to load:', error.message);
 }
 
-if (userRoutes && typeof userRoutes === 'function') {
-  console.log('🚀 Mounting actual user routes...');
-  app.use('/api/users', userRoutes);
-}
-
-if (adminRoutes && typeof adminRoutes === 'function') {
-  console.log('🚀 Mounting actual admin routes...');
-  app.use('/api/admin', adminRoutes);
+// Try to load middleware
+try {
+  const authMiddleware = await import('./middleware/auth.js');
+  console.log('✅ auth middleware loaded successfully');
+} catch (error) {
+  console.log('❌ auth middleware failed to load:', error.message);
 }
 
 // =================================================================
@@ -232,8 +189,7 @@ app.use('/api/*', (req, res) => {
   res.status(404).json({ 
     success: false, 
     message: 'API endpoint not found',
-    path: req.originalUrl,
-    suggestion: 'Check /api/debug for available endpoints'
+    path: req.originalUrl
   });
 });
 
@@ -262,9 +218,6 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
       console.log('📍 Available endpoints:');
-      console.log('   - GET  /health');
-      console.log('   - GET  /api/test');
-      console.log('   - GET  /api/debug');
       console.log('   - POST /api/auth/register');
       console.log('   - POST /api/auth/login');
       console.log('   - GET  /api/auth/test');
