@@ -12,6 +12,9 @@ import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
 const app = express();
+const app = express();
+// Add this line to fix the rate limit warning:
+app.set('trust proxy', 1); // Trust first proxy
 const PORT = process.env.PORT || 8080;
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -247,3 +250,4 @@ const startServer = async () => {
 };
 
 startServer();
+
