@@ -52,7 +52,6 @@ if (process.env.ALLOWED_ORIGINS) {
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.includes(origin)) {
@@ -130,9 +129,9 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       health: '/health',
-      auth: '/api/authRoutes',
-      users: '/api/usersRoutes',
-      admin: '/api/adminRoutes'
+      auth: '/api/auth',          // FIXED: Changed from /api/authRoutes
+      users: '/api/users',        // FIXED: Changed from /api/usersRoutes
+      admin: '/api/admin'         // FIXED: Changed from /api/adminRoutes
     },
     environment: process.env.NODE_ENV
   });
@@ -147,11 +146,55 @@ app.get('/api/test', (req, res) => {
 });
 
 // =================================================================
-//                  API Routes
+//                  DEBUG ROUTES - ADD THIS SECTION
 // =================================================================
-app.use('/api/authRoutes', authRoutes);
-app.use('/api/usersRoutes', userRoutes);
-app.use('/api/adminRoutes', adminRoutes);
+app.get('/api/debug/routes', (req, res) => {
+  const routes = [];
+  
+  function scanRoutes(layer, prefix = '') {
+    if (layer.route) {
+      const path = prefix + (layer.route.path === '/' ? '' : layer.route.path);
+      routes.push({
+        path: path,
+        methods: Object.keys(layer.route.methods)
+      });
+    } else if (layer.name === 'router' && layer.handle.stack) {
+      const newPrefix = prefix + (layer.regexp.fast_slash ? '' : layer.path);
+      layer.handle.stack.forEach(sublayer => {
+        scanRoutes(sublayer, newPrefix);
+      });
+    }
+  }
+
+  app._router.stack.forEach(layer => scanRoutes(layer));
+  
+  res.json({
+    success: true,
+    totalRoutes: routes.length,
+    routes: routes
+  });
+});
+
+// Temporary test route for auth
+app.get('/api/auth/debug', (req, res) => {
+  res.json({ success: true, message: 'Auth base route is working!' });
+});
+
+app.post('/api/auth/register/debug', (req, res) => {
+  res.json({ success: true, message: 'Register debug endpoint works!' });
+});
+
+// =================================================================
+//                  API Routes - FIXED PATHS
+// =================================================================
+console.log('Mounting auth routes on /api/auth...');
+app.use('/api/auth', authRoutes);          // FIXED: Changed from /api/authRoutes
+
+console.log('Mounting user routes on /api/users...');
+app.use('/api/users', userRoutes);         // FIXED: Changed from /api/usersRoutes
+
+console.log('Mounting admin routes on /api/admin...');
+app.use('/api/admin', adminRoutes);        // FIXED: Changed from /api/adminRoutes
 
 // =================================================================
 //                  Error Handling
@@ -188,6 +231,10 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
+      console.log('📍 Mounted routes:');
+      console.log('   - /api/auth');
+      console.log('   - /api/users'); 
+      console.log('   - /api/admin');
     });
 
     const gracefulShutdown = async (signal) => {
@@ -209,4 +256,3 @@ const startServer = async () => {
 };
 
 startServer();
-
