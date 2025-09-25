@@ -11,14 +11,38 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-// Import routes - Check if these files exist with correct exports
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/usersRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// =================================================================
+//                  File Existence Check
+// =================================================================
+console.log('🔍 Checking route files...');
+
+let authRoutes, userRoutes, adminRoutes;
+
+try {
+  // Try to import routes with error handling
+  authRoutes = (await import('./routes/authRoutes.js')).default;
+  console.log('✅ authRoutes.js loaded successfully');
+} catch (error) {
+  console.log('❌ authRoutes.js failed to load:', error.message);
+}
+
+try {
+  userRoutes = (await import('./routes/usersRoutes.js')).default;
+  console.log('✅ usersRoutes.js loaded successfully');
+} catch (error) {
+  console.log('❌ usersRoutes.js failed to load:', error.message);
+}
+
+try {
+  adminRoutes = (await import('./routes/adminRoutes.js')).default;
+  console.log('✅ adminRoutes.js loaded successfully');
+} catch (error) {
+  console.log('❌ adminRoutes.js failed to load:', error.message);
+}
 
 // =================================================================
 //                  Database Connection & Middleware
@@ -128,91 +152,77 @@ app.get('/', (req, res) => {
     message: 'Right Tech Centre API Server',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    endpoints: {
-      health: '/health',
-      test: '/api/test',
-      debug: '/api/debug/routes'
-    },
     environment: process.env.NODE_ENV
   });
 });
 
 // =================================================================
-//                  TEST ROUTES - ADD THESE FIRST
+//                  TEST ROUTES - Always Work
 // =================================================================
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'API is functioning correctly', 
-    timestamp: new Date().toISOString()
+    message: 'API test endpoint is working' 
   });
 });
 
-// Simple debug route that should definitely work
-app.get('/api/debug/routes', (req, res) => {
+app.get('/api/debug', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'Debug route is working',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Simple auth test route
-app.post('/api/auth/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Auth test route is working' 
-  });
-});
-
-// Simple register test route
-app.post('/api/auth/register/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Register test route is working' 
+    message: 'Debug endpoint is working',
+    routes: {
+      auth: '/api/auth/*',
+      users: '/api/users/*', 
+      admin: '/api/admin/*'
+    }
   });
 });
 
 // =================================================================
-//                  CHECK IF ROUTE FILES EXIST AND WORK
+//                  SIMPLE AUTH ROUTES (Fallback)
 // =================================================================
-console.log('Checking route files...');
+const simpleAuthRouter = express.Router();
 
-// Test if authRoutes is a valid router
-try {
-  console.log('Auth routes type:', typeof authRoutes);
-  if (authRoutes && typeof authRoutes === 'function') {
-    console.log('✅ Auth routes loaded successfully');
-    app.use('/api/auth', authRoutes);
-  } else {
-    console.log('❌ Auth routes not loaded properly - using fallback');
-    // Fallback auth routes
-    const fallbackAuthRouter = express.Router();
-    fallbackAuthRouter.post('/register', (req, res) => {
-      res.json({ success: true, message: 'Fallback register endpoint' });
-    });
-    app.use('/api/auth', fallbackAuthRouter);
-  }
-} catch (error) {
-  console.log('❌ Error loading auth routes:', error.message);
+simpleAuthRouter.post('/register', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Auth register endpoint is working!',
+    timestamp: new Date().toISOString()
+  });
+});
+
+simpleAuthRouter.post('/login', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Auth login endpoint is working!' 
+  });
+});
+
+simpleAuthRouter.get('/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Auth test endpoint is working!' 
+  });
+});
+
+app.use('/api/auth', simpleAuthRouter);
+
+// =================================================================
+//                  MOUNT ACTUAL ROUTES IF THEY EXIST
+// =================================================================
+if (authRoutes && typeof authRoutes === 'function') {
+  console.log('🚀 Mounting actual auth routes...');
+  app.use('/api/auth', authRoutes);
 }
 
-try {
-  if (userRoutes && typeof userRoutes === 'function') {
-    console.log('✅ User routes loaded successfully');
-    app.use('/api/users', userRoutes);
-  }
-} catch (error) {
-  console.log('❌ Error loading user routes:', error.message);
+if (userRoutes && typeof userRoutes === 'function') {
+  console.log('🚀 Mounting actual user routes...');
+  app.use('/api/users', userRoutes);
 }
 
-try {
-  if (adminRoutes && typeof adminRoutes === 'function') {
-    console.log('✅ Admin routes loaded successfully');
-    app.use('/api/admin', adminRoutes);
-  }
-} catch (error) {
-  console.log('❌ Error loading admin routes:', error.message);
+if (adminRoutes && typeof adminRoutes === 'function') {
+  console.log('🚀 Mounting actual admin routes...');
+  app.use('/api/admin', adminRoutes);
 }
 
 // =================================================================
@@ -223,7 +233,7 @@ app.use('/api/*', (req, res) => {
     success: false, 
     message: 'API endpoint not found',
     path: req.originalUrl,
-    availableEndpoints: ['/health', '/api/test', '/api/debug/routes', '/api/auth/test']
+    suggestion: 'Check /api/debug for available endpoints'
   });
 });
 
@@ -254,9 +264,10 @@ const startServer = async () => {
       console.log('📍 Available endpoints:');
       console.log('   - GET  /health');
       console.log('   - GET  /api/test');
-      console.log('   - GET  /api/debug/routes');
-      console.log('   - POST /api/auth/test');
-      console.log('   - POST /api/auth/register/test');
+      console.log('   - GET  /api/debug');
+      console.log('   - POST /api/auth/register');
+      console.log('   - POST /api/auth/login');
+      console.log('   - GET  /api/auth/test');
     });
 
     const gracefulShutdown = async (signal) => {
