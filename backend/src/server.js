@@ -135,52 +135,36 @@ app.get('/api/test', (req, res) => {
 });
 
 // =================================================================
-//                  ROUTE LOADING WITH DETAILED DIAGNOSTICS
+//                  ACTUAL AUTHENTICATION SYSTEM
 // =================================================================
-console.log('=== ROUTE LOADING DIAGNOSTICS ===');
+console.log('=== LOADING ACTUAL AUTH SYSTEM ===');
 
-// Create a simple router that will definitely work
-const workingAuthRouter = express.Router();
-
-workingAuthRouter.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Auth test from working router' });
-});
-
-workingAuthRouter.post('/register', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Register endpoint - using actual authController',
-    data: req.body 
-  });
-});
-
-workingAuthRouter.post('/login', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Login endpoint - using actual authController',
-    data: req.body 
-  });
-});
-
-app.use('/api/auth', workingAuthRouter);
-console.log('✅ Basic auth routes mounted at /api/auth');
-
-// Try to load the actual authController to see if it works
+// Import the actual authController functions directly
+let authController;
 try {
-  const authController = await import('./controllers/authController.js');
-  console.log('✅ authController.js loaded successfully');
-  console.log('Available exports:', Object.keys(authController));
+  authController = await import('./controllers/authController.js');
+  console.log('✅ authController loaded successfully');
 } catch (error) {
-  console.log('❌ authController.js failed to load:', error.message);
+  console.log('❌ Failed to load authController:', error);
+  process.exit(1);
 }
 
-// Try to load middleware
-try {
-  const authMiddleware = await import('./middleware/auth.js');
-  console.log('✅ auth middleware loaded successfully');
-} catch (error) {
-  console.log('❌ auth middleware failed to load:', error.message);
-}
+// Create auth routes using the actual controller functions
+const authRouter = express.Router();
+
+// Public routes
+authRouter.post('/register', authController.register);
+authRouter.post('/login', authController.login);
+authRouter.post('/login/verify-2fa', authController.verify2FALogin);
+
+// Add a test route
+authRouter.get('/test', (req, res) => {
+  res.json({ success: true, message: 'Actual auth system is working!' });
+});
+
+// Mount the auth routes
+app.use('/api/auth', authRouter);
+console.log('✅ Actual auth system mounted at /api/auth');
 
 // =================================================================
 //                  Error Handling
@@ -195,12 +179,31 @@ app.use('/api/*', (req, res) => {
 
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error);
+  
+  // Mongoose validation error
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation error',
+      errors: Object.values(error.errors).map(e => e.message)
+    });
+  }
+  
+  // MongoDB duplicate key error
+  if (error.code === 11000) {
+    return res.status(409).json({
+      success: false,
+      message: 'User already exists with this email'
+    });
+  }
+  
   if (error.message === 'Not allowed by CORS') {
     return res.status(403).json({ 
       success: false, 
       message: 'Origin not allowed' 
     });
   }
+  
   res.status(500).json({
     success: false,
     message: isProduction ? 'Internal server error' : error.message
@@ -217,9 +220,11 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
+      console.log('📍 Actual authentication system is LIVE!');
       console.log('📍 Available endpoints:');
       console.log('   - POST /api/auth/register');
       console.log('   - POST /api/auth/login');
+      console.log('   - POST /api/auth/login/verify-2fa');
       console.log('   - GET  /api/auth/test');
     });
 
