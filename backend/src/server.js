@@ -11,9 +11,9 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/usersRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -43,8 +43,7 @@ app.use(helmet({
 
 const allowedOrigins = [
   'https://righttechcentre.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173'
+  'http://localhost:5000'
 ];
 
 if (process.env.ALLOWED_ORIGINS) {
@@ -131,9 +130,9 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       health: '/health',
-      auth: '/api/auth',
-      users: '/api/users',
-      admin: '/api/admin'
+      auth: '/api/authRoutes',
+      users: '/api/usersRoutes',
+      admin: '/api/adminRoutes'
     },
     environment: process.env.NODE_ENV
   });
@@ -150,9 +149,9 @@ app.get('/api/test', (req, res) => {
 // =================================================================
 //                  API Routes
 // =================================================================
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/authRoutes', authRoutes);
+app.use('/api/usersRoutes', userRoutes);
+app.use('/api/adminRoutes', adminRoutes);
 
 // =================================================================
 //                  Error Handling
@@ -210,3 +209,4 @@ const startServer = async () => {
 };
 
 startServer();
+
