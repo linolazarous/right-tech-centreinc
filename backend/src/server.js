@@ -11,6 +11,7 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
+// Import routes - Check if these files exist with correct exports
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/usersRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -129,14 +130,16 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       health: '/health',
-      auth: '/api/auth',          // FIXED: Changed from /api/authRoutes
-      users: '/api/users',        // FIXED: Changed from /api/usersRoutes
-      admin: '/api/admin'         // FIXED: Changed from /api/adminRoutes
+      test: '/api/test',
+      debug: '/api/debug/routes'
     },
     environment: process.env.NODE_ENV
   });
 });
 
+// =================================================================
+//                  TEST ROUTES - ADD THESE FIRST
+// =================================================================
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true, 
@@ -145,56 +148,72 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// =================================================================
-//                  DEBUG ROUTES - ADD THIS SECTION
-// =================================================================
+// Simple debug route that should definitely work
 app.get('/api/debug/routes', (req, res) => {
-  const routes = [];
-  
-  function scanRoutes(layer, prefix = '') {
-    if (layer.route) {
-      const path = prefix + (layer.route.path === '/' ? '' : layer.route.path);
-      routes.push({
-        path: path,
-        methods: Object.keys(layer.route.methods)
-      });
-    } else if (layer.name === 'router' && layer.handle.stack) {
-      const newPrefix = prefix + (layer.regexp.fast_slash ? '' : layer.path);
-      layer.handle.stack.forEach(sublayer => {
-        scanRoutes(sublayer, newPrefix);
-      });
-    }
-  }
-
-  app._router.stack.forEach(layer => scanRoutes(layer));
-  
-  res.json({
-    success: true,
-    totalRoutes: routes.length,
-    routes: routes
+  res.json({ 
+    success: true, 
+    message: 'Debug route is working',
+    timestamp: new Date().toISOString()
   });
 });
 
-// Temporary test route for auth
-app.get('/api/auth/debug', (req, res) => {
-  res.json({ success: true, message: 'Auth base route is working!' });
+// Simple auth test route
+app.post('/api/auth/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Auth test route is working' 
+  });
 });
 
-app.post('/api/auth/register/debug', (req, res) => {
-  res.json({ success: true, message: 'Register debug endpoint works!' });
+// Simple register test route
+app.post('/api/auth/register/test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Register test route is working' 
+  });
 });
 
 // =================================================================
-//                  API Routes - FIXED PATHS
+//                  CHECK IF ROUTE FILES EXIST AND WORK
 // =================================================================
-console.log('Mounting auth routes on /api/auth...');
-app.use('/api/auth', authRoutes);          // FIXED: Changed from /api/authRoutes
+console.log('Checking route files...');
 
-console.log('Mounting user routes on /api/users...');
-app.use('/api/users', userRoutes);         // FIXED: Changed from /api/usersRoutes
+// Test if authRoutes is a valid router
+try {
+  console.log('Auth routes type:', typeof authRoutes);
+  if (authRoutes && typeof authRoutes === 'function') {
+    console.log('✅ Auth routes loaded successfully');
+    app.use('/api/auth', authRoutes);
+  } else {
+    console.log('❌ Auth routes not loaded properly - using fallback');
+    // Fallback auth routes
+    const fallbackAuthRouter = express.Router();
+    fallbackAuthRouter.post('/register', (req, res) => {
+      res.json({ success: true, message: 'Fallback register endpoint' });
+    });
+    app.use('/api/auth', fallbackAuthRouter);
+  }
+} catch (error) {
+  console.log('❌ Error loading auth routes:', error.message);
+}
 
-console.log('Mounting admin routes on /api/admin...');
-app.use('/api/admin', adminRoutes);        // FIXED: Changed from /api/adminRoutes
+try {
+  if (userRoutes && typeof userRoutes === 'function') {
+    console.log('✅ User routes loaded successfully');
+    app.use('/api/users', userRoutes);
+  }
+} catch (error) {
+  console.log('❌ Error loading user routes:', error.message);
+}
+
+try {
+  if (adminRoutes && typeof adminRoutes === 'function') {
+    console.log('✅ Admin routes loaded successfully');
+    app.use('/api/admin', adminRoutes);
+  }
+} catch (error) {
+  console.log('❌ Error loading admin routes:', error.message);
+}
 
 // =================================================================
 //                  Error Handling
@@ -203,7 +222,8 @@ app.use('/api/*', (req, res) => {
   res.status(404).json({ 
     success: false, 
     message: 'API endpoint not found',
-    path: req.originalUrl
+    path: req.originalUrl,
+    availableEndpoints: ['/health', '/api/test', '/api/debug/routes', '/api/auth/test']
   });
 });
 
@@ -231,10 +251,12 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-      console.log('📍 Mounted routes:');
-      console.log('   - /api/auth');
-      console.log('   - /api/users'); 
-      console.log('   - /api/admin');
+      console.log('📍 Available endpoints:');
+      console.log('   - GET  /health');
+      console.log('   - GET  /api/test');
+      console.log('   - GET  /api/debug/routes');
+      console.log('   - POST /api/auth/test');
+      console.log('   - POST /api/auth/register/test');
     });
 
     const gracefulShutdown = async (signal) => {
