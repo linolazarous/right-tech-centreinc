@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User from '../models/UserModel.js';
 import { generate2FASecret, verify2FAToken } from '../services/authService.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import logger from '../utils/logger.js';
@@ -376,3 +376,4 @@ export const disable2FA = async (req, res) => {
     });
   }
 };
+
