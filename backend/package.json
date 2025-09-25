@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "build": "npm install --legacy-peer-deps",
+    "seed:admin": "node src/scripts/seedAdmin.js",
     "clean": "rm -rf node_modules package-lock.json",
     "audit:fix": "npm audit fix --force"
   },
