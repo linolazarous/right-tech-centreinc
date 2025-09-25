@@ -1,4 +1,4 @@
-import UserModel from '../models/userModel.js';
+import UserModel from '../models/user.js';
 import logger from '../utils/logger.js';
 
 class UserService {
@@ -57,3 +57,4 @@ class UserService {
 }
 
 export default UserService;
+
