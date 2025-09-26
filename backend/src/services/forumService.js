@@ -1,4 +1,4 @@
-import ForumPost from '../models/ForumModel.js';
+import ForumModel from '../models/ForumModel.js';
 import logger from '../utils/logger.js';
 import { validateForumPost } from '../validators/forumValidator.js';
 import { moderateContent } from './moderationService.js';
@@ -22,7 +22,7 @@ export const createPost = async (postData) => {
     }
 
     logger.info('Creating forum post');
-    const post = new ForumPost({
+    const post = new ForumModel({
       ...postData,
       status: 'published',
       createdAt: new Date(),
@@ -48,15 +48,15 @@ export const getPosts = async (options = { page: 1, limit: 20 }) => {
   try {
     const { page, limit } = options;
     
-    logger.info('Fetching forum posts', { page, limit });
-    const posts = await ForumPost.find({ status: 'published' })
+    logger.info(`Fetching forum posts, { page: ${page}, limit: ${limit} }`);
+    const posts = await ForumModel.find({ status: 'published' })
       .populate('user', 'name avatar')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .select('-__v');
 
-    const total = await ForumPost.countDocuments({ status: 'published' });
+    const total = await ForumModel.countDocuments({ status: 'published' });
 
     return {
       posts,
@@ -72,4 +72,3 @@ export const getPosts = async (options = { page: 1, limit: 20 }) => {
     throw error;
   }
 };
-
