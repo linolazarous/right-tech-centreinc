@@ -1,5 +1,5 @@
 import Job from '../models/Job.js';
-import User from '../models/User.js';
+import User from '../models/UserModel.js';
 import logger from '../utils/logger.js';
 import { validateUserId } from '../validators/userValidator.js';
 
@@ -53,3 +53,4 @@ export const getJobRecommendations = async (userId, options = {}) => {
     throw error;
   }
 };
+
