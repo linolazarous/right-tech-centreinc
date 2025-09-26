@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/UserModel.js';
+import UserModel from '../models/UserModel.js';
 import { generate2FASecret, verify2FAToken } from '../services/authService.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import logger from '../utils/logger.js';
 
-// ** NEW: Moved from adminController.js **
 export const register = async (req, res) => {
   try {
     const { email, password, firstName, lastName, role = 'student' } = req.body;
@@ -16,7 +15,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -24,7 +23,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const user = new User({
+    const user = new UserModel({
       email,
       password,
       firstName,
@@ -71,7 +70,6 @@ export const register = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -83,7 +81,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await UserModel.findOne({ email }).select('+password');
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
@@ -129,7 +127,6 @@ export const login = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const verify2FALogin = async (req, res) => {
   try {
     const { userId, token } = req.body;
@@ -148,7 +145,7 @@ export const verify2FALogin = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId).select('+twoFASecret');
+    const user = await UserModel.findById(userId).select('+twoFASecret');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -199,21 +196,29 @@ export const verify2FALogin = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const getAuthStatus = async (req, res) => {
   try {
+    // Since req.user comes from the token, we need to fetch fresh user data
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
     res.json({
       success: true,
-      isAdmin: req.user.role === 'admin',
-      isInstructor: req.user.role === 'instructor',
+      isAdmin: user.role === 'admin',
+      isInstructor: user.role === 'instructor',
       user: {
-        id: req.user._id,
-        email: req.user.email,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        role: req.user.role,
-        avatar: req.user.avatar,
-        twoFAEnabled: req.user.twoFAEnabled
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        avatar: user.avatar,
+        twoFAEnabled: user.twoFAEnabled
       }
     });
   } catch (error) {
@@ -225,7 +230,6 @@ export const getAuthStatus = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const enable2FA = async (req, res) => {
   const { userId } = req.body;
   
@@ -237,7 +241,7 @@ export const enable2FA = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await UserModel.findById(userId);
     if (!user) {
       return res.status(404).json({ 
         success: false,
@@ -271,7 +275,6 @@ export const enable2FA = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const verify2FA = async (req, res) => {
   const { userId, token, secret } = req.body;
   
@@ -290,7 +293,7 @@ export const verify2FA = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId).select('+twoFASecret');
+    const user = await UserModel.findById(userId).select('+twoFASecret');
     if (!user) {
       return res.status(404).json({ 
         success: false,
@@ -332,7 +335,6 @@ export const verify2FA = async (req, res) => {
   }
 };
 
-// ** NEW: Moved from adminController.js **
 export const disable2FA = async (req, res) => {
   try {
     const { userId, password } = req.body;
@@ -344,7 +346,7 @@ export const disable2FA = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId).select('+password');
+    const user = await UserModel.findById(userId).select('+password');
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -377,3 +379,12 @@ export const disable2FA = async (req, res) => {
   }
 };
 
+export default {
+  register,
+  login,
+  verify2FALogin,
+  getAuthStatus,
+  enable2FA,
+  verify2FA,
+  disable2FA
+};
