@@ -8,7 +8,7 @@ import {
   verify2FA, 
   disable2FA 
 } from '../controllers/authController.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
