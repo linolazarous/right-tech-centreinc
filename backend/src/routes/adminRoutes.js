@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { getAdminStats } from '../controllers/adminController.js';
 
