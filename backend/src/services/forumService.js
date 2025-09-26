@@ -1,4 +1,4 @@
-import ForumPost from '../models/ForumPost.js';
+import ForumPost from '../models/ForumModel.js';
 import logger from '../utils/logger.js';
 import { validateForumPost } from '../validators/forumValidator.js';
 import { moderateContent } from './moderationService.js';
@@ -72,3 +72,4 @@ export const getPosts = async (options = { page: 1, limit: 20 }) => {
     throw error;
   }
 };
+
