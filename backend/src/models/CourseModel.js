@@ -103,6 +103,7 @@ const courseSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(v) {
+        if (!v) return true; // Allow null/empty
         return validator.isURL(v, {
           protocols: ['http', 'https'],
           require_protocol: true,
@@ -183,7 +184,7 @@ const courseSchema = new mongoose.Schema({
     default: Date.now 
   }
 }, {
-  timestamps: true, // Auto-manage createdAt and updatedAt
+  timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
@@ -204,9 +205,15 @@ courseSchema.pre('save', function(next) {
     this.isPublished = true;
   }
   
-  // Calculate total duration from lessons
+  // Calculate total duration from lessons if lessons are modified
   if (this.isModified('lessons')) {
-    this.duration = this.lessons.reduce((sum, lesson) => sum + (lesson.duration || 0), 0) / 60; // Convert minutes to hours
+    const totalMinutes = this.lessons.reduce((sum, lesson) => sum + (lesson.duration || 0), 0);
+    this.duration = Math.round((totalMinutes / 60) * 100) / 100; // Convert minutes to hours with 2 decimal places
+  }
+  
+  // Ensure price consistency
+  if (this.isModified('price.amount')) {
+    this.price.isFree = this.price.amount === 0;
   }
   
   this.updatedAt = new Date();
@@ -215,17 +222,21 @@ courseSchema.pre('save', function(next) {
 
 // Virtual properties
 courseSchema.virtual('enrollmentCount').get(function() {
-  return this.enrolledStudents.length;
+  return this.enrolledStudents ? this.enrolledStudents.length : 0;
 });
 
 courseSchema.virtual('averageRating').get(function() {
   if (!this.ratings || this.ratings.length === 0) return 0;
   const sum = this.ratings.reduce((acc, rating) => acc + rating.rating, 0);
-  return sum / this.ratings.length;
+  return Math.round((sum / this.ratings.length) * 10) / 10; // Round to 1 decimal place
 });
 
 courseSchema.virtual('totalLessons').get(function() {
-  return this.lessons.length;
+  return this.lessons ? this.lessons.length : 0;
+});
+
+courseSchema.virtual('totalStudents').get(function() {
+  return this.enrolledStudents ? this.enrolledStudents.length : 0;
 });
 
 // Static methods
@@ -239,7 +250,7 @@ courseSchema.statics.getPublishedCourses = function(limit = 10) {
 courseSchema.statics.getByInstructor = function(instructorId) {
   return this.find({ instructor: instructorId })
     .sort({ createdAt: -1 })
-    .populate('instructor', 'name');
+    .populate('instructor', 'name avatar');
 };
 
 courseSchema.statics.getByCategory = function(category, limit = 10) {
@@ -248,7 +259,18 @@ courseSchema.statics.getByCategory = function(category, limit = 10) {
     status: 'published' 
   })
   .sort({ publishedAt: -1 })
-  .limit(limit);
+  .limit(limit)
+  .populate('instructor', 'name avatar');
+};
+
+courseSchema.statics.getFeaturedCourses = function(limit = 5) {
+  return this.find({ 
+    isFeatured: true, 
+    status: 'published' 
+  })
+  .sort({ publishedAt: -1 })
+  .limit(limit)
+  .populate('instructor', 'name avatar');
 };
 
 // Instance methods
@@ -259,21 +281,72 @@ courseSchema.methods.enrollStudent = function(userId) {
   return this.save();
 };
 
+courseSchema.methods.unenrollStudent = function(userId) {
+  this.enrolledStudents = this.enrolledStudents.filter(id => !id.equals(userId));
+  return this.save();
+};
+
 courseSchema.methods.addRating = function(userId, rating, review) {
   // Check if user already rated
   const existingRatingIndex = this.ratings.findIndex(r => r.userId.equals(userId));
   
   if (existingRatingIndex >= 0) {
     // Update existing rating
-    this.ratings[existingRatingIndex] = { userId, rating, review, createdAt: new Date() };
+    this.ratings[existingRatingIndex] = { 
+      userId, 
+      rating, 
+      review, 
+      createdAt: new Date() 
+    };
   } else {
     // Add new rating
-    this.ratings.push({ userId, rating, review, createdAt: new Date() });
+    this.ratings.push({ 
+      userId, 
+      rating, 
+      review, 
+      createdAt: new Date() 
+    });
   }
   
   return this.save();
 };
 
-const Course = mongoose.model('Course', courseSchema);
+courseSchema.methods.removeRating = function(userId) {
+  this.ratings = this.ratings.filter(rating => !rating.userId.equals(userId));
+  return this.save();
+};
 
-export default Course;
+courseSchema.methods.publish = function() {
+  this.status = 'published';
+  this.publishedAt = new Date();
+  this.isPublished = true;
+  return this.save();
+};
+
+courseSchema.methods.unpublish = function() {
+  this.status = 'draft';
+  this.isPublished = false;
+  return this.save();
+};
+
+courseSchema.methods.addLesson = function(lessonData) {
+  this.lessons.push(lessonData);
+  return this.save();
+};
+
+courseSchema.methods.updateLesson = function(lessonId, lessonData) {
+  const lessonIndex = this.lessons.findIndex(lesson => lesson._id.equals(lessonId));
+  if (lessonIndex !== -1) {
+    this.lessons[lessonIndex] = { ...this.lessons[lessonIndex].toObject(), ...lessonData };
+  }
+  return this.save();
+};
+
+courseSchema.methods.removeLesson = function(lessonId) {
+  this.lessons = this.lessons.filter(lesson => !lesson._id.equals(lessonId));
+  return this.save();
+};
+
+const CourseModel = mongoose.model('Course', courseSchema);
+
+export default CourseModel;
