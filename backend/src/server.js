@@ -12,7 +12,6 @@ import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
 const app = express();
-// Fix for rate limit warning - CORRECT PLACEMENT:
 app.set('trust proxy', 1); // Trust first proxy
 
 const PORT = process.env.PORT || 8080;
@@ -42,7 +41,8 @@ app.use(helmet({
 
 const allowedOrigins = [
   'https://righttechcentre.vercel.app',
-  'http://localhost:5000'
+  'http://localhost:5000',
+  'http://localhost:3000'
 ];
 
 if (process.env.ALLOWED_ORIGINS) {
@@ -126,7 +126,15 @@ app.get('/', (req, res) => {
     message: 'Right Tech Centre API Server',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    availableEndpoints: [
+      '/api/auth/*',
+      '/api/users/*',
+      '/api/courses/*',
+      '/api/admin/*',
+      '/api/payment/*',
+      '/api/analytics/*'
+    ]
   });
 });
 
@@ -138,36 +146,76 @@ app.get('/api/test', (req, res) => {
 });
 
 // =================================================================
-//                  ACTUAL AUTHENTICATION SYSTEM
+//                  DYNAMIC ROUTE LOADING SYSTEM
 // =================================================================
-console.log('=== LOADING ACTUAL AUTH SYSTEM ===');
+console.log('=== LOADING ALL ROUTES ===');
 
-// Import the actual authController functions directly
-let authController;
-try {
-  authController = await import('./controllers/authController.js');
-  console.log('✅ authController loaded successfully');
-} catch (error) {
-  console.log('❌ Failed to load authController:', error);
-  process.exit(1);
-}
+// Route configuration map
+const routeConfig = [
+  { path: '/api/auth', file: './routes/authRoutes.js', name: 'Authentication' },
+  { path: '/api/users', file: './routes/usersRoutes.js', name: 'Users' },
+  { path: '/api/admin', file: './routes/adminRoutes.js', name: 'Admin' },
+  { path: '/api/courses', file: './routes/courseRoutes.js', name: 'Courses' },
+  { path: '/api/payments', file: './routes/paymentRoutes.js', name: 'Payments' },
+  { path: '/api/analytics', file: './routes/analyticsRoutes.js', name: 'Analytics' },
+  { path: '/api/forum', file: './routes/forumRoutes.js', name: 'Forum' },
+  { path: '/api/certificates', file: './routes/certificateRoutes.js', name: 'Certificates' },
+  { path: '/api/jobs', file: './routes/jobRoutes.js', name: 'Jobs' },
+  { path: '/api/career', file: './routes/careerPathRoutes.js', name: 'Career Path' },
+  { path: '/api/assessments', file: './routes/skillsAssessmentRoutes.js', name: 'Assessments' },
+  { path: '/api/vr', file: './routes/vrLearningRoutes.js', name: 'VR Learning' },
+  { path: '/api/gamification', file: './routes/gamificationRoutes.js', name: 'Gamification' },
+  { path: '/api/subscriptions', file: './routes/subscriptionRoutes.js', name: 'Subscriptions' },
+  { path: '/api/notifications', file: './routes/pushNotificationRoutes.js', name: 'Notifications' }
+];
 
-// Create auth routes using the actual controller functions
-const authRouter = express.Router();
+// Load and mount all routes
+const loadRoutes = async () => {
+  for (const route of routeConfig) {
+    try {
+      const routeModule = await import(route.file);
+      if (routeModule.default) {
+        app.use(route.path, routeModule.default);
+        console.log(`✅ ${route.name} routes mounted at ${route.path}`);
+      } else {
+        console.log(`⚠️  ${route.name} routes file exists but no default export`);
+      }
+    } catch (error) {
+      if (error.code === 'MODULE_NOT_FOUND') {
+        console.log(`❌ ${route.name} routes file not found: ${route.file}`);
+      } else {
+        console.log(`❌ Error loading ${route.name} routes:`, error.message);
+      }
+    }
+  }
+};
 
-// Public routes
-authRouter.post('/register', authController.register);
-authRouter.post('/login', authController.login);
-authRouter.post('/login/verify-2fa', authController.verify2FALogin);
-
-// Add a test route
-authRouter.get('/test', (req, res) => {
-  res.json({ success: true, message: 'Actual auth system is working!' });
-});
-
-// Mount the auth routes
-app.use('/api/auth', authRouter);
-console.log('✅ Actual auth system mounted at /api/auth');
+// Load core routes that should always work
+const loadCoreRoutes = async () => {
+  console.log('=== LOADING CORE ROUTES ===');
+  
+  // Auth routes (core functionality)
+  try {
+    const authController = await import('./controllers/authController.js');
+    const authRouter = express.Router();
+    
+    // Public routes
+    authRouter.post('/register', authController.register);
+    authRouter.post('/login', authController.login);
+    authRouter.post('/login/verify-2fa', authController.verify2FALogin);
+    authRouter.get('/test', (req, res) => {
+      res.json({ success: true, message: 'Auth system working!' });
+    });
+    
+    app.use('/api/auth', authRouter);
+    console.log('✅ Core auth routes mounted at /api/auth');
+  } catch (error) {
+    console.log('❌ Critical: Failed to load auth controller:', error.message);
+  }
+  
+  // Load all other routes
+  await loadRoutes();
+};
 
 // =================================================================
 //                  Error Handling
@@ -176,14 +224,14 @@ app.use('/api/*', (req, res) => {
   res.status(404).json({ 
     success: false, 
     message: 'API endpoint not found',
-    path: req.originalUrl
+    path: req.originalUrl,
+    suggestion: 'Check the / endpoint for available API routes'
   });
 });
 
 app.use((error, req, res, next) => {
   logger.error('Unhandled error:', error);
   
-  // Mongoose validation error
   if (error.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
@@ -192,11 +240,10 @@ app.use((error, req, res, next) => {
     });
   }
   
-  // MongoDB duplicate key error
   if (error.code === 11000) {
     return res.status(409).json({
       success: false,
-      message: 'User already exists with this email'
+      message: 'Duplicate entry found'
     });
   }
   
@@ -219,20 +266,20 @@ app.use((error, req, res, next) => {
 const startServer = async () => {
   try {
     await initializeDatabase();
+    await loadCoreRoutes();
     
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-      console.log('📍 Actual authentication system is LIVE!');
-      console.log('📍 Available endpoints:');
-      console.log('   - POST /api/auth/register');
-      console.log('   - POST /api/auth/login');
-      console.log('   - POST /api/auth/login/verify-2fa');
-      console.log('   - GET  /api/auth/test');
+      console.log('📍 All routes loaded successfully!');
+      console.log('📍 Available API endpoints:');
+      routeConfig.forEach(route => {
+        console.log(`   - ${route.path}/*`);
+      });
     });
 
     const gracefulShutdown = async (signal) => {
-      console.log(`Received ${signal}, shutting down...`);
+      console.log(`Received ${signal}, shutting down gracefully...`);
       server.close(async () => {
         await mongoose.connection.close();
         console.log('Server stopped');
@@ -250,5 +297,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-
