@@ -1,5 +1,5 @@
-import Job from '../models/JobModel.js';
-import User from '../models/UserModel.js';
+import JobModel from '../models/JobModel.js';
+import UserModel from '../models/UserModel.js';
 import logger from '../utils/logger.js';
 import { validateUserId } from '../validators/userValidator.js';
 
@@ -18,7 +18,7 @@ export const getJobRecommendations = async (userId, options = {}) => {
 
     logger.info(`Fetching job recommendations for user ${userId}`);
     
-    const user = await User.findById(userId).select('skills');
+    const user = await UserModel.findById(userId).select('skills');
     if (!user) {
       throw new Error('User not found');
     }
@@ -33,7 +33,7 @@ export const getJobRecommendations = async (userId, options = {}) => {
     if (location) query.location = location;
     if (remote) query.isRemote = true;
 
-    const jobs = await Job.find(query)
+    const jobs = await JobModel.find(query)
       .sort({ postedDate: -1 })
       .limit(parseInt(limit))
       .select('-__v');
@@ -53,5 +53,3 @@ export const getJobRecommendations = async (userId, options = {}) => {
     throw error;
   }
 };
-
-
