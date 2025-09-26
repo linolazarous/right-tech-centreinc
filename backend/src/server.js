@@ -11,6 +11,14 @@ import rateLimit from 'express-rate-limit';
 import { connectDB, checkDBHealth } from './db.js';
 import logger from './utils/logger.js';
 
+// === CRITICAL FIX: IMPORT YOUR ROUTE FILES ===
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+// ===========================================
+
 const app = express();
 app.set('trust proxy', 1);
 
@@ -30,9 +38,8 @@ const initializeDatabase = async () => {
   }
 };
 
-// =================================================================
-//                  Security & Performance Middleware
-// =================================================================
+// ... (Rest of Middleware remains the same) ...
+
 app.use(helmet({
   contentSecurityPolicy: isProduction ? undefined : false,
   crossOriginEmbedderPolicy: false,
@@ -124,16 +131,12 @@ app.get('/', (req, res) => {
       health: 'GET /health',
       apiTest: 'GET /api/test',
       
-      // Auth endpoints
-      authRegister: 'POST /api/auth/register',
-      authLogin: 'POST /api/auth/login',
-      authTest: 'GET /api/auth/test',
-      
-      // Core endpoints
-      courses: 'GET /api/courses',
-      users: 'GET /api/users', 
-      admin: 'GET /api/admin',
-      payments: 'GET /api/payments/test'
+      // Actual application routes
+      auth: '/api/auth/*',
+      users: '/api/users/*', 
+      courses: '/api/courses/*',
+      admin: '/api/admin/*',
+      payments: '/api/payments/*'
     }
   });
 });
@@ -148,113 +151,23 @@ app.get('/api/test', (req, res) => {
 });
 
 // =================================================================
-//                  DIRECT ROUTE DEFINITIONS (NO FILE IMPORTS)
+//                  MOUNT ACTUAL APPLICATION ROUTES (THE FIX!)
 // =================================================================
+console.log('=== MOUNTING APPLICATION ROUTES ===');
 
-// AUTH ROUTES - Guaranteed to work
-app.post('/api/auth/register', async (req, res) => {
-  try {
-    // Simple registration logic
-    const { email, password, firstName, lastName } = req.body;
-    
-    if (!email || !password || !firstName || !lastName) {
-      return res.status(400).json({
-        success: false,
-        message: 'All fields are required'
-      });
-    }
-    
-    res.json({
-      success: true,
-      message: 'User registered successfully (DEMO)',
-      user: { email, firstName, lastName, id: 'demo-' + Date.now() }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Registration failed'
-    });
-  }
-});
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
-app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'Email and password required'
-    });
-  }
-  
-  res.json({
-    success: true,
-    message: 'Login successful (DEMO)',
-    token: 'demo-token-' + Date.now(),
-    user: { email, firstName: 'Demo', lastName: 'User' }
-  });
-});
+console.log('=== ALL ROUTES MOUNTED SUCCESSFULLY ===');
 
-app.get('/api/auth/test', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Auth endpoint is definitely working!' 
-  });
-});
-
-// COURSES ROUTES - Guaranteed to work
-app.get('/api/courses', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Courses endpoint working!',
-    courses: [
-      { id: 1, title: 'Demo Course 1', description: 'Sample course' },
-      { id: 2, title: 'Demo Course 2', description: 'Sample course' }
-    ]
-  });
-});
-
-// USERS ROUTES - Guaranteed to work  
-app.get('/api/users', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Users endpoint working!',
-    users: [
-      { id: 1, name: 'Demo User 1', email: 'user1@demo.com' },
-      { id: 2, name: 'Demo User 2', email: 'user2@demo.com' }
-    ]
-  });
-});
-
-// ADMIN ROUTES - Guaranteed to work
-app.get('/api/admin', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Admin endpoint working!',
-    stats: {
-      totalUsers: 150,
-      totalCourses: 25,
-      revenue: 5000
-    }
-  });
-});
-
-// PAYMENTS ROUTES - Guaranteed to work
-app.get('/api/payments/test', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Payments endpoint working!'
-  });
-});
-
-// =================================================================
-//                  TRY TO LOAD ACTUAL CONTROLLERS LATER
-// =================================================================
-console.log('=== BASIC ROUTES ARE GUARANTEED TO WORK ===');
 
 // =================================================================
 //                  Error Handling
 // =================================================================
+// 404 handler for any unhandled endpoint
 app.use('*', (req, res) => {
   res.status(404).json({ 
     success: false, 
@@ -282,16 +195,7 @@ const startServer = async () => {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV}`);
-      console.log('📍 GUARANTEED WORKING ENDPOINTS:');
-      console.log('   ✅ GET  /health');
-      console.log('   ✅ GET  /api/test');
-      console.log('   ✅ POST /api/auth/register');
-      console.log('   ✅ POST /api/auth/login');
-      console.log('   ✅ GET  /api/auth/test');
-      console.log('   ✅ GET  /api/courses');
-      console.log('   ✅ GET  /api/users');
-      console.log('   ✅ GET  /api/admin');
-      console.log('   ✅ GET  /api/payments/test');
+      console.log('📍 ALL APPLICATION ROUTES ARE NOW ACTIVE.');
     });
 
     // Graceful shutdown
