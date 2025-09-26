@@ -1,4 +1,4 @@
-// backend/src/models/User.js
+// backend/src/models/UserModel.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs'; // Changed from 'bcrypt' to 'bcryptjs'
 
