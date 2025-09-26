@@ -1,4 +1,4 @@
-import ForumPost from '../models/ForumPost.js';
+import ForumPost from '../models/ForumModel.js';
 import logger from '../utils/logger.js';
 import { isValidObjectId } from '../utils/helpers.js';
 import { validateForumPost } from '../validators/forumValidator.js';
@@ -46,3 +46,4 @@ export const createPost = async (req, res) => {
 export default {
     createPost
 };
+
