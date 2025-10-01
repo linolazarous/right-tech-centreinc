@@ -6,7 +6,7 @@ export const generate2FASecret = (email) => {
     name: `Right Tech Centre (${email})`,
     issuer: 'Right Tech Centre'
   });
-
+  
   return secret;
 };
 
@@ -15,7 +15,7 @@ export const verify2FAToken = (secret, token) => {
     secret: secret,
     encoding: 'base32',
     token: token,
-    window: 1 // Allow 30 seconds before/after for time sync issues
+    window: 2 // Allow 2 time steps before/after for clock skew
   });
 };
 
