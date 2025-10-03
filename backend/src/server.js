@@ -6,7 +6,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Load Modules with .js Extension (Crucial for ES Module Resolution)
-import { connectDB } from './config/db.js';
+// FIX 1: Corrected path from ./config/db.js to ./db.js
+import { connectDB } from './db.js'; 
 import { setupSecurityMiddleware } from './middleware/security.js';
 import globalErrorHandler from './middleware/errorHandler.js';
 import apiRoutes from './routes/index.js';
@@ -65,8 +66,10 @@ app.use((req, res) => {
 // --- Server Start ---
 // Note: Digital Ocean requires listening on a specific port, often PORT || 8080
 const PORT = process.env.PORT || 8080; 
-app.listen(PORT, () => {
-  logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+const HOST = '0.0.0.0'; // FIX 2: Bind to 0.0.0.0 for container compatibility
+
+app.listen(PORT, HOST, () => { // Changed app.listen signature
+  logger.info(`Server running in ${process.env.NODE_ENV} mode on ${HOST}:${PORT}`);
 });
 
 export { app }; // Export for testing
