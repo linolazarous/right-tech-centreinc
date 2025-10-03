@@ -90,10 +90,9 @@
   },
   "engines": {
     "node": "18.x",
-    "npm": ">=8.0.0"
+    "npm": "11.6.1"
   },
   "optionalDependencies": {
     "canvas": "^2.11.2"
   }
-}
-
+  }
