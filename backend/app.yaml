@@ -1,27 +1,3 @@
-name: righttechcentre-backend
-region: nyc3 
-services:
-  - name: api
-    source_dir: backend
-    github:
-      repo: linolazarous/right-tech-centreinc
-      branch: master
-      deploy_on_push: true
-    run_command: npm start
-    build_command: npm install --legacy-peer-deps
-    environment_slug: node-js
-    instance_count: 1
-    instance_size_slug: basic-xxs
-    routes:
-      - path: /
-    http_port: 8080
-    environment_variables:
-      - key: NPM_CONFIG_LEGACY_PEER_DEPS
-        value: "true"
-    envs:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "8080"
-      - key: CLIENT_URL
-        value: https://righttechcentre.vercel.app
+[Immersive content redacted for brevity.]
+
+
