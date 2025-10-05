@@ -1,7 +1,11 @@
 import express from 'express';
 const router = express.Router();
 
-// Get all courses
+/**
+ * @route   GET /api/courses
+ * @desc    Get all published courses
+ * @access  Public
+ */
 router.get('/', async (req, res) => {
   try {
     const CourseModel = (await import('../models/CourseModel.js')).default;
@@ -9,20 +13,18 @@ router.get('/', async (req, res) => {
       .populate('instructor', 'firstName lastName email')
       .sort({ createdAt: -1 });
 
-    res.json({
-      success: true,
-      courses,
-      count: courses.length
-    });
+    res.json({ success: true, count: courses.length, courses });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch courses'
-    });
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch courses' });
   }
 });
 
-// Get course by ID
+/**
+ * @route   GET /api/courses/:courseId
+ * @desc    Get detailed course by ID
+ * @access  Public
+ */
 router.get('/:courseId', async (req, res) => {
   try {
     const CourseModel = (await import('../models/CourseModel.js')).default;
@@ -30,47 +32,38 @@ router.get('/:courseId', async (req, res) => {
       .populate('instructor', 'firstName lastName email bio');
 
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: 'Course not found'
-      });
+      return res.status(404).json({ success: false, message: 'Course not found' });
     }
 
-    res.json({
-      success: true,
-      course
-    });
+    res.json({ success: true, course });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch course'
-    });
+    console.error('Error fetching course:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch course' });
   }
 });
 
-// Create new course (protected - requires auth)
+/**
+ * @route   POST /api/courses
+ * @desc    Create a new course
+ * @access  Protected (Instructor/Admin)
+ */
 router.post('/', async (req, res) => {
   try {
-    // This would require authentication in a real scenario
     const CourseModel = (await import('../models/CourseModel.js')).default;
-    
     const course = new CourseModel({
       ...req.body,
-      instructor: req.body.instructor || '65a1b2c3d4e5f67890123456' // Default instructor ID
+      instructor: req.body.instructor || '65a1b2c3d4e5f67890123456'
     });
 
     await course.save();
-
     res.status(201).json({
       success: true,
       course,
       message: 'Course created successfully'
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create course'
-    });
+    console.error('Error creating course:', error);
+    res.status(500).json({ success: false, message: 'Failed to create course' });
   }
 });
 
