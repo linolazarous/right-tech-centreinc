@@ -23,8 +23,12 @@ fi
 
 # Configuration with your details
 APP_NAME="righttechcentre-backend"
-REGION="ams3"
+REGION="nyc3"  # Changed to match your current region
 GITHUB_REPO="linolazarous/right-tech-centreinc"
+
+# Correct URLs
+BACKEND_URL="https://righttechcentre-kn5oq.ondigitalocean.app"
+FRONTEND_URL="https://righttechcentre-iyysq.ondigitalocean.app"  # Fixed typo
 
 # Create app.yaml configuration
 cat > app.yaml << EOF
@@ -34,7 +38,7 @@ services:
 - name: api
   github:
     repo: $GITHUB_REPO
-    branch: master 
+    branch: main  # Changed from master to main
   source_dir: /
   run_command: npm start
   build_command: npm install
@@ -49,12 +53,14 @@ services:
   - key: PORT
     value: "8080"
   - key: FRONTEND_URL
-    value: https://righttechcentre-iyysq.ondigitalocean.app
+    value: $FRONTEND_URL
   - key: CORS_ORIGIN
-    value: https://righttechcentre-iyysq.ondigitalocean.app
+    value: $FRONTEND_URL
 EOF
 
 echo "📋 Created app.yaml configuration"
+echo "🔗 Backend URL: $BACKEND_URL"
+echo "🔗 Frontend URL: $FRONTEND_URL"
 
 # Deploy to DigitalOcean
 echo "🔄 Deploying to DigitalOcean App Platform..."
@@ -62,7 +68,7 @@ doctl apps create --spec app.yaml
 
 echo "✅ Deployment initiated! Check your DigitalOcean dashboard for status."
 echo "📝 Note: It may take a few minutes for the deployment to complete."
-echo "🌐 Your backend will be available at: https://righttechcentre-backend.ondigitalocean.app"
+echo "🌐 Your backend will be available at: $BACKEND_URL"
 
 # Clean up
 rm app.yaml
