@@ -1,68 +1,51 @@
-// routes/mobile.js
 import express from 'express';
-import { login as webLogin } from '../controllers/authController.js';
-import { getCourse } from '../controllers/courseController.js';
+import * as authController from '../controllers/authController.js';
+import * as courseController from '../controllers/courseController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { validateMobileLogin } from '../middleware/validationMiddleware.js';
 import rateLimit from '../middleware/rateLimitMiddleware.js';
 
 const router = express.Router();
 
-// Mobile-optimized login
+// Mobile login (delegates to web logic)
 router.post(
   '/auth/login',
   validateMobileLogin,
   rateLimit('20req/hour'),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
-      const result = await webLogin(req.body);
-      res.json({
-        ...result,
-        mobileData: {
-          sessionLifetime: 2592000, // 30 days
-          refreshToken: true
-        }
-      });
+      req.isMobile = true; // Optional flag for controller logic
+      await authController.login(req, res);
     } catch (error) {
-      const statusCode = error.message.includes('invalid') ? 401 : 500;
-      res.status(statusCode).json({
-        success: false,
-        error: 'Login failed',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
+      next(error);
     }
   }
 );
 
-// Mobile-optimized content delivery
+// Mobile-friendly course content
 router.get(
   '/content/:courseId',
   authMiddleware,
   rateLimit('100req/hour'),
   async (req, res) => {
     try {
-      const course = await getCourse(req.params.courseId);
-      if (!course) {
-        return res.status(404).json({
-          success: false,
-          error: 'Course not found'
-        });
-      }
-      
+      const course = await courseController.getCourse(req, res);
+      if (!course || !course.videos) return;
+
+      // Adjust video URLs for mobile
+      course.videos = course.videos.map(v => ({
+        ...v,
+        url: `${v.url}?mobile=1&quality=medium`
+      }));
+
       res.json({
         status: 'success',
-        data: {
-          ...course,
-          videos: course.videos.map(v => ({
-            ...v,
-            url: `${v.url}?mobile=1&quality=medium`
-          }))
-        }
+        data: course
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        error: 'Failed to fetch course',
+        error: 'Failed to fetch course content',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
