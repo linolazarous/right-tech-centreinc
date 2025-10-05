@@ -1,17 +1,17 @@
+// src/routes/adminRoutes.js
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { requireAdmin } from '../middleware/admin.js';
 import { getAdminStats } from '../controllers/adminController.js';
 
 const router = express.Router();
 
-// All admin routes require authentication and admin role
-router.use(authenticateToken, requireAdmin);
-
-// Admin dashboard statistics
-router.get('/stats', getAdminStats);
-
-// Admin login endpoint
+/**
+ * @route   POST /api/admin/login
+ * @desc    Authenticate admin and issue JWT token
+ * @access  Public
+ */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -19,29 +19,29 @@ router.post('/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Email and password are required'
+        message: 'Email and password are required.'
       });
     }
 
-    const UserModel = (await import('../models/UserModel.js')).default;
+    const { default: UserModel } = await import('../models/UserModel.js');
     const user = await UserModel.findOne({ email, role: 'admin' }).select('+password');
-    
+
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid admin credentials'
+        message: 'Invalid admin credentials.'
       });
     }
 
-    const jwt = (await import('jsonwebtoken')).default;
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    res.json({
+    return res.status(200).json({
       success: true,
+      message: 'Admin login successful.',
       token,
       admin: {
         id: user._id,
@@ -52,75 +52,103 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    console.error('Admin login error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Admin login failed'
+      message: 'Admin login failed due to server error.'
     });
   }
 });
 
-// User management
+// Protect all routes below this line
+router.use(authenticateToken, requireAdmin);
+
+/**
+ * @route   GET /api/admin/stats
+ * @desc    Retrieve admin dashboard statistics
+ * @access  Private (Admin only)
+ */
+router.get('/stats', getAdminStats);
+
+/**
+ * @route   GET /api/admin/users
+ * @desc    Retrieve all registered users
+ * @access  Private (Admin only)
+ */
 router.get('/users', async (req, res) => {
   try {
-    const UserModel = (await import('../models/UserModel.js')).default;
+    const { default: UserModel } = await import('../models/UserModel.js');
     const users = await UserModel.find().select('-password -twoFASecret');
-    
-    res.json({ 
-      success: true, 
+
+    return res.status(200).json({
+      success: true,
       users,
       count: users.length
     });
   } catch (error) {
-    res.status(500).json({
+    console.error('Fetch users error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Failed to fetch users'
+      message: 'Failed to fetch users.'
     });
   }
 });
 
-// Course management
+/**
+ * @route   GET /api/admin/courses
+ * @desc    Retrieve all courses with instructor info
+ * @access  Private (Admin only)
+ */
 router.get('/courses', async (req, res) => {
   try {
-    const CourseModel = (await import('../models/CourseModel.js')).default;
+    const { default: CourseModel } = await import('../models/CourseModel.js');
     const courses = await CourseModel.find().populate('instructor', 'firstName lastName email');
-    
-    res.json({ 
-      success: true, 
+
+    return res.status(200).json({
+      success: true,
       courses,
       count: courses.length
     });
   } catch (error) {
-    res.status(500).json({
+    console.error('Fetch courses error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Failed to fetch courses'
+      message: 'Failed to fetch courses.'
     });
   }
 });
 
-// Analytics endpoint
+/**
+ * @route   GET /api/admin/analytics
+ * @desc    Retrieve system-wide analytics
+ * @access  Private (Admin only)
+ */
 router.get('/analytics', async (req, res) => {
   try {
-    const UserModel = (await import('../models/UserModel.js')).default;
-    const CourseModel = (await import('../models/CourseModel.js')).default;
-    
-    const totalUsers = await UserModel.countDocuments();
-    const totalCourses = await CourseModel.countDocuments();
-    const activeUsers = await UserModel.countDocuments({ status: 'active' });
-    
-    res.json({
+    const { default: UserModel } = await import('../models/UserModel.js');
+    const { default: CourseModel } = await import('../models/CourseModel.js');
+
+    const [totalUsers, totalCourses, activeUsers] = await Promise.all([
+      UserModel.countDocuments(),
+      CourseModel.countDocuments(),
+      UserModel.countDocuments({ status: 'active' })
+    ]);
+
+    return res.status(200).json({
       success: true,
       analytics: {
         totalUsers,
         totalCourses,
         activeUsers,
-        liveClasses: 0, // You can implement this later
-        revenue: 0 // You can implement this later
+        liveClasses: 0,
+        revenue: 0
       }
     });
   } catch (error) {
-    res.status(500).json({
+    console.error('Fetch analytics error:', error);
+    return res.status(500).json({
       success: false,
-      message: 'Failed to fetch analytics'
+      message: 'Failed to fetch analytics.'
     });
   }
 });
