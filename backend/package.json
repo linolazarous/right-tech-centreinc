@@ -1,32 +1,39 @@
 {
   "name": "backend",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "type": "module",
-  "description": "Backend API for Right Tech Centre - Comprehensive E-Learning Platform",
+  "description": "Right Tech Centre Backend API – AI-Powered E-Learning Platform with Blockchain, Payments, and VR Capabilities, optimized for DigitalOcean",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "build": "npm install --legacy-peer-deps",
+    "start": "NODE_ENV=production node src/server.js",
+    "dev": "NODE_ENV=development nodemon src/server.js",
+    "build": "npm ci --legacy-peer-deps",
+    "postinstall": "npm run build",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "clean": "rm -rf node_modules package-lock.json",
     "audit:fix": "npm audit fix --force",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles"
   },
   "keywords": [
     "api",
     "backend",
     "express",
     "mongodb",
-    "e-learning",
+    "digitalocean",
+    "ai",
     "blockchain",
     "vr",
     "payments",
-    "zoom"
+    "zoom",
+    "e-learning",
+    "stripe",
+    "security"
   ],
   "author": "Right Tech Centre",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/storage": "^7.2.0",
+    "@truffle/hdwallet-provider": "^2.1.10",
     "aframe": "^1.4.0",
     "aws-sdk": "^2.1467.0",
     "axios": "^1.5.0",
@@ -78,9 +85,7 @@
     "validator": "^13.11.0",
     "web3": "^4.1.1",
     "winston": "^3.11.0",
-    "xml2js": "^0.6.2",
-    "@google-cloud/storage": "^7.2.0",
-    "@truffle/hdwallet-provider": "^2.1.10"
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
@@ -88,11 +93,18 @@
     "eslint": "^8.47.0",
     "prettier": "^3.0.2"
   },
-  "engines": {
-    "node": "18.x",
-    "npm": ">=8.0.0"
-  },
   "optionalDependencies": {
     "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "verbose": true,
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov"]
   }
 }
