@@ -23,7 +23,7 @@ fi
 
 # Configuration with your details
 APP_NAME="righttechcentre-backend"
-REGION="nyc3"  # Changed to match your current region
+REGION="nyc1"  # Changed to match your current region
 GITHUB_REPO="linolazarous/right-tech-centreinc"
 
 # Correct URLs
