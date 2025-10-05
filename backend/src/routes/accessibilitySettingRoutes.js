@@ -1,11 +1,17 @@
+// src/routes/accessibilitySettingRoutes.js
 import express from 'express';
-const router = express.Router();
 import AccessibilitySettingController from '../controllers/accessibilitySettingController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { validateUserIdParam } from '../middleware/validationMiddleware.js';
 import rateLimit from '../middleware/rateLimitMiddleware.js';
 
-// Get accessibility settings for a user
+const router = express.Router();
+
+/**
+ * @route   GET /api/accessibility/:userId
+ * @desc    Retrieve accessibility settings for a specific user
+ * @access  Private (Authenticated users only)
+ */
 router.get(
   '/:userId',
   authMiddleware,
@@ -14,7 +20,11 @@ router.get(
   AccessibilitySettingController.getSettings
 );
 
-// Update accessibility settings for a user
+/**
+ * @route   PUT /api/accessibility/:userId
+ * @desc    Update accessibility settings for a specific user
+ * @access  Private (Authenticated users only)
+ */
 router.put(
   '/:userId',
   authMiddleware,
