@@ -1,5 +1,5 @@
 name: righttechcentre-backend
-region: nyc3 
+region: nyc1
 services:
   - name: api
     source_dir: backend
