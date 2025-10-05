@@ -1,70 +1,44 @@
+// src/controllers/affiliationController.js
 import AffiliationService from '../services/affiliationService.js';
-import logger from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
 import { validateAffiliationData } from '../validators/affiliationValidator.js';
 
 class AffiliationController {
-  /**
-   * Get all affiliations
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   static async getAffiliations(req, res) {
     try {
-      const { page = 1, limit = 10 } = req.query;
-      
-      // Validate pagination parameters
-      if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
-        return res.status(400).json({ message: 'Invalid pagination parameters' });
-      }
+      const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+      const limit = Math.max(parseInt(req.query.limit || '10', 10), 1);
 
-      const options = {
-        page: parseInt(page),
-        limit: parseInt(limit)
-      };
+      const { data, total } = await AffiliationService.getAffiliations({ page, limit });
+      logger.info(`Retrieved affiliations (page=${page}, limit=${limit})`);
 
-      const affiliations = await AffiliationService.getAffiliations(options);
-      
-      logger.info(`Retrieved ${affiliations.length} affiliations`);
-      res.status(200).json({
-        data: affiliations,
-        page: options.page,
-        limit: options.limit
+      return res.status(200).json({
+        success: true,
+        data,
+        meta: { page, limit, total }
       });
-    } catch (error) {
-      logger.error(`Error getting affiliations: ${error.message}`, { stack: error.stack });
-      res.status(500).json({ 
-        error: 'Internal server error',
-        message: error.message 
-      });
+    } catch (err) {
+      logger.error('Error getting affiliations', { message: err.message, stack: err.stack });
+      return res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
 
-  /**
-   * Add a new affiliation
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
   static async addAffiliation(req, res) {
     try {
       const affiliationData = req.body;
-      
-      // Validate input data
-      const validationError = validateAffiliationData(affiliationData);
-      if (validationError) {
-        logger.warn(`Validation error: ${validationError}`);
-        return res.status(400).json({ message: validationError });
+      const error = validateAffiliationData(affiliationData);
+      if (error) {
+        logger.warn('Affiliation validation failed', { error });
+        return res.status(400).json({ success: false, message: error });
       }
 
       const newAffiliation = await AffiliationService.addAffiliation(affiliationData);
-      
-      logger.info(`New affiliation added with ID: ${newAffiliation._id}`);
-      res.status(201).json(newAffiliation);
-    } catch (error) {
-      logger.error(`Error adding affiliation: ${error.message}`, { stack: error.stack });
-      res.status(500).json({ 
-        error: 'Internal server error',
-        message: error.message 
-      });
+      logger.info('Affiliation created', { id: newAffiliation._id });
+
+      return res.status(201).json({ success: true, data: newAffiliation });
+    } catch (err) {
+      logger.error('Error adding affiliation', { message: err.message, stack: err.stack });
+      return res.status(500).json({ success: false, message: 'Internal server error' });
     }
   }
 }
