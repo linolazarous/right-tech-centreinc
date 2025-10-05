@@ -49,7 +49,7 @@ fi
 mkdir -p .do
 cat > .do/app.yaml << EOF
 name: righttechcentre-backend
-region: nyc3
+region: nyc1
 services:
 - name: api
   github:
