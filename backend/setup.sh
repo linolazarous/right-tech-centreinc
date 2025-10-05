@@ -17,6 +17,10 @@ if ! command -v npm &> /dev/null; then
     exit 1
 fi
 
+# Correct URLs
+BACKEND_URL="https://righttechcentre-kn5oq.ondigitalocean.app"
+FRONTEND_URL="https://righttechcentre-iyysq.ondigitalocean.app"  # Fixed typo
+
 # Create necessary files for DigitalOcean deployment
 echo "📁 Creating deployment files..."
 
@@ -27,8 +31,8 @@ NODE_ENV=production
 PORT=8080
 DATABASE_URL=your_database_url_here
 JWT_SECRET=your_jwt_secret_here
-FRONTEND_URL=https://righttechcentre-iyysq.ondigitalocean.app
-CORS_ORIGIN=https://righttechcentre-iyysq.ondigitalocean.app
+FRONTEND_URL=$FRONTEND_URL
+CORS_ORIGIN=$FRONTEND_URL
 EOF
     echo "✅ Created .env.example"
 fi
@@ -45,12 +49,12 @@ fi
 mkdir -p .do
 cat > .do/app.yaml << EOF
 name: righttechcentre-backend
-region: ams3
+region: nyc3
 services:
 - name: api
   github:
     repo: linolazarous/right-tech-centreinc
-    branch: master 
+    branch: main  # Changed from master to main
   source_dir: /
   run_command: npm start
   build_command: npm install
@@ -65,9 +69,9 @@ services:
   - key: PORT
     value: "8080"
   - key: FRONTEND_URL
-    value: https://righttechcentre-iyysq.ondigitalocean.app
+    value: $FRONTEND_URL
   - key: CORS_ORIGIN
-    value: https://righttechcentre-iyysq.ondigitalocean.app
+    value: $FRONTEND_URL
 EOF
 
 echo "✅ Created .do/app.yaml template"
@@ -79,4 +83,4 @@ npm install
 echo "🎉 Setup completed! Please:"
 echo "1. Update .env.example with your actual environment variables"
 echo "2. Run ./deploy.sh to deploy"
-echo "3. Your frontend will connect to: https://righttechcentre-backend.ondigitalocean.app"
+echo "3. Your frontend will connect to: $BACKEND_URL"
