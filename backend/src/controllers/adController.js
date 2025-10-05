@@ -1,68 +1,52 @@
+// src/controllers/adController.js
 import Ad from '../models/AdModel.js';
-import { generateAdContent } from "../services/adService.js";
-import { postToSocialMedia } from "../services/socialMediaService.js";
-import logger from '../utils/logger.js';
+import { generateAdContent } from '../services/adService.js';
+import { postToSocialMedia } from '../services/socialMediaService.js';
 import { getUserPreferences } from '../services/userService.js';
+import { logger } from '../utils/logger.js';
+import { isValidObjectId } from '../utils/helpers.js';
 
-const socialMediaPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
+const SOCIAL_PLATFORMS = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
 
-/**
- * Generate and post ad to multiple platforms
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
 export const generateAndPostAd = async (req, res) => {
   const { userId } = req.body;
-  
+
   try {
-    // Input validation
-    if (!userId || typeof userId !== 'string') {
-      logger.warn(`Invalid userId format: ${userId}`);
-      return res.status(400).json({ message: 'Invalid user ID format' });
+    if (!userId || !isValidObjectId(userId)) {
+      logger.warn(`Invalid userId: ${userId}`);
+      return res.status(400).json({ success: false, message: 'Invalid user ID' });
     }
 
     const userPreferences = await getUserPreferences(userId);
     const adContent = await generateAdContent(userPreferences);
 
-    // Post to social media platforms in parallel
-    const postingResults = await Promise.allSettled(
-      socialMediaPlatforms.map(platform => 
-        postToSocialMedia(platform, adContent)
-      )
+    // Post in parallel to external platforms but cap concurrency if needed in prod
+    const results = await Promise.allSettled(
+      SOCIAL_PLATFORMS.map((platform) => postToSocialMedia(platform, adContent))
     );
 
-    // Log posting results
-    postingResults.forEach((result, index) => {
-      if (result.status === 'rejected') {
-        logger.error(`Failed to post to ${socialMediaPlatforms[index]}: ${result.reason.message}`);
-      }
-    });
-
-    // Save ad to database
-    const ad = await Ad.create({ 
-      userId, 
+    // Save ad record (do not store secrets)
+    const ad = await Ad.create({
+      userId,
       content: adContent,
-      postedPlatforms: socialMediaPlatforms
+      postedPlatforms: SOCIAL_PLATFORMS.filter((_, i) => results[i].status === 'fulfilled'),
+      failedPlatforms: SOCIAL_PLATFORMS.filter((_, i) => results[i].status === 'rejected'),
+      createdAt: new Date()
     });
 
-    logger.info(`Ad successfully created and posted for userId: ${userId}`);
-    res.status(201).json({
-      ad,
-      postingResults: postingResults.map((result, index) => ({
-        platform: socialMediaPlatforms[index],
-        status: result.status,
-        error: result.status === 'rejected' ? result.reason.message : undefined
-      }))
-    });
+    // Build compact postingResults for response (no internal error stacks)
+    const postingResults = results.map((r, i) => ({
+      platform: SOCIAL_PLATFORMS[i],
+      status: r.status,
+      error: r.status === 'rejected' ? String(r.reason?.message || r.reason) : undefined
+    }));
+
+    logger.info(`Ad created by user ${userId}`, { adId: ad._id });
+    return res.status(201).json({ success: true, ad, postingResults });
   } catch (err) {
-    logger.error(`Error in generateAndPostAd: ${err.message}`, { stack: err.stack });
-    res.status(500).json({ 
-      error: 'Internal server error',
-      message: err.message 
-    });
+    logger.error('Error generating/posting ad', { message: err.message, stack: err.stack });
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
 
-export default { 
-  generateAndPostAd 
-};
+export default { generateAndPostAd };
