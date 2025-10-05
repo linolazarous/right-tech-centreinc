@@ -1,13 +1,19 @@
 import express from 'express';
-const router = express.Router();
 import certificateController from '../controllers/certificateController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 import { validateCertificate } from '../middleware/validationMiddleware.js';
 import roleMiddleware from '../middleware/roleMiddleware.js';
 import rateLimit from '../middleware/rateLimitMiddleware.js';
 
+const router = express.Router();
+
+/**
+ * @route   POST /api/certificates/issue
+ * @desc    Issue a course completion certificate
+ * @access  Admin, Instructor
+ */
 router.post(
-  '/issue-certificate',
+  '/issue',
   authMiddleware,
   roleMiddleware(['admin', 'instructor']),
   validateCertificate,
