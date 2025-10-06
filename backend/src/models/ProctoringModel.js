@@ -1,262 +1,49 @@
 import mongoose from 'mongoose';
 
 const proctoringSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User ID is required'],
-    index: true
-  },
-  examId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Exam',
-    required: [true, 'Exam ID is required'],
-    index: true
-  },
-  sessionId: {
-    type: String,
-    required: [true, 'Session ID is required'],
-    unique: true,
-    index: true
-  },
-  startTime: {
-    type: Date,
-    required: [true, 'Start time is required'],
-    index: true
-  },
-  scheduledStartTime: {
-    type: Date,
-    required: [true, 'Scheduled start time is required']
-  },
-  endTime: {
-    type: Date,
-    validate: {
-      validator: function(v) {
-        return !v || v > this.startTime;
-      },
-      message: 'End time must be after start time'
-    },
-    index: true
-  },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  examId: { type: mongoose.Schema.Types.ObjectId, ref: 'Exam', required: true, index: true },
+  sessionId: { type: String, required: true, unique: true, index: true },
+  startTime: { type: Date, required: true, index: true },
+  endTime: Date,
   deviceInfo: {
-    os: String,
-    browser: String,
-    ipAddress: String,
-    screenResolution: String,
-    deviceType: String
+    os: String, browser: String, ipAddress: String, deviceType: String
   },
   authentication: {
-    method: {
-      type: String,
-      enum: ['password', 'biometric', '2fa', 'proctoring'],
-      default: 'password'
-    },
-    photos: [String],
+    method: { type: String, enum: ['password', 'biometric', '2fa'], default: 'password' },
     verified: Boolean
   },
   activityLogs: [{
     timestamp: { type: Date, required: true },
-    eventType: { 
+    eventType: {
       type: String,
-      enum: [
-        'tab_switch', 
-        'window_resize', 
-        'copy_attempt',
-        'paste_attempt',
-        'face_not_visible',
-        'multiple_faces',
-        'voice_detected',
-        'noise_detected',
-        'device_disconnect',
-        'reconnect'
-      ],
+      enum: ['tab_switch', 'copy_attempt', 'face_not_visible', 'multiple_faces', 'noise_detected'],
       required: true
     },
-    severity: {
-      type: String,
-      enum: ['low', 'medium', 'high'],
-      default: 'low'
-    },
-    screenshot: String,
-    metadata: Object
+    severity: { type: String, enum: ['low', 'medium', 'high'], default: 'low' }
   }],
   flaggedEvents: [{
     type: {
       type: String,
-      enum: [
-        'cheating_suspected',
-        'identity_verification_failed',
-        'environment_violation',
-        'timeout_violation',
-        'technical_issue'
-      ],
+      enum: ['cheating_suspected', 'identity_failed', 'environment_violation'],
       required: true
     },
-    timestamp: { type: Date, default: Date.now },
     description: String,
-    evidence: [String],
-    reviewed: { type: Boolean, default: false },
-    reviewedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    reviewNotes: String,
-    actionTaken: {
-      type: String,
-      enum: [
-        'none',
-        'warning',
-        'exam_paused',
-        'exam_terminated',
-        'score_adjusted',
-        'disqualified'
-      ],
-      default: 'none'
-    }
+    reviewed: { type: Boolean, default: false }
   }],
-  recording: {
-    status: {
-      type: String,
-      enum: ['not_started', 'recording', 'completed', 'failed'],
-      default: 'not_started'
-    },
-    url: String,
-    segments: [{
-      startTime: Date,
-      endTime: Date,
-      url: String,
-      sizeMB: Number
-    }]
-  },
-  systemChecks: {
-    camera: Boolean,
-    microphone: Boolean,
-    networkStability: Boolean,
-    fullScreen: Boolean,
-    browserLock: Boolean
-  },
   status: {
     type: String,
-    enum: [
-      'scheduled',
-      'started',
-      'in_progress',
-      'paused',
-      'completed',
-      'terminated',
-      'technical_failure'
-    ],
-    default: 'scheduled',
-    index: true
-  },
-  performanceMetrics: {
-    averageLatency: Number,
-    packetLoss: Number,
-    frameRate: Number,
-    audioQuality: Number
-  },
-  metadata: {
-    type: Object,
-    default: {}
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    immutable: true
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+    enum: ['scheduled', 'in_progress', 'completed', 'terminated'],
+    default: 'scheduled'
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+proctoringSchema.virtual('durationMinutes').get(function () {
+  return this.endTime ? (this.endTime - this.startTime) / 60000 : 0;
 });
 
-proctoringSchema.index({ userId: 1, examId: 1 });
-proctoringSchema.index({ 'flaggedEvents.reviewed': 1 });
-proctoringSchema.index({ startTime: -1 });
-proctoringSchema.index({ status: 1, startTime: 1 });
-proctoringSchema.index({ 'activityLogs.eventType': 1 });
-proctoringSchema.index({ 'activityLogs.timestamp': 1 });
-
-proctoringSchema.pre('save', function(next) {
-  if (this.isModified('startTime') && !this.endTime) {
-    this.status = 'in_progress';
-  }
-  if (this.isModified('endTime') && this.endTime) {
-    this.status = 'completed';
-  }
-  next();
-});
-
-proctoringSchema.statics.findActiveSessions = async function() {
-  try {
-    return await this.find({ 
-      status: { $in: ['started', 'in_progress', 'paused'] } 
-    }).populate('userId examId', 'name email title duration');
-  } catch (error) {
-    console.error('Error finding active proctoring sessions:', error);
-    throw error;
-  }
+proctoringSchema.statics.findActive = function () {
+  return this.find({ status: { $in: ['in_progress', 'scheduled'] } });
 };
-
-proctoringSchema.statics.findFlaggedSessions = async function() {
-  try {
-    return await this.find({ 
-      'flaggedEvents.reviewed': false 
-    }).sort({ startTime: -1 });
-  } catch (error) {
-    console.error('Error finding flagged proctoring sessions:', error);
-    throw error;
-  }
-};
-
-proctoringSchema.methods.addActivityEvent = async function(eventData) {
-  try {
-    this.activityLogs.push(eventData);
-    await this.save();
-    return this;
-  } catch (error) {
-    console.error(`Error adding activity event to session ${this._id}:`, error);
-    throw error;
-  }
-};
-
-proctoringSchema.methods.flagEvent = async function(flagData) {
-  try {
-    this.flaggedEvents.push(flagData);
-    this.status = flagData.type === 'exam_terminated' ? 'terminated' : this.status;
-    await this.save();
-    return this;
-  } catch (error) {
-    console.error(`Error flagging event in session ${this._id}:`, error);
-    throw error;
-  }
-};
-
-proctoringSchema.methods.completeSession = async function() {
-  try {
-    this.endTime = new Date();
-    this.status = 'completed';
-    await this.save();
-    return this;
-  } catch (error) {
-    console.error(`Error completing session ${this._id}:`, error);
-    throw error;
-  }
-};
-
-proctoringSchema.virtual('durationMinutes').get(function() {
-  if (!this.startTime || !this.endTime) return 0;
-  return (this.endTime - this.startTime) / (1000 * 60);
-});
-
-proctoringSchema.virtual('isActive').get(function() {
-  return ['started', 'in_progress', 'paused'].includes(this.status);
-});
-
-proctoringSchema.virtual('severityScore').get(function() {
-  const scores = { low: 1, medium: 3, high: 5 };
-  return this.activityLogs.reduce((sum, log) => sum + (scores[log.severity] || 0), 0);
-});
 
 export default mongoose.model('Proctoring', proctoringSchema);
