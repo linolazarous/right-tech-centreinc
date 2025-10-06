@@ -1,40 +1,24 @@
-import codingChallengeService from '../services/codingChallengeService.js';
+import CodingChallengeModel from '../models/codingChallengeModel.js';
 import logger from '../utils/logger.js';
 
 export const getCodingChallenges = async (req, res) => {
-    try {
-        const { difficulty, language, limit = 20 } = req.query;
-        
-        // Validate query parameters
-        if (difficulty && !['easy', 'medium', 'hard'].includes(difficulty)) {
-            return res.status(400).json({ error: 'Invalid difficulty level' });
-        }
+  try {
+    const { difficulty, language, limit: limitStr = '20' } = req.query;
+    const limit = parseInt(limitStr, 10);
 
-        if (limit && (isNaN(limit) || limit < 1 || limit > 50)) {
-            return res.status(400).json({ error: 'Limit must be between 1 and 50' });
-        }
+    const filter = {};
+    if (difficulty) filter.difficulty = difficulty;
+    if (language) filter.language = language;
 
-        logger.info('Fetching coding challenges', { difficulty, language });
-        const challenges = await codingChallengeService.getCodingChallenges({
-            difficulty,
-            language,
-            limit: parseInt(limit)
-        });
+    const challenges = await CodingChallengeModel.find(filter)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean();
 
-        res.status(200).json({
-            count: challenges.length,
-            filters: { difficulty, language },
-            challenges
-        });
-    } catch (error) {
-        logger.error(`Error getting coding challenges: ${error.message}`, { stack: error.stack });
-        res.status(500).json({ 
-            error: 'Failed to retrieve coding challenges',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-};
-
-export default {
-    getCodingChallenges
+    logger.info(`Fetched ${challenges.length} coding challenges`);
+    res.status(200).json({ success: true, count: challenges.length, data: challenges });
+  } catch (error) {
+    logger.error(`Error fetching coding challenges: ${error.message}`);
+    res.status(500).json({ success: false, error: 'Failed to fetch coding challenges.' });
+  }
 };
