@@ -1,5 +1,6 @@
 name: righttechcentre-backend
 region: nyc1
+
 services:
   - name: api
     source_dir: backend
@@ -7,24 +8,65 @@ services:
       repo: linolazarous/right-tech-centreinc
       branch: master
       deploy_on_push: true
+
+    # Build & Run commands
+    build_command: npm ci --legacy-peer-deps
     run_command: node src/server.js
-    build_command: npm install --legacy-peer-deps
+
+    # Environment
     environment_slug: node-js
-    instance_count: 1
-    instance_size_slug: basic-xxs
+    instance_count: 2               # run at least 2 for uptime; 1 if budget-limited
+    instance_size_slug: basic-xs    # can be scaled to basic-s / professional-xs
+    http_port: 8080
+
     routes:
       - path: /
-    http_port: 8080
-    environment_variables:
-      - key: NPM_CONFIG_LEGACY_PEER_DEPS
-        value: "true"
+
     envs:
+      # Node environment variables
       - key: NODE_ENV
         value: production
       - key: PORT
         value: "8080"
       - key: CLIENT_URL
         value: https://righttechcentre.vercel.app
-      # Ensure your database and other secret keys are defined here as well!
-      # - key: DB_URI
-      #   value: your_mongodb_connection_string
+      - key: NPM_CONFIG_LEGACY_PEER_DEPS
+        value: "true"
+
+      # 🗝️ Security / API Keys (Replace with actual values via App Platform dashboard)
+      - key: DB_URI
+        scope: RUN_TIME
+        value: ${DB_URI}             # MongoDB URI or connection string
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        value: ${JWT_SECRET}
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        value: ${STRIPE_SECRET_KEY}
+      - key: CLOUDINARY_URL
+        scope: RUN_TIME
+        value: ${CLOUDINARY_URL}
+      - key: EMAIL_USER
+        scope: RUN_TIME
+        value: ${EMAIL_USER}
+      - key: EMAIL_PASS
+        scope: RUN_TIME
+        value: ${EMAIL_PASS}
+      - key: ADMIN_EMAIL
+        scope: RUN_TIME
+        value: ${ADMIN_EMAIL}
+      - key: ADMIN_PASSWORD
+        scope: RUN_TIME
+        value: ${ADMIN_PASSWORD}
+
+    # Optional: Health checks (ensures your service restarts if unhealthy)
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 10
+      period_seconds: 30
+      timeout_seconds: 5
+      failure_threshold: 3
+      success_threshold: 1
+
+    # Auto redeploy when new code is pushed
+    auto_deploy: true
