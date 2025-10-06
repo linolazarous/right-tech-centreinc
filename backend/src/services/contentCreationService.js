@@ -1,42 +1,61 @@
 import OpenAI from "openai";
-import Course from '../models/Course.js';
+import Course from '../models/CourseModel.js';
 import logger from '../utils/logger.js';
 import { validateTopic } from '../validators/contentValidator.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- * Generate course content using AI
- * @param {string} topic - Course topic
- * @param {string} audience - Target audience
- * @param {string} depth - Content depth level
- * @returns {Promise<Object>} Generated course content
+ * Generate AI-powered course content
+ * @param {Object} options
+ * @param {string} options.topic - Course topic
+ * @param {string} [options.audience='beginners'] - Target audience
+ * @param {string} [options.depth='intermediate'] - Content depth
+ * @returns {Promise<Object>} Structured course content
  */
 const generateCourseContent = async ({ topic, audience = 'beginners', depth = 'intermediate' }) => {
   try {
+    // Validate topic
     const validation = validateTopic(topic);
     if (!validation.valid) {
       throw new Error(validation.message);
     }
 
     logger.info(`Generating course content for topic: ${topic}`);
-    
-    const prompt = `Create a detailed course outline on ${topic} for ${audience} with ${depth} depth. 
-      Include learning objectives, module breakdown, and key concepts.`;
-    
-    const response = await openai.completions.create({
-      model: "text-davinci-003",
-      prompt,
-      max_tokens: 1000,
-      temperature: 0.7,
+
+    // AI prompt
+    const prompt = `
+      You are an expert instructional designer.
+      Create a detailed course on "${topic}" for ${audience} learners at a ${depth} level.
+      Include:
+        1. Learning objectives
+        2. Module breakdown (with titles and descriptions)
+        3. Key concepts for each module
+        4. Optional resources or references
+      Provide output in a structured and easy-to-parse format.
+    `;
+
+    // Call OpenAI Chat Completion API
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: "You generate structured educational content." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 1500,
+      temperature: 0.7
     });
 
-    const content = response.choices[0].text.trim();
-    
-    // Parse and structure the generated content
-    const structuredContent = parseGeneratedContent(content);
-    
+    const rawContent = response.choices?.[0]?.message?.content?.trim();
+    if (!rawContent) {
+      throw new Error("No content returned from OpenAI");
+    }
+
+    // Parse the raw content into structured format
+    const structuredContent = parseGeneratedContent(rawContent);
+
     logger.info('Successfully generated course content');
+
     return {
       topic,
       audience,
@@ -44,6 +63,7 @@ const generateCourseContent = async ({ topic, audience = 'beginners', depth = 'i
       content: structuredContent,
       generatedAt: new Date().toISOString()
     };
+
   } catch (error) {
     logger.error(`Course content generation failed: ${error.message}`);
     throw new Error('Failed to generate course content');
@@ -51,28 +71,39 @@ const generateCourseContent = async ({ topic, audience = 'beginners', depth = 'i
 };
 
 /**
- * Parse AI-generated content into structured format
- * @param {string} content - Raw generated content
- * @returns {Object} Structured content
+ * Parse AI-generated content into structured JSON
+ * @param {string} content - Raw AI content
+ * @returns {Object} Parsed course content
  */
 const parseGeneratedContent = (content) => {
-  // Basic parsing logic - would be more sophisticated in production
-  const sections = content.split('\n\n');
+  const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
+
   const result = {
     objectives: [],
     modules: []
   };
 
-  sections.forEach(section => {
-    if (section.startsWith('Learning Objectives:')) {
-      result.objectives = section.split('\n').slice(1);
-    } else if (section.startsWith('Module')) {
-      result.modules.push({
-        title: section.split('\n')[0],
-        content: section.split('\n').slice(1).join('\n')
-      });
+  let currentModule = null;
+
+  lines.forEach(line => {
+    if (/^Learning Objectives:?/i.test(line)) {
+      // Capture objectives
+      const index = lines.indexOf(line);
+      for (let i = index + 1; i < lines.length && !/^Module/i.test(lines[i]); i++) {
+        result.objectives.push(lines[i].replace(/^[-*]\s?/, '').trim());
+      }
+    } else if (/^Module\s*\d+[:.-]?/i.test(line)) {
+      // Start new module
+      if (currentModule) result.modules.push(currentModule);
+      currentModule = { title: line, content: '' };
+    } else if (currentModule) {
+      // Append content to current module
+      currentModule.content += (currentModule.content ? '\n' : '') + line;
     }
   });
+
+  // Push last module
+  if (currentModule) result.modules.push(currentModule);
 
   return result;
 };
