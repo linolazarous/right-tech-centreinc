@@ -1,50 +1,34 @@
-import CertificateService from '../services/certificateService.js';
+import CertificateModel from '../models/certificateModel.js';
 import logger from '../utils/logger.js';
-import { isValidObjectId } from '../utils/helpers.js';
 
-export const issueCertificate = async (req, res) => {
-    try {
-        const { userId, courseId, completionDate } = req.body;
-        
-        // Validate inputs
-        if (!isValidObjectId(userId) || !isValidObjectId(courseId)) {
-            return res.status(400).json({ error: 'Invalid user ID or course ID format' });
-        }
-
-        if (!completionDate || isNaN(Date.parse(completionDate))) {
-            return res.status(400).json({ error: 'Invalid completion date' });
-        }
-
-        logger.info(`Issuing certificate for user: ${userId}, course: ${courseId}`);
-        const certificate = await CertificateService.issueCertificate({
-            userId,
-            courseId,
-            completionDate: new Date(completionDate),
-            issuedDate: new Date()
-        });
-
-        logger.info(`Certificate issued: ${certificate._id}`);
-        res.status(201).json({
-            certificateId: certificate._id,
-            userId: certificate.userId,
-            courseId: certificate.courseId,
-            issueDate: certificate.issuedDate,
-            downloadUrl: certificate.downloadUrl
-        });
-    } catch (error) {
-        logger.error(`Error issuing certificate: ${error.message}`, { stack: error.stack });
-        
-        if (error.message.includes('already exists')) {
-            return res.status(409).json({ error: error.message });
-        }
-        
-        res.status(500).json({ 
-            error: 'Failed to issue certificate',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
+export const generateCertificate = async (req, res) => {
+  try {
+    const { userId, courseId } = req.body;
+    if (!userId || !courseId) {
+      return res.status(400).json({ success: false, error: 'userId and courseId are required.' });
     }
-};
 
-export default {
-    issueCertificate
+    const certificate = await CertificateModel.create({
+      userId,
+      courseId,
+      issuedDate: new Date(),
+      downloadUrl: `/certificates/${userId}-${courseId}.pdf`,
+    });
+
+    logger.info(`Certificate generated for user ${userId} on course ${courseId}`);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        certificateId: certificate._id,
+        userId: certificate.userId,
+        courseId: certificate.courseId,
+        issueDate: certificate.issuedDate,
+        downloadUrl: certificate.downloadUrl,
+      },
+    });
+  } catch (error) {
+    logger.error(`Error generating certificate: ${error.message}`);
+    res.status(500).json({ success: false, error: 'Failed to generate certificate.' });
+  }
 };
