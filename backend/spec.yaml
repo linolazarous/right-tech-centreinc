@@ -1,0 +1,114 @@
+name: righttechcentre-backend
+region: nyc1
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+  - rule: CPU_UTILIZATION
+  - rule: MEMORY_UTILIZATION
+
+services:
+  - name: api
+    environment_slug: node-js
+    instance_size_slug: basic-xs
+    instance_count: 2
+    auto_deploy: true
+    source_dir: backend
+    github:
+      repo: linolazarous/right-tech-centreinc
+      branch: master
+      deploy_on_push: true
+
+    build_command: npm ci --legacy-peer-deps
+    run_command: node src/server.js
+    http_port: 8080
+
+    routes:
+      - path: /
+
+    envs:
+      # Runtime environment
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: PORT
+        value: "8080"
+        scope: RUN_TIME
+      - key: CLIENT_URL
+        value: https://righttechcentre.vercel.app
+        scope: RUN_TIME
+      - key: NPM_CONFIG_LEGACY_PEER_DEPS
+        value: "true"
+        scope: BUILD_TIME
+
+      # Database & Authentication
+      - key: DB_URI
+        scope: RUN_TIME
+        value: ${DB_URI}
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        value: ${JWT_SECRET}
+
+      # Payment & Media Integrations
+      - key: STRIPE_SECRET_KEY
+        scope: RUN_TIME
+        value: ${STRIPE_SECRET_KEY}
+      - key: CLOUDINARY_URL
+        scope: RUN_TIME
+        value: ${CLOUDINARY_URL}
+
+      # Email Configuration
+      - key: EMAIL_USER
+        scope: RUN_TIME
+        value: ${EMAIL_USER}
+      - key: EMAIL_PASS
+        scope: RUN_TIME
+        value: ${EMAIL_PASS}
+      - key: ADMIN_EMAIL
+        scope: RUN_TIME
+        value: ${ADMIN_EMAIL}
+      - key: ADMIN_PASSWORD
+        scope: RUN_TIME
+        value: ${ADMIN_PASSWORD}
+
+      # Optional AI / Blockchain integrations
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        value: ${OPENAI_API_KEY}
+      - key: WEB3_PROVIDER_URL
+        scope: RUN_TIME
+        value: ${WEB3_PROVIDER_URL}
+      - key: COINBASE_API_KEY
+        scope: RUN_TIME
+        value: ${COINBASE_API_KEY}
+
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 10
+      period_seconds: 30
+      timeout_seconds: 5
+      failure_threshold: 3
+      success_threshold: 1
+
+    scaling:
+      min_instances: 1
+      max_instances: 3
+      metrics:
+        cpu_percent: 80
+        memory_percent: 85
+
+workers:
+  # optional background tasks / queue workers
+  - name: background-jobs
+    environment_slug: node-js
+    source_dir: backend
+    build_command: npm ci --legacy-peer-deps
+    run_command: node src/jobs/worker.js
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: DB_URI
+        value: ${DB_URI}
+        scope: RUN_TIME
