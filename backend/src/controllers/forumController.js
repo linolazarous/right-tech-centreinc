@@ -1,49 +1,30 @@
-import ForumPost from '../models/ForumModel.js';
+import ForumPost from '../models/forumModel.js';
 import logger from '../utils/logger.js';
-import { isValidObjectId } from '../utils/helpers.js';
-import { validateForumPost } from '../validators/forumValidator.js';
 
 export const createPost = async (req, res) => {
-    try {
-        const postData = req.body;
-        
-        // Validate input
-        const validation = validateForumPost(postData);
-        if (!validation.valid) {
-            return res.status(400).json({ error: validation.message });
-        }
+  try {
+    const postData = { ...req.body, author: req.user.id };
+    const post = await ForumPost.create(postData);
+    await post.populate('author', 'name avatar');
 
-        if (!isValidObjectId(postData.author)) {
-            return res.status(400).json({ error: 'Invalid author ID format' });
-        }
-
-        logger.info('Creating forum post', { author: postData.author });
-        const post = new ForumPost(postData);
-        await post.save();
-
-        logger.info(`Forum post created: ${post._id}`);
-        res.status(201).json({
-            postId: post._id,
-            title: post.title,
-            author: post.author,
-            tags: post.tags,
-            createdAt: post.createdAt
-        });
-    } catch (error) {
-        logger.error(`Error creating forum post: ${error.message}`, { stack: error.stack });
-        
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({ error: error.message });
-        }
-        
-        res.status(500).json({ 
-            error: 'Failed to create forum post',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
+    logger.info(`Forum post created by user ${req.user.id}`);
+    res.status(201).json({ success: true, data: post });
+  } catch (error) {
+    logger.error(`Error creating forum post: ${error.message}`);
+    res.status(500).json({ success: false, error: 'Failed to create forum post.' });
+  }
 };
 
-export default {
-    createPost
-};
+export const getPosts = async (req, res) => {
+  try {
+    const posts = await ForumPost.find()
+      .populate('author', 'name avatar')
+      .sort({ createdAt: -1 })
+      .lean();
 
+    res.status(200).json({ success: true, count: posts.length, data: posts });
+  } catch (error) {
+    logger.error(`Error fetching forum posts: ${error.message}`);
+    res.status(500).json({ success: false, error: 'Failed to fetch posts.' });
+  }
+};
